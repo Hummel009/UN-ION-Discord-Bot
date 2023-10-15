@@ -46,15 +46,19 @@ fun main() {
 			}
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
-			val encryptedMessage = encrypt(event.messageContent)
-			Files.write(filePath, encryptedMessage.toByteArray(), StandardOpenOption.APPEND)
+			val unicodeCodes = event.messageContent.codePoints().toArray()
+			Files.write(
+				filePath,
+				unicodeCodes.joinToString(" ").toByteArray(StandardCharsets.UTF_8),
+				StandardOpenOption.APPEND
+			)
+			Files.write(filePath, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
 
 			val currentModifiedTime = Files.getLastModifiedTime(filePath).toMillis()
 
 			if (rand.nextInt(chance) == 0 && currentModifiedTime > lastModifiedTime) {
-				val encryptedRandomLine = filePath.getRandomLine()
-				val decryptedRandomLine = decrypt(encryptedRandomLine)
-				event.channel.sendMessage(decryptedRandomLine)
+				val randomLine = filePath.getRandomLine()
+				event.channel.sendMessage(randomLine)
 				lastModifiedTime = currentModifiedTime
 			}
 		}
@@ -69,15 +73,12 @@ fun String.isMessageForbidden(): Boolean {
 
 fun Path.getRandomLine(): String {
 	val lines = Files.readAllLines(this)
-	return if (lines.isNotEmpty()) lines[rand.nextInt(lines.size)] else ""
-}
-
-fun encrypt(input: String): String {
-	return input.toByteArray()
-		.joinToString("") { String.format("%8s", Integer.toBinaryString(it.toInt() and 0xFF)).replace(' ', '0') }
-}
-
-fun decrypt(input: String): String {
-	val binaryChunks = input.chunked(8)
-	return binaryChunks.joinToString("") { Integer.parseInt(it, 2).toChar().toString() }
+	return if (lines.isNotEmpty()) {
+		val randomLine = lines[rand.nextInt(lines.size)]
+		val unicodeCodes = randomLine.split(" ").map { it.toInt() }
+		val unicodeChars = unicodeCodes.map { it.toChar() }.toCharArray()
+		String(unicodeChars)
+	} else {
+		""
+	}
 }
