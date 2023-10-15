@@ -53,7 +53,7 @@ fun main() {
 			val currentModifiedTime = Files.getLastModifiedTime(filePath).toMillis()
 
 			if (rand.nextInt(chance) == 0 && currentModifiedTime > lastModifiedTime) {
-				val randomLine = getRandomLineFromFile(filePath)
+				val randomLine = filePath.getRandomLine()
 				event.channel.sendMessage(randomLine)
 				lastModifiedTime = currentModifiedTime
 			}
@@ -67,7 +67,7 @@ fun String.isMessageForbidden(): Boolean {
 	return this.length < 2 || startsWith("!") || contains("@") || contains("http") || contains("\r") || contains("\n")
 }
 
-fun getRandomLineFromFile(filePath: Path): String {
-	val lines = Files.readAllLines(filePath)
+fun Path.getRandomLine(): String {
+	val lines = Files.readAllLines(this)
 	return if (lines.isNotEmpty()) lines[Random().nextInt(lines.size)] else ""
 }
