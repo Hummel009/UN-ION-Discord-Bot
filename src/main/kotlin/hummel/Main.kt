@@ -24,12 +24,26 @@ fun main() {
 	}
 
 	var lastModifiedTime = Files.getLastModifiedTime(filePath).toMillis()
+	var chance = 10
 
 	api.addMessageCreateListener { event ->
 		if (event.messageAuthor.isBotOwner) {
 			if (event.messageContent.equals("!clear database")) {
 				Files.write(filePath, byteArrayOf())
 				event.channel.sendMessage("Database cleared.")
+			}
+			if (event.messageContent.startsWith("!chance")) {
+				val parts = event.messageContent.split(" ")
+				if (parts.size >= 2) {
+					try {
+						chance = parts[1].toInt()
+						event.channel.sendMessage("Chance changed to $chance.")
+					} catch (e: NumberFormatException) {
+						event.channel.sendMessage("Invalid integer format after !chance.")
+					}
+				} else {
+					event.channel.sendMessage("No integer provided after !chance.")
+				}
 			}
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
@@ -38,7 +52,7 @@ fun main() {
 
 			val currentModifiedTime = Files.getLastModifiedTime(filePath).toMillis()
 
-			if (rand.nextInt(10) == 0 && currentModifiedTime > lastModifiedTime) {
+			if (rand.nextInt(chance) == 0 && currentModifiedTime > lastModifiedTime) {
 				val randomLine = getRandomLineFromFile(filePath)
 				event.channel.sendMessage(randomLine)
 				lastModifiedTime = currentModifiedTime
