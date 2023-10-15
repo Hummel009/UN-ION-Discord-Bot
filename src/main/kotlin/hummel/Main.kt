@@ -17,7 +17,7 @@ fun main() {
 
 	val api = DiscordApiBuilder().setToken(token).addIntents(*Intent.values()).login().join()
 
-	val filePath = Paths.get("db.txt")
+	val filePath = Paths.get("db.bin")
 	if (Files.notExists(filePath)) {
 		Files.createFile(filePath)
 	}

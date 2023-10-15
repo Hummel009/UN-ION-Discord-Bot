@@ -40,4 +40,4 @@ bin/
 
 ### SECURITY ###
 token.txt
-db.txt
+db.bin
