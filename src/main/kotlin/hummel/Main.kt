@@ -13,7 +13,6 @@ import java.util.*
 val rand: Random = Random()
 
 fun main() {
-	println("Connecting to Discord...")
 	val token = File("token.txt").readText(StandardCharsets.UTF_8)
 
 	val api = DiscordApiBuilder().setToken(token).addIntents(*Intent.values()).login().join()
