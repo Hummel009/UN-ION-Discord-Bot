@@ -21,8 +21,12 @@ configurations {
 
 dependencies {
 	embed 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
-	embed 'org.javacord:javacord:3.8.0'
-	implementation 'org.javacord:javacord:3.8.0'
+	embed('org.javacord:javacord:3.8.0') {
+		exclude group: 'org.bouncycastle'
+	}
+	implementation('org.javacord:javacord:3.8.0') {
+		exclude group: 'org.bouncycastle'
+	}
 }
 
 kotlin {
