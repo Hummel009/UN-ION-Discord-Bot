@@ -22,10 +22,15 @@ fun main() {
 
 	api.addMessageCreateListener { event ->
 		val serverID = event.server.get().id
-		val path = Paths.get("$serverID.bin")
-		if (Files.notExists(path)) {
+		val folderPath = Paths.get("$serverID")
+		if (!Files.exists(folderPath)) {
+			Files.createDirectories(folderPath)
+		}
+		val path = folderPath.resolve("messages.bin")
+		if (!Files.exists(path)) {
 			Files.createFile(path)
 		}
+
 		lastEditTime[serverID] = Files.getLastModifiedTime(path).toMillis()
 
 		if (event.messageAuthor.isBotOwner) {
