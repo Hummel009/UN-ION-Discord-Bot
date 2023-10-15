@@ -27,7 +27,7 @@ fun main() {
 
 	api.addMessageCreateListener { event ->
 		if (event.messageAuthor.isBotOwner) {
-			if (event.messageContent.equals("!clear database")) {
+			if (event.messageContent == "!clear database") {
 				Files.write(filePath, byteArrayOf())
 				event.channel.sendMessage("Database cleared.")
 			}
@@ -46,14 +46,15 @@ fun main() {
 			}
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
-			val messageToSave = "${event.messageContent}\r\n"
-			Files.write(filePath, messageToSave.toByteArray(), StandardOpenOption.APPEND)
+			val encryptedMessage = encrypt(event.messageContent)
+			Files.write(filePath, encryptedMessage.toByteArray(), StandardOpenOption.APPEND)
 
 			val currentModifiedTime = Files.getLastModifiedTime(filePath).toMillis()
 
 			if (rand.nextInt(chance) == 0 && currentModifiedTime > lastModifiedTime) {
-				val randomLine = filePath.getRandomLine()
-				event.channel.sendMessage(randomLine)
+				val encryptedRandomLine = filePath.getRandomLine()
+				val decryptedRandomLine = decrypt(encryptedRandomLine)
+				event.channel.sendMessage(decryptedRandomLine)
 				lastModifiedTime = currentModifiedTime
 			}
 		}
@@ -68,5 +69,15 @@ fun String.isMessageForbidden(): Boolean {
 
 fun Path.getRandomLine(): String {
 	val lines = Files.readAllLines(this)
-	return if (lines.isNotEmpty()) lines[Random().nextInt(lines.size)] else ""
+	return if (lines.isNotEmpty()) lines[rand.nextInt(lines.size)] else ""
+}
+
+fun encrypt(input: String): String {
+	return input.toByteArray()
+		.joinToString("") { String.format("%8s", Integer.toBinaryString(it.toInt() and 0xFF)).replace(' ', '0') }
+}
+
+fun decrypt(input: String): String {
+	val binaryChunks = input.chunked(8)
+	return binaryChunks.joinToString("") { Integer.parseInt(it, 2).toChar().toString() }
 }
