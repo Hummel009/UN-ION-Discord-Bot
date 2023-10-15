@@ -17,26 +17,28 @@ fun main() {
 
 	val api = DiscordApiBuilder().setToken(token).addIntents(*Intent.values()).login().join()
 
-	val filePath = Paths.get("db.bin")
-	if (Files.notExists(filePath)) {
-		Files.createFile(filePath)
-	}
-
-	var lastModifiedTime = Files.getLastModifiedTime(filePath).toMillis()
-	var chance = 10
+	val chance = HashMap<Long, Int>()
+	val lastEditTime = HashMap<Long, Long>()
 
 	api.addMessageCreateListener { event ->
+		val serverID = event.server.get().id
+		val path = Paths.get("$serverID.bin")
+		if (Files.notExists(path)) {
+			Files.createFile(path)
+		}
+		lastEditTime[serverID] = Files.getLastModifiedTime(path).toMillis()
+
 		if (event.messageAuthor.isBotOwner) {
 			if (event.messageContent == "!clear database") {
-				Files.write(filePath, byteArrayOf())
+				Files.write(path, byteArrayOf())
 				event.channel.sendMessage("Database cleared.")
 			}
 			if (event.messageContent.startsWith("!chance")) {
 				val parts = event.messageContent.split(" ")
 				if (parts.size >= 2) {
 					try {
-						chance = parts[1].toInt()
-						event.channel.sendMessage("Chance changed to $chance.")
+						chance[serverID] = parts[1].toInt()
+						event.channel.sendMessage("Chance changed to ${chance[serverID]}.")
 					} catch (e: NumberFormatException) {
 						event.channel.sendMessage("Invalid integer format after !chance.")
 					}
@@ -46,20 +48,18 @@ fun main() {
 			}
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
-			val unicodeCodes = event.messageContent.codePoints().toArray()
+			val ints = event.messageContent.codePoints().toArray()
 			Files.write(
-				filePath,
-				unicodeCodes.joinToString(" ").toByteArray(StandardCharsets.UTF_8),
-				StandardOpenOption.APPEND
+				path, ints.joinToString(" ").toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND
 			)
-			Files.write(filePath, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
+			Files.write(path, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
 
-			val currentModifiedTime = Files.getLastModifiedTime(filePath).toMillis()
+			val editTime = Files.getLastModifiedTime(path).toMillis()
 
-			if (rand.nextInt(chance) == 0 && currentModifiedTime > lastModifiedTime) {
-				val randomLine = filePath.getRandomLine()
+			if (rand.nextInt(chance[serverID] ?: 10) == 0 && editTime > (lastEditTime[serverID] ?: 0L)) {
+				val randomLine = path.getRandomLine()
 				event.channel.sendMessage(randomLine)
-				lastModifiedTime = currentModifiedTime
+				lastEditTime[event.server.get().id] = editTime
 			}
 		}
 	}
