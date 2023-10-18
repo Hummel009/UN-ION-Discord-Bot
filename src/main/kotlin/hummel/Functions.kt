@@ -9,16 +9,13 @@ import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 fun sendMessage(event: MessageCreateEvent, data: ServerInfo) {
 	val path = Paths.get("${data.serverID}/messages.bin")
-	val editTime = Files.getLastModifiedTime(path).toMillis()
 
-	if (rand.nextInt(data.chance) == 0 && editTime > data.lastUpdate) {
+	if (rand.nextInt(data.chance) == 0) {
 		val randomLine = path.getRandomLine()
 		randomLine?.let {
 			event.channel.sendMessage(it)
-			data.lastUpdate = editTime
 		}
 	}
 }
@@ -72,5 +69,18 @@ fun registerChanceFunc(event: MessageCreateEvent, data: ServerInfo) {
 		} else {
 			event.channel.sendMessage("No integer provided after !chance.")
 		}
+	}
+}
+
+fun registerGetInfoFunc(event: MessageCreateEvent, data: ServerInfo) {
+	if (event.messageContent == "!getinfo") {
+		event.channel.sendMessage(
+			"""
+			FULL SERVER INFO:
+			>> Server name: ${data.serverName};
+			>> Server id: ${data.serverID};
+			>> Message chance: ${data.chance};
+			""".trimIndent()
+		)
 	}
 }

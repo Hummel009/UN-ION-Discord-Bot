@@ -21,6 +21,7 @@ fun main() {
 			registerClearFunc(event, data)
 			registerBackupFunc(event, data)
 			registerChanceFunc(event, data)
+			registerGetInfoFunc(event, data)
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
 			saveMessage(event, data)

@@ -21,9 +21,7 @@ fun getData(event: MessageCreateEvent, serverID: String): ServerInfo {
 		Files.createFile(msgPath)
 	}
 
-	val lastUpdate = Files.getLastModifiedTime(msgPath).toMillis()
-
-	return ServerInfo(serverID, serverName, chance, lastUpdate)
+	return ServerInfo(serverID, serverName, chance)
 }
 
 fun saveDataToJson(data: ServerInfo, filePath: String) {
