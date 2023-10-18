@@ -9,6 +9,7 @@ import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+
 fun sendMessage(event: MessageCreateEvent, data: ServerInfo) {
 	val path = Paths.get("${data.serverID}/messages.bin")
 	val editTime = Files.getLastModifiedTime(path).toMillis()
@@ -49,7 +50,9 @@ fun registerBackupFunc(event: MessageCreateEvent, data: ServerInfo) {
 		try {
 			Files.copy(path, destinationPath)
 			val backupFile = File(destinationPath.toString())
-			event.channel.sendMessage(backupFile)
+			val future = event.channel.sendMessage(backupFile)
+			future.get()
+			Files.delete(destinationPath)
 		} catch (e: Exception) {
 			event.channel.sendMessage("Error backuping database.")
 		}
