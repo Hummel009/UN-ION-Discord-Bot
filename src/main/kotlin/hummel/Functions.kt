@@ -1,6 +1,7 @@
 package hummel
 
 import org.javacord.api.event.message.MessageCreateEvent
+import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -47,7 +48,8 @@ fun registerBackupFunc(event: MessageCreateEvent, data: ServerInfo) {
 
 		try {
 			Files.copy(path, destinationPath)
-			event.channel.sendMessage("Database was backuped.")
+			val backupFile = File(destinationPath.toString())
+			event.channel.sendMessage(backupFile)
 		} catch (e: Exception) {
 			event.channel.sendMessage("Error backuping database.")
 		}
