@@ -107,9 +107,9 @@ fun registerBirthdayFunc(event: MessageCreateEvent, data: ServerInfo) {
 		if (parameters.size == 4) {
 			try {
 				val userID = parameters[1].toLong()
-				val month = if (parameters[3].toInt() in 1..12) parameters[3].toInt() else throw Exception()
+				val month = if (parameters[2].toInt() in 1..12) parameters[2].toInt() else throw Exception()
 				val range = ranges[month] ?: throw Exception()
-				val day = if (parameters[2].toInt() in range) parameters[2].toInt() else throw Exception()
+				val day = if (parameters[3].toInt() in range) parameters[3].toInt() else throw Exception()
 				data.birthday.add(Birthday(userID, day, month))
 				event.channel.sendMessage("Added birthday: @$userID, \"$day.$month\".")
 			} catch (e: Exception) {
