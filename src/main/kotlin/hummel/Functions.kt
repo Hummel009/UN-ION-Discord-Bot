@@ -30,7 +30,7 @@ fun saveMessage(event: MessageCreateEvent, data: ServerInfo) {
 	Files.write(path, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
 }
 
-fun registerClearFunc(event: MessageCreateEvent, data: ServerInfo) {
+fun registerClearDatabaseFunc(event: MessageCreateEvent, data: ServerInfo) {
 	if (event.messageContent == "!clear database") {
 		val path = Paths.get("${data.serverID}/messages.bin")
 		Files.write(path, byteArrayOf())
@@ -38,7 +38,7 @@ fun registerClearFunc(event: MessageCreateEvent, data: ServerInfo) {
 	}
 }
 
-fun registerBackupFunc(event: MessageCreateEvent, data: ServerInfo) {
+fun registerBackupDatabaseFunc(event: MessageCreateEvent, data: ServerInfo) {
 	if (event.messageContent == "!backup database") {
 		val path = Paths.get("${data.serverID}/messages.bin")
 
@@ -57,7 +57,7 @@ fun registerBackupFunc(event: MessageCreateEvent, data: ServerInfo) {
 	}
 }
 
-fun registerChanceFunc(event: MessageCreateEvent, data: ServerInfo) {
+fun registerMessageChanceFunc(event: MessageCreateEvent, data: ServerInfo) {
 	if (event.messageContent.startsWith("!chance")) {
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 2) {
@@ -101,7 +101,7 @@ val ranges: Map<Int, IntRange> = mapOf(
 	12 to 1..31,
 )
 
-fun registerBirthdayFunc(event: MessageCreateEvent, data: ServerInfo) {
+fun registerAddBirthdayFunc(event: MessageCreateEvent, data: ServerInfo) {
 	if (event.messageContent.startsWith("!birthday")) {
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 4) {
@@ -136,4 +136,11 @@ fun isBirthdayToday(data: ServerInfo): Pair<Boolean, Long> {
 
 fun sendBirthdayMessage(event: MessageCreateEvent, userID: Long) {
 	event.channel.sendMessage("<@$userID>, с днём рождения!")
+}
+
+fun registerClearBirthdaysFunc(event: MessageCreateEvent, data: ServerInfo) {
+	if (event.messageContent == "!clear birthdays") {
+		data.birthday = HashSet()
+		event.channel.sendMessage("Birthdays cleared.")
+	}
 }
