@@ -135,5 +135,5 @@ fun isBirthdayToday(data: ServerInfo): Pair<Boolean, Long> {
 }
 
 fun sendBirthdayMessage(event: MessageCreateEvent, userID: Long) {
-	event.channel.sendMessage("<@$userID, с днём рождения!>")
+	event.channel.sendMessage("<@$userID>, с днём рождения!")
 }
