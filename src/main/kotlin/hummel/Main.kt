@@ -19,6 +19,7 @@ fun main() {
 
 		if (event.messageAuthor.isBotOwner) {
 			registerClearFunc(event, data)
+			registerBackupFunc(event, data)
 			registerChanceFunc(event, data)
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {

@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun sendMessage(event: MessageCreateEvent, data: ServerInfo) {
 	val path = Paths.get("${data.serverID}/messages.bin")
@@ -33,6 +35,22 @@ fun registerClearFunc(event: MessageCreateEvent, data: ServerInfo) {
 		val path = Paths.get("${data.serverID}/messages.bin")
 		Files.write(path, byteArrayOf())
 		event.channel.sendMessage("Database cleared.")
+	}
+}
+
+fun registerBackupFunc(event: MessageCreateEvent, data: ServerInfo) {
+	if (event.messageContent == "!backup database") {
+		val path = Paths.get("${data.serverID}/messages.bin")
+
+		val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+		val destinationPath = Paths.get("${data.serverID}/messages-$timeStamp.bin")
+
+		try {
+			Files.copy(path, destinationPath)
+			event.channel.sendMessage("Database was backuped.")
+		} catch (e: Exception) {
+			event.channel.sendMessage("Error backuping database.")
+		}
 	}
 }
 
