@@ -17,11 +17,18 @@ fun main() {
 
 		val data = readDataFromJson("$serverID/data.json") ?: getData(event, serverID)
 
+		val birthdayAndWhose = isBirthdayToday(data)
+
+		if (birthdayAndWhose.first) {
+			sendBirthdayMessage(event, birthdayAndWhose.second)
+		}
+
 		if (event.messageAuthor.isBotOwner) {
 			registerClearFunc(event, data)
 			registerBackupFunc(event, data)
 			registerChanceFunc(event, data)
 			registerGetInfoFunc(event, data)
+			registerBirthdayFunc(event, data)
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
 			saveMessage(event, data)
