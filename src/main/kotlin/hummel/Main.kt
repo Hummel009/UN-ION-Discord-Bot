@@ -41,7 +41,7 @@ fun main() {
 
 		if (event.messageAuthor.isBotOwner) {
 			clearServerMessages(event, data)
-			clearServerBirthdays(event, data)
+			deleteBirthday(event, data)
 		}
 
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {

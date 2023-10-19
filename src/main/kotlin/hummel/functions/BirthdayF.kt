@@ -60,10 +60,36 @@ fun sendBirthdayMessage(event: MessageCreateEvent, userID: Long) {
 	event.channel.sendMessage("<@$userID>, с днём рождения!")
 }
 
-fun clearServerBirthdays(event: MessageCreateEvent, data: ServerData) {
-	if (event.messageContent == "${prefix}clear_birthdays") {
-		functions.add("clear_birthdays")
-		data.birthday = HashSet()
-		event.channel.sendMessage("Birthdays cleared.")
+fun deleteBirthday(event: MessageCreateEvent, data: ServerData) {
+	if (event.messageContent.startsWith("${prefix}delete_birthday")) {
+		functions.add("clear_birthday [USER_ID]")
+		val parameters = event.messageContent.split(" ")
+		if (parameters.size == 1) {
+			try {
+				if (!event.messageAuthor.isBotOwner) {
+					throw Exception()
+				}
+				data.birthday = HashSet()
+				event.channel.sendMessage("Birthdays cleared.")
+			} catch (e: Exception) {
+				event.channel.sendMessage("You are not the bot owner!")
+			}
+		} else if (parameters.size == 2) {
+			try {
+				val userID = parameters[1].toLong()
+				val set = HashSet<Birthday>()
+				for (birthday in data.birthday) {
+					if (userID != birthday.userID) {
+						set.add(birthday)
+					}
+				}
+				data.birthday = set
+				event.channel.sendMessage("Removed birthday of user <@$userID>")
+			} catch (e: Exception) {
+				event.channel.sendMessage("Invalid integers after !birthday.")
+			}
+		} else {
+			event.channel.sendMessage("No integers provided after !birthday.")
+		}
 	}
 }
