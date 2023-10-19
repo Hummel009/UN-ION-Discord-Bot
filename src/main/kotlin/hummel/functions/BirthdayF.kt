@@ -38,58 +38,60 @@ fun addBirthday(event: MessageCreateEvent, data: ServerData) {
 				event.channel.sendMessage("Invalid integers after !birthday.")
 			}
 		} else {
-			event.channel.sendMessage("No integers provided after !birthday.")
+			event.channel.sendMessage("Wrong command usage.")
 		}
 	}
 }
 
-fun isBirthdayToday(data: ServerData): Pair<Boolean, Long> {
+fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 	val currentDate = LocalDate.now()
 	val currentDay = currentDate.dayOfMonth
 	val currentMonth = currentDate.monthValue
+	val set = HashSet<Long>()
+	var isBirthdayToday = false
 
 	for ((userID, day, month) in data.birthday) {
 		if (day == currentDay && month == currentMonth) {
-			return true to userID
+			isBirthdayToday = true
+			set.add(userID)
 		}
 	}
-	return false to 0
+	return isBirthdayToday to set
 }
 
-fun sendBirthdayMessage(event: MessageCreateEvent, userID: Long) {
-	event.channel.sendMessage("<@$userID>, с днём рождения!")
+fun sendBirthdayMessage(event: MessageCreateEvent, userIDs: Set<Long>) {
+	userIDs.forEach { event.channel.sendMessage("<@$it>, с днём рождения!") }
 }
 
-fun deleteBirthday(event: MessageCreateEvent, data: ServerData) {
+fun clearServerBirthdays(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent.startsWith("${prefix}delete_birthday")) {
-		functions.add("clear_birthday [USER_ID]")
+		functions.add("delete_birthday [USER_ID]")
 		val parameters = event.messageContent.split(" ")
-		if (parameters.size == 1) {
-			try {
-				if (!event.messageAuthor.isBotOwner) {
-					throw Exception()
-				}
+		when (parameters.size) {
+			1 -> {
 				data.birthday = HashSet()
 				event.channel.sendMessage("Birthdays cleared.")
-			} catch (e: Exception) {
-				event.channel.sendMessage("You are not the bot owner!")
 			}
-		} else if (parameters.size == 2) {
-			try {
-				val userID = parameters[1].toLong()
-				val set = HashSet<Birthday>()
-				for (birthday in data.birthday) {
-					if (userID != birthday.userID) {
-						set.add(birthday)
+
+			2 -> {
+				try {
+					val userID = parameters[1].toLong()
+					val set = HashSet<Birthday>()
+					for (birthday in data.birthday) {
+						if (userID != birthday.userID) {
+							set.add(birthday)
+						}
 					}
+					data.birthday = set
+					event.channel.sendMessage("Removed birthday of user <@$userID>")
+				} catch (e: Exception) {
+					event.channel.sendMessage("Invalid integers after !birthday.")
 				}
-				data.birthday = set
-				event.channel.sendMessage("Removed birthday of user <@$userID>")
-			} catch (e: Exception) {
-				event.channel.sendMessage("Invalid integers after !birthday.")
 			}
-		} else {
-			event.channel.sendMessage("No integers provided after !birthday.")
+
+			else -> {
+				event.channel.sendMessage("Wrong command usage.")
+			}
 		}
 	}
 }

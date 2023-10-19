@@ -7,6 +7,7 @@ import hummel.utils.readDataFromJson
 import hummel.utils.saveDataToJson
 import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.entity.intent.Intent
+import org.javacord.api.entity.message.MessageAuthor
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -32,16 +33,16 @@ fun main() {
 		randomChoice(event)
 		getHelp(event)
 
-		if (event.messageAuthor.canManageMessagesInTextChannel()) {
+		if (event.messageAuthor.isOfficer()) {
 			setMessageChance(event, data)
-			getServerMessages(event, data)
-			getServerData(event, data)
 			addBirthday(event, data)
 		}
 
-		if (event.messageAuthor.isBotOwner) {
+		if (event.messageAuthor.isGeneral()) {
 			clearServerMessages(event, data)
-			deleteBirthday(event, data)
+			clearServerBirthdays(event, data)
+			getServerMessages(event, data)
+			getServerData(event, data)
 		}
 
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
@@ -64,3 +65,7 @@ fun main() {
 
 	println("You can invite the bot by using the following url: " + api.createBotInvite())
 }
+
+private fun MessageAuthor.isGeneral(): Boolean = this.isServerAdmin
+
+private fun MessageAuthor.isOfficer(): Boolean = this.canManageMessagesInTextChannel()
