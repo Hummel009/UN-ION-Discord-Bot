@@ -16,15 +16,15 @@ val answers: Set<String> = setOf(
 )
 
 fun eightBall(event: MessageCreateEvent) {
+	functions.add("8ball")
 	if (event.messageContent == "${prefix}8ball") {
-		functions.add("8ball")
 		event.channel.sendMessage(answers.random())
 	}
 }
 
 fun randomChoice(event: MessageCreateEvent) {
+	functions.add("choice ITEM-1 ITEM-2 ITEM-N")
 	if (event.messageContent.startsWith("${prefix}choice")) {
-		functions.add("choice ITEM-1 ITEM-2 ITEM-N")
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size >= 2) {
 			try {

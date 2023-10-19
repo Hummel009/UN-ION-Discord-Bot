@@ -23,8 +23,8 @@ val ranges: Map<Int, IntRange> = mapOf(
 )
 
 fun addBirthday(event: MessageCreateEvent, data: ServerData) {
+	functions.add("add_birthday USER_ID MONTH DAY")
 	if (event.messageContent.startsWith("${prefix}add_birthday")) {
-		functions.add("add_birthday USER_ID MONTH DAY")
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 4) {
 			try {
@@ -60,8 +60,8 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 }
 
 fun clearServerBirthdays(event: MessageCreateEvent, data: ServerData) {
+	functions.add("delete_birthday [USER_ID]")
 	if (event.messageContent.startsWith("${prefix}delete_birthday")) {
-		functions.add("delete_birthday [USER_ID]")
 		val parameters = event.messageContent.split(" ")
 		when (parameters.size) {
 			1 -> {

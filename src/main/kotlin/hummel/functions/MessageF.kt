@@ -35,8 +35,8 @@ fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
 }
 
 fun setMessageChance(event: MessageCreateEvent, data: ServerData) {
+	functions.add("set_chance INT")
 	if (event.messageContent.startsWith("${prefix}set_chance")) {
-		functions.add("set_chance INT")
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 2) {
 			try {
@@ -60,19 +60,22 @@ fun getServerData(event: MessageCreateEvent, data: ServerData) {
 }
 
 fun getHelp(event: MessageCreateEvent) {
-	val sb = StringBuilder()
-	sb.append("All the commands of the bot:\r\n")
+	functions.add("help")
+	if (event.messageContent == "${prefix}help") {
+		val sb = StringBuilder()
+		sb.append("All the commands of the bot:\r\n")
 
-	functions.forEach {
-		sb.append(">> $prefix$it;\r\n")
+		functions.forEach {
+			sb.append(">> $prefix$it;\r\n")
+		}
+
+		event.channel.sendMessage(sb.toString())
 	}
-
-	event.channel.sendMessage(sb.toString())
 }
 
 fun clearServerMessages(event: MessageCreateEvent, data: ServerData) {
+	functions.add("clear_messages")
 	if (event.messageContent == "${prefix}clear_messages") {
-		functions.add("clear_messages")
 		val path = Paths.get("${data.serverID}/messages.bin")
 		Files.write(path, byteArrayOf())
 		event.channel.sendMessage("Server messages cleared.")
@@ -82,8 +85,8 @@ fun clearServerMessages(event: MessageCreateEvent, data: ServerData) {
 fun forkSendAndDelete(
 	event: MessageCreateEvent, data: ServerData, command: String, fileName: String, fileExtension: String
 ) {
+	functions.add(command)
 	if (event.messageContent == "$prefix$command") {
-		functions.add(command)
 		val path = Paths.get("${data.serverID}/$fileName")
 
 		val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
