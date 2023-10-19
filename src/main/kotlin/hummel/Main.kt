@@ -28,16 +28,22 @@ fun main() {
 
 		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event, serverID)
 
+		eightBall(event)
+		randomChoice(event)
 		getHelp(event)
+
+		if (event.messageAuthor.canManageMessagesInTextChannel()) {
+			setMessageChance(event, data)
+			getServerMessages(event, data)
+			getServerData(event, data)
+			addBirthday(event, data)
+		}
 
 		if (event.messageAuthor.isBotOwner) {
 			clearServerMessages(event, data)
 			clearServerBirthdays(event, data)
-			getServerMessages(event, data)
-			getServerData(event, data)
-			setMessageChance(event, data)
-			addBirthday(event, data)
 		}
+
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
 			saveAllowedMessage(event, data)
 			sendRandomMessage(event, data)
