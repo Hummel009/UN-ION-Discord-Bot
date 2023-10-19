@@ -2,6 +2,7 @@ package hummel.utils
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import hummel.structures.Date
 import hummel.structures.ServerData
 import org.javacord.api.event.message.MessageCreateEvent
 import java.io.IOException
@@ -28,7 +29,7 @@ fun getDataFromDiscord(event: MessageCreateEvent, serverID: String): ServerData 
 	val yesterdayDay = yesterday.dayOfMonth
 	val yesterdayMonth = yesterday.monthValue
 
-	return ServerData(serverID, serverName, chance, HashSet(), yesterdayDay to yesterdayMonth)
+	return ServerData(serverID, serverName, chance, HashSet(), Date(yesterdayDay, yesterdayMonth))
 }
 
 fun saveDataToJson(data: ServerData, filePath: String) {
