@@ -99,7 +99,7 @@ fun sendBirthdayMessage(event: MessageCreateEvent, data: ServerData) {
 
 	val (isBirthday, userIDs) = isBirthdayToday(data)
 
-	if (isBirthday && currentDay != data.lastWish.day && currentMonth != data.lastWish.month) {
+	if (isBirthday && (currentDay != data.lastWish.day || currentMonth != data.lastWish.month)) {
 		userIDs.forEach { event.channel.sendMessage("<@$it>, с днём рождения!") }
 		data.lastWish.day = currentDay
 		data.lastWish.month = currentMonth
