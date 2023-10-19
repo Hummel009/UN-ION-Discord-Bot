@@ -22,9 +22,11 @@ fun main() {
 
 		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event, serverID)
 
-		eightBall(event)
-		randomChoice(event)
-		getHelp(event)
+		if (event.isAllowedCommand()) {
+			eightBall(event)
+			randomChoice(event)
+			getHelp(event)
+		}
 
 		if (event.isOfficerMessage()) {
 			setMessageChance(event, data)

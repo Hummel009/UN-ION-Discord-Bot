@@ -7,9 +7,18 @@ import java.nio.file.Path
 
 fun MessageCreateEvent.isAllowedMessage(): Boolean {
 	val start = setOf("!", "?")
+
+	if (start.any { messageContent.startsWith(it) }) {
+		return false
+	}
+
+	return isAllowedCommand()
+}
+
+fun MessageCreateEvent.isAllowedCommand(): Boolean {
 	val contain = setOf("@", "http", "\r", "\n")
 
-	if (start.any { messageContent.startsWith(it) } || contain.any { messageContent.contains(it) }) {
+	if (contain.any { messageContent.contains(it) }) {
 		return false
 	}
 
