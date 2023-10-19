@@ -17,7 +17,7 @@ val answers: Set<String> = setOf(
 
 fun eightBall(event: MessageCreateEvent) {
 	functions.add("8ball")
-	if (event.messageContent == "${prefix}8ball") {
+	if (event.messageContent.startsWith("${prefix}8ball")) {
 		event.channel.sendMessage(answers.random())
 	}
 }

@@ -29,9 +29,9 @@ fun MessageCreateEvent.isAllowedCommand(): Boolean {
 	return messageContent.length >= 2
 }
 
-fun MessageCreateEvent.isGeneralMessage(): Boolean = messageAuthor.isServerAdmin
+fun MessageCreateEvent.isGeneralMessage(): Boolean = messageAuthor.canBanUsersFromServer()
 
-fun MessageCreateEvent.isOfficerMessage(): Boolean = messageAuthor.canManageMessagesInTextChannel()
+fun MessageCreateEvent.isOfficerMessage(): Boolean = messageAuthor.canMuteMembersOnServer()
 
 fun Path.getRandomLine(): String? {
 	val lines = Files.readAllLines(this)

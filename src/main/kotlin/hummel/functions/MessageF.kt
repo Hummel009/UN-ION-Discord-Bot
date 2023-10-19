@@ -87,7 +87,7 @@ fun forkSendAndDelete(
 ) {
 	functions.add(command)
 	if (event.messageContent == "$prefix$command") {
-		val path = Paths.get("${data.serverID}/$fileName")
+		val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
 
 		val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
 		val destinationPath = Paths.get("${data.serverID}/$fileName-$timeStamp.$fileExtension")
