@@ -45,7 +45,7 @@ fun main() {
 			getServerData(event, data)
 		}
 
-		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
+		if (!event.isMessageForbidden()) {
 			saveAllowedMessage(event, data)
 			sendRandomMessage(event, data)
 
