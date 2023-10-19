@@ -1,5 +1,10 @@
 package hummel
 
+import hummel.functions.*
+import hummel.utils.getDataFromDiscord
+import hummel.utils.isMessageForbidden
+import hummel.utils.readDataFromJson
+import hummel.utils.saveDataToJson
 import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.entity.intent.Intent
 import java.io.File
@@ -7,6 +12,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 val rand: Random = Random()
+val prefix: String = "!"
 
 fun main() {
 	val token = File("token.txt").readText(StandardCharsets.UTF_8)
@@ -18,19 +24,19 @@ fun main() {
 	api.addMessageCreateListener { event ->
 		val serverID = event.server.get().id.toString()
 
-		val data = readDataFromJson("$serverID/data.json") ?: getData(event, serverID)
+		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event, serverID)
 
 		if (event.messageAuthor.isBotOwner) {
-			registerClearDatabaseFunc(event, data)
-			registerClearBirthdaysFunc(event, data)
-			registerBackupDatabaseFunc(event, data)
-			registerMessageChanceFunc(event, data)
-			registerGetInfoFunc(event, data)
-			registerAddBirthdayFunc(event, data)
+			clearServerMessages(event, data)
+			clearServerBirthdays(event, data)
+			getServerMessages(event, data)
+			getServerData(event, data)
+			setMessageChance(event, data)
+			addBirthday(event, data)
 		}
 		if (!event.messageContent.isMessageForbidden() && !event.messageAuthor.isYourself && !event.messageAuthor.isBotUser) {
-			saveMessage(event, data)
-			sendMessage(event, data)
+			saveAllowedMessage(event, data)
+			sendRandomMessage(event, data)
 
 			val currentTime = System.currentTimeMillis()
 			val timeSinceLastWish = currentTime - lastBirthdayWishTime

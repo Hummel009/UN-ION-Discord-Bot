@@ -1,5 +1,6 @@
-package hummel
+package hummel.utils
 
+import hummel.rand
 import java.nio.file.Files
 import java.nio.file.Path
 
