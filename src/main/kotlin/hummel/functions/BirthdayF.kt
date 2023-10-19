@@ -24,7 +24,7 @@ val ranges: Map<Int, IntRange> = mapOf(
 
 fun addBirthday(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent.startsWith("${prefix}add_birthday")) {
-		functions.add("add_birthday")
+		functions.add("add_birthday USER_ID MONTH DAY")
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 4) {
 			try {

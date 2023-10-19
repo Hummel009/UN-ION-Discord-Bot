@@ -37,7 +37,7 @@ fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
 
 fun setMessageChance(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent.startsWith("${prefix}set_chance")) {
-		functions.add("set_chance")
+		functions.add("set_chance INT")
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 2) {
 			try {
