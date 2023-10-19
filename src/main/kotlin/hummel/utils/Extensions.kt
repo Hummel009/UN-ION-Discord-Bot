@@ -5,20 +5,24 @@ import org.javacord.api.event.message.MessageCreateEvent
 import java.nio.file.Files
 import java.nio.file.Path
 
-fun MessageCreateEvent.isMessageForbidden(): Boolean {
+fun MessageCreateEvent.isAllowedMessage(): Boolean {
 	val start = setOf("!", "?")
 	val contain = setOf("@", "http", "\r", "\n")
 
 	if (start.any { messageContent.startsWith(it) } || contain.any { messageContent.contains(it) }) {
-		return true
+		return false
 	}
 
 	if (messageAuthor.isYourself || messageAuthor.isBotUser) {
-		return true
+		return false
 	}
 
-	return messageContent.length < 2
+	return messageContent.length >= 2
 }
+
+fun MessageCreateEvent.isGeneralMessage(): Boolean = messageAuthor.isServerAdmin
+
+fun MessageCreateEvent.isOfficerMessage(): Boolean = messageAuthor.canManageMessagesInTextChannel()
 
 fun Path.getRandomLine(): String? {
 	val lines = Files.readAllLines(this)
