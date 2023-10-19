@@ -7,6 +7,7 @@ import org.javacord.api.event.message.MessageCreateEvent
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.LocalDate
 
 fun getDataFromDiscord(event: MessageCreateEvent, serverID: String): ServerData {
 	val serverName = event.server.get().name
@@ -22,7 +23,12 @@ fun getDataFromDiscord(event: MessageCreateEvent, serverID: String): ServerData 
 		Files.createFile(msgPath)
 	}
 
-	return ServerData(serverID, serverName, chance)
+	val currentDate = LocalDate.now()
+	val yesterday = currentDate.minusDays(1)
+	val yesterdayDay = yesterday.dayOfMonth
+	val yesterdayMonth = yesterday.monthValue
+
+	return ServerData(serverID, serverName, chance, HashSet(), yesterdayDay to yesterdayMonth)
 }
 
 fun saveDataToJson(data: ServerData, filePath: String) {

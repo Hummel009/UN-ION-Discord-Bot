@@ -17,9 +17,6 @@ fun main() {
 	val token = File("token.txt").readText(StandardCharsets.UTF_8)
 	val api = DiscordApiBuilder().setToken(token).addIntents(*Intent.values()).login().join()
 
-	var lastBirthdayWishTime: Long = 0
-	val twentyFourHoursInMillis = 24 * 60 * 60 * 1000
-
 	api.addMessageCreateListener { event ->
 		val serverID = event.server.get().id.toString()
 
@@ -44,16 +41,7 @@ fun main() {
 		if (event.isAllowedMessage()) {
 			saveAllowedMessage(event, data)
 			sendRandomMessage(event, data)
-
-			val currentTime = System.currentTimeMillis()
-			val timeSinceLastWish = currentTime - lastBirthdayWishTime
-
-			val (isBirthday, userID) = isBirthdayToday(data)
-
-			if (isBirthday && timeSinceLastWish >= twentyFourHoursInMillis) {
-				sendBirthdayMessage(event, userID)
-				lastBirthdayWishTime = currentTime
-			}
+			sendBirthdayMessage(event, data)
 		}
 
 		saveDataToJson(data, "$serverID/data.json")

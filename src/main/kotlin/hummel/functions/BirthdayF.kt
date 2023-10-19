@@ -59,10 +59,6 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 	return isBirthdayToday to set
 }
 
-fun sendBirthdayMessage(event: MessageCreateEvent, userIDs: Set<Long>) {
-	userIDs.forEach { event.channel.sendMessage("<@$it>, с днём рождения!") }
-}
-
 fun clearServerBirthdays(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent.startsWith("${prefix}delete_birthday")) {
 		functions.add("delete_birthday [USER_ID]")
@@ -93,5 +89,19 @@ fun clearServerBirthdays(event: MessageCreateEvent, data: ServerData) {
 				event.channel.sendMessage("Wrong command usage.")
 			}
 		}
+	}
+}
+
+fun sendBirthdayMessage(event: MessageCreateEvent, data: ServerData) {
+	val currentDate = LocalDate.now()
+	val currentDay = currentDate.dayOfMonth
+	val currentMonth = currentDate.monthValue
+
+	val (isBirthday, userIDs) = isBirthdayToday(data)
+
+	if (isBirthday && currentDay != data.lastWish.day && currentMonth != data.lastWish.month) {
+		userIDs.forEach { event.channel.sendMessage("<@$it>, с днём рождения!") }
+		data.lastWish.day = currentDay
+		data.lastWish.month = currentMonth
 	}
 }
