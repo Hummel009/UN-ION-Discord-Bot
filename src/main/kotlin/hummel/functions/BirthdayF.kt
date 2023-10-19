@@ -1,8 +1,9 @@
 package hummel.functions
 
-import hummel.structures.Birthday
-import hummel.structures.ServerInfo
+import hummel.functions
 import hummel.prefix
+import hummel.structures.Birthday
+import hummel.structures.ServerData
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 
@@ -21,8 +22,9 @@ val ranges: Map<Int, IntRange> = mapOf(
 	12 to 1..31,
 )
 
-fun addBirthday(event: MessageCreateEvent, data: ServerInfo) {
+fun addBirthday(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent.startsWith("${prefix}add_birthday")) {
+		functions.add("add_birthday")
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 4) {
 			try {
@@ -41,7 +43,7 @@ fun addBirthday(event: MessageCreateEvent, data: ServerInfo) {
 	}
 }
 
-fun isBirthdayToday(data: ServerInfo): Pair<Boolean, Long> {
+fun isBirthdayToday(data: ServerData): Pair<Boolean, Long> {
 	val currentDate = LocalDate.now()
 	val currentDay = currentDate.dayOfMonth
 	val currentMonth = currentDate.monthValue
@@ -58,8 +60,9 @@ fun sendBirthdayMessage(event: MessageCreateEvent, userID: Long) {
 	event.channel.sendMessage("<@$userID>, с днём рождения!")
 }
 
-fun clearServerBirthdays(event: MessageCreateEvent, data: ServerInfo) {
+fun clearServerBirthdays(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent == "${prefix}clear_birthdays") {
+		functions.add("clear_birthdays")
 		data.birthday = HashSet()
 		event.channel.sendMessage("Birthdays cleared.")
 	}

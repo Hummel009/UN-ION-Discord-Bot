@@ -1,11 +1,13 @@
 package hummel.functions
 
-import hummel.structures.ServerInfo
-import hummel.utils.getRandomLine
+import hummel.functions
 import hummel.prefix
 import hummel.rand
+import hummel.structures.ServerData
+import hummel.utils.getRandomLine
 import org.javacord.api.event.message.MessageCreateEvent
 import java.io.File
+import java.lang.StringBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -13,7 +15,7 @@ import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun sendRandomMessage(event: MessageCreateEvent, data: ServerInfo) {
+fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
 	val path = Paths.get("${data.serverID}/messages.bin")
 
 	if (rand.nextInt(data.chance) == 0) {
@@ -24,7 +26,7 @@ fun sendRandomMessage(event: MessageCreateEvent, data: ServerInfo) {
 	}
 }
 
-fun saveAllowedMessage(event: MessageCreateEvent, data: ServerInfo) {
+fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
 	val path = Paths.get("${data.serverID}/messages.bin")
 	val ints = event.messageContent.codePoints().toArray()
 	Files.write(
@@ -33,8 +35,9 @@ fun saveAllowedMessage(event: MessageCreateEvent, data: ServerInfo) {
 	Files.write(path, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
 }
 
-fun setMessageChance(event: MessageCreateEvent, data: ServerInfo) {
+fun setMessageChance(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent.startsWith("${prefix}set_chance")) {
+		functions.add("set_chance")
 		val parameters = event.messageContent.split(" ")
 		if (parameters.size == 2) {
 			try {
@@ -49,16 +52,28 @@ fun setMessageChance(event: MessageCreateEvent, data: ServerInfo) {
 	}
 }
 
-fun getServerMessages(event: MessageCreateEvent, data: ServerInfo) {
+fun getServerMessages(event: MessageCreateEvent, data: ServerData) {
 	forkSendAndDelete(event, data, "get_messages", "messages", "bin")
 }
 
-fun getServerData(event: MessageCreateEvent, data: ServerInfo) {
+fun getServerData(event: MessageCreateEvent, data: ServerData) {
 	forkSendAndDelete(event, data, "get_data", "data", "json")
 }
 
-fun clearServerMessages(event: MessageCreateEvent, data: ServerInfo) {
+fun getHelp(event: MessageCreateEvent) {
+	val sb = StringBuilder()
+	sb.append("All the commands of the bot:\r\n")
+
+	functions.forEach {
+		sb.append(">> $prefix$it;\r\n")
+	}
+
+	event.channel.sendMessage(sb.toString())
+}
+
+fun clearServerMessages(event: MessageCreateEvent, data: ServerData) {
 	if (event.messageContent == "${prefix}clear_messages") {
+		functions.add("clear_messages")
 		val path = Paths.get("${data.serverID}/messages.bin")
 		Files.write(path, byteArrayOf())
 		event.channel.sendMessage("Server messages cleared.")
@@ -66,9 +81,10 @@ fun clearServerMessages(event: MessageCreateEvent, data: ServerInfo) {
 }
 
 fun forkSendAndDelete(
-	event: MessageCreateEvent, data: ServerInfo, command: String, fileName: String, fileExtension: String
+	event: MessageCreateEvent, data: ServerData, command: String, fileName: String, fileExtension: String
 ) {
 	if (event.messageContent == "$prefix$command") {
+		functions.add(command)
 		val path = Paths.get("${data.serverID}/$fileName")
 
 		val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))

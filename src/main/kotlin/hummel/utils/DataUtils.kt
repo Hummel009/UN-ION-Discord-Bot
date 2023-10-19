@@ -2,13 +2,13 @@ package hummel.utils
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import hummel.structures.ServerInfo
+import hummel.structures.ServerData
 import org.javacord.api.event.message.MessageCreateEvent
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
-fun getDataFromDiscord(event: MessageCreateEvent, serverID: String): ServerInfo {
+fun getDataFromDiscord(event: MessageCreateEvent, serverID: String): ServerData {
 	val serverName = event.server.get().name
 	val chance = 10
 
@@ -22,10 +22,10 @@ fun getDataFromDiscord(event: MessageCreateEvent, serverID: String): ServerInfo 
 		Files.createFile(msgPath)
 	}
 
-	return ServerInfo(serverID, serverName, chance)
+	return ServerData(serverID, serverName, chance)
 }
 
-fun saveDataToJson(data: ServerInfo, filePath: String) {
+fun saveDataToJson(data: ServerData, filePath: String) {
 	try {
 		val gson = GsonBuilder().setPrettyPrinting().create()
 		val json = gson.toJson(data)
@@ -34,11 +34,11 @@ fun saveDataToJson(data: ServerInfo, filePath: String) {
 	}
 }
 
-fun readDataFromJson(filePath: String): ServerInfo? {
+fun readDataFromJson(filePath: String): ServerData? {
 	try {
 		val gson = Gson()
 		val json = String(Files.readAllBytes(Paths.get(filePath)))
-		return gson.fromJson(json, ServerInfo::class.java)
+		return gson.fromJson(json, ServerData::class.java)
 	} catch (ignored: IOException) {
 	}
 	return null

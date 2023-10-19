@@ -11,8 +11,10 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
 
+const val prefix: String = "!"
+
 val rand: Random = Random()
-val prefix: String = "!"
+val functions: MutableSet<String> = HashSet()
 
 fun main() {
 	val token = File("token.txt").readText(StandardCharsets.UTF_8)
@@ -25,6 +27,8 @@ fun main() {
 		val serverID = event.server.get().id.toString()
 
 		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event, serverID)
+
+		getHelp(event)
 
 		if (event.messageAuthor.isBotOwner) {
 			clearServerMessages(event, data)
