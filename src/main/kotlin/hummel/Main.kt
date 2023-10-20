@@ -21,6 +21,7 @@ fun main() {
 		val serverID = event.server.get().id.toString()
 
 		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event, serverID)
+		val copy = data.copy()
 
 		if (event.isAllowedCommand()) {
 			eightBall(event)
@@ -46,7 +47,9 @@ fun main() {
 			sendBirthdayMessage(event, data)
 		}
 
-		saveDataToJson(data, "$serverID/data.json")
+		if (copy != data) {
+			saveDataToJson(data, "$serverID/data.json")
+		}
 	}
 
 	println("You can invite the bot by using the following url: " + api.createBotInvite())
