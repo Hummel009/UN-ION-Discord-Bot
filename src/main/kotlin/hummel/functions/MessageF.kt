@@ -1,10 +1,9 @@
 package hummel.functions
 
-import hummel.functions
-import hummel.prefix
 import hummel.rand
 import hummel.structures.ServerData
 import hummel.utils.getRandomLine
+import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -13,6 +12,7 @@ import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
 
 fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
 	val path = Paths.get("${data.serverID}/messages.bin")
@@ -34,72 +34,60 @@ fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
 	Files.write(path, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
 }
 
-fun setMessageChance(event: MessageCreateEvent, data: ServerData) {
-	functions.add("set_chance INT")
-	if (event.messageContent.startsWith("${prefix}set_chance")) {
-		val parameters = event.messageContent.split(" ")
-		if (parameters.size == 2) {
+fun setChance(event: InteractionCreateEvent, data: ServerData) {
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains("set_chance")) {
+		val arguments = sc.arguments[0].stringValue.get().split(" ")
+		if (arguments.size == 1) {
 			try {
-				data.chance = parameters[1].toInt()
-				event.channel.sendMessage("Chance changed to ${data.chance}.")
+				data.chance = arguments[0].toInt()
+				sc.createImmediateResponder().setContent("Chance changed to ${data.chance}.").respond()
 			} catch (e: NumberFormatException) {
-				event.channel.sendMessage("Invalid integer format after !chance.")
+				sc.createImmediateResponder().setContent("Invalid argument format").respond()
 			}
 		} else {
-			event.channel.sendMessage("No integer provided after !chance.")
+			sc.createImmediateResponder().setContent("No arguments provided.").respond()
 		}
 	}
 }
 
-fun getServerMessages(event: MessageCreateEvent, data: ServerData) {
+fun getServerMessages(event: InteractionCreateEvent, data: ServerData) {
 	forkSendAndDelete(event, data, "get_messages", "messages", "bin")
 }
 
-fun getServerData(event: MessageCreateEvent, data: ServerData) {
+fun getServerData(event: InteractionCreateEvent, data: ServerData) {
 	forkSendAndDelete(event, data, "get_data", "data", "json")
 }
 
-fun getHelp(event: MessageCreateEvent) {
-	functions.add("help")
-	if (event.messageContent == "${prefix}help") {
-		val sb = StringBuilder()
-		sb.append("All the commands of the bot:\r\n")
-
-		functions.forEach {
-			sb.append(">> $prefix$it;\r\n")
-		}
-
-		event.channel.sendMessage(sb.toString())
-	}
-}
-
-fun clearServerMessages(event: MessageCreateEvent, data: ServerData) {
-	functions.add("clear_messages")
-	if (event.messageContent == "${prefix}clear_messages") {
+fun clearServerMessages(event: InteractionCreateEvent, data: ServerData) {
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains("clear_messages")) {
 		val path = Paths.get("${data.serverID}/messages.bin")
 		Files.write(path, byteArrayOf())
-		event.channel.sendMessage("Server messages cleared.")
+		sc.createImmediateResponder().setContent("Server messages cleared.").respond()
 	}
 }
 
 fun forkSendAndDelete(
-	event: MessageCreateEvent, data: ServerData, command: String, fileName: String, fileExtension: String
+	event: InteractionCreateEvent, data: ServerData, command: String, fileName: String, fileExtension: String
 ) {
-	functions.add(command)
-	if (event.messageContent == "$prefix$command") {
-		val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
 
-		val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
-		val destinationPath = Paths.get("${data.serverID}/$fileName-$timeStamp.$fileExtension")
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains(command)) {
+		sc.respondLater().thenAccept {
+			val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
 
-		try {
-			Files.copy(path, destinationPath)
-			val backupFile = File(destinationPath.toString())
-			val future = event.channel.sendMessage(backupFile)
-			future.get()
-			Files.delete(destinationPath)
-		} catch (e: Exception) {
-			event.channel.sendMessage("Error while copying and sending file.")
+			val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+			val destinationPath = Paths.get("${data.serverID}/$fileName-$timeStamp.$fileExtension")
+			try {
+				Files.copy(path, destinationPath)
+				val backupFile = File(destinationPath.toString())
+				val future = sc.createFollowupMessageBuilder().addAttachment(backupFile).send()
+				future.get()
+				Files.delete(destinationPath)
+			} catch (e: Exception) {
+				sc.createImmediateResponder().setContent("Error while copying and sending file.").respond()
+			}
 		}
 	}
 }

@@ -4,14 +4,15 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import hummel.structures.Date
 import hummel.structures.ServerData
-import org.javacord.api.event.message.MessageCreateEvent
+import org.javacord.api.entity.server.Server
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDate
+import java.util.*
 
-fun getDataFromDiscord(event: MessageCreateEvent, serverID: String): ServerData {
-	val serverName = event.server.get().name
+fun getDataFromDiscord(server: Optional<Server>, serverID: String): ServerData {
+	val serverName = server.get().name
 	val chance = 10
 
 	val folderPath = Paths.get(serverID)

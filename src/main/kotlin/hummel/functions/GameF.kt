@@ -1,8 +1,6 @@
 package hummel.functions
 
-import hummel.functions
-import hummel.prefix
-import org.javacord.api.event.message.MessageCreateEvent
+import org.javacord.api.event.interaction.InteractionCreateEvent
 
 val answers: Set<String> = setOf(
 	"Да.",
@@ -15,32 +13,26 @@ val answers: Set<String> = setOf(
 	"Точно нет, я уверен на 100%"
 )
 
-fun eightBall(event: MessageCreateEvent) {
-	functions.add("8ball")
-	if (event.messageContent.startsWith("${prefix}8ball")) {
-		event.channel.sendMessage(answers.random())
+fun eightBall(event: InteractionCreateEvent) {
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains("8ball")) {
+		val arguments = sc.arguments[0].stringValue.get().split(" ")
+		if (arguments.isNotEmpty()) {
+			sc.createImmediateResponder().setContent(answers.random()).respond()
+		} else {
+			sc.createImmediateResponder().setContent("No arguments provided.").respond()
+		}
 	}
 }
 
-fun randomChoice(event: MessageCreateEvent) {
-	functions.add("choice ITEM-1 ITEM-2 ITEM-N")
-	if (event.messageContent.startsWith("${prefix}choice")) {
-		val parameters = event.messageContent.split(" ")
-		if (parameters.size >= 2) {
-			try {
-				var answer: String
-				while (true) {
-					answer = parameters.random()
-					if (answer != parameters[0]) {
-						break
-					}
-				}
-				event.channel.sendMessage(answer)
-			} catch (e: NumberFormatException) {
-				event.channel.sendMessage("Invalid word format after !choice.")
-			}
+fun randomChoice(event: InteractionCreateEvent) {
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains("choice")) {
+		val arguments = sc.arguments[0].stringValue.get().split(" ")
+		if (arguments.isNotEmpty()) {
+			sc.createImmediateResponder().setContent(arguments.random()).respond()
 		} else {
-			event.channel.sendMessage("No integer provided after !choice.")
+			sc.createImmediateResponder().setContent("No arguments provided.").respond()
 		}
 	}
 }

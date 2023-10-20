@@ -1,24 +1,16 @@
 package hummel.utils
 
 import hummel.rand
+import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
 import java.nio.file.Files
 import java.nio.file.Path
 
 fun MessageCreateEvent.isAllowedMessage(): Boolean {
+	val contain = setOf("@", "http", "\r", "\n")
 	val start = setOf("!", "?")
 
-	if (start.any { messageContent.startsWith(it) }) {
-		return false
-	}
-
-	return isAllowedCommand()
-}
-
-fun MessageCreateEvent.isAllowedCommand(): Boolean {
-	val contain = setOf("@", "http", "\r", "\n")
-
-	if (contain.any { messageContent.contains(it) }) {
+	if (start.any { messageContent.startsWith(it) } || contain.any { messageContent.contains(it) }) {
 		return false
 	}
 
@@ -29,9 +21,13 @@ fun MessageCreateEvent.isAllowedCommand(): Boolean {
 	return messageContent.length >= 2
 }
 
-fun MessageCreateEvent.isGeneralMessage(): Boolean = messageAuthor.canBanUsersFromServer()
+fun InteractionCreateEvent.isGeneralMessage(): Boolean {
+	return interaction.asSlashCommandInteraction().get().user.isBotOwner
+}
 
-fun MessageCreateEvent.isOfficerMessage(): Boolean = messageAuthor.canMuteMembersOnServer()
+fun InteractionCreateEvent.isOfficerMessage(): Boolean {
+	return interaction.asSlashCommandInteraction().get().user.isBotOwner
+}
 
 fun Path.getRandomLine(): String? {
 	val lines = Files.readAllLines(this)

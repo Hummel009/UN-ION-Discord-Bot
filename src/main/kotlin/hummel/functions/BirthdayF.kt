@@ -1,9 +1,8 @@
 package hummel.functions
 
-import hummel.functions
-import hummel.prefix
 import hummel.structures.Birthday
 import hummel.structures.ServerData
+import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 
@@ -22,23 +21,23 @@ val ranges: Map<Int, IntRange> = mapOf(
 	12 to 1..31,
 )
 
-fun addBirthday(event: MessageCreateEvent, data: ServerData) {
-	functions.add("add_birthday USER_ID MONTH DAY")
-	if (event.messageContent.startsWith("${prefix}add_birthday")) {
-		val parameters = event.messageContent.split(" ")
-		if (parameters.size == 4) {
+fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains("add_birthday")) {
+		val arguments = sc.arguments[0].stringValue.get().split(" ")
+		if (arguments.size == 3) {
 			try {
-				val userID = parameters[1].toLong()
-				val month = if (parameters[2].toInt() in 1..12) parameters[2].toInt() else throw Exception()
+				val userID = arguments[0].toLong()
+				val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 				val range = ranges[month] ?: throw Exception()
-				val day = if (parameters[3].toInt() in range) parameters[3].toInt() else throw Exception()
+				val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
 				data.birthday.add(Birthday(userID, day, month))
-				event.channel.sendMessage("Added birthday: @$userID, \"$day.$month\".")
-			} catch (e: Exception) {
-				event.channel.sendMessage("Invalid integers after !birthday.")
+				sc.createImmediateResponder().setContent("Added birthday: @$userID, \"$day.$month\".").respond()
+			} catch (e: NumberFormatException) {
+				sc.createImmediateResponder().setContent("Invalid argument format").respond()
 			}
 		} else {
-			event.channel.sendMessage("Wrong command usage.")
+			sc.createImmediateResponder().setContent("No arguments provided.").respond()
 		}
 	}
 }
@@ -59,34 +58,34 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 	return isBirthdayToday to set
 }
 
-fun clearServerBirthdays(event: MessageCreateEvent, data: ServerData) {
-	functions.add("delete_birthday [USER_ID]")
-	if (event.messageContent.startsWith("${prefix}delete_birthday")) {
-		val parameters = event.messageContent.split(" ")
-		when (parameters.size) {
-			1 -> {
-				data.birthday = HashSet()
-				event.channel.sendMessage("Birthdays cleared.")
-			}
-
-			2 -> {
-				try {
-					val userID = parameters[1].toLong()
-					val set = HashSet<Birthday>()
-					for (birthday in data.birthday) {
-						if (userID != birthday.userID) {
-							set.add(birthday)
+fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains("clear_birthdays")) {
+		if (sc.arguments.isEmpty()) {
+			data.birthday = HashSet()
+			sc.createImmediateResponder().setContent("Birthdays cleared.").respond()
+		} else {
+			val arguments = sc.arguments[0].stringValue.get().split(" ")
+			when (arguments.size) {
+				1 -> {
+					try {
+						val userID = arguments[0].toLong()
+						val set = HashSet<Birthday>()
+						for (birthday in data.birthday) {
+							if (userID != birthday.userID) {
+								set.add(birthday)
+							}
 						}
+						data.birthday = set
+						sc.createImmediateResponder().setContent("Removed birthday of user @$userID").respond()
+					} catch (e: Exception) {
+						sc.createImmediateResponder().setContent("Invalid argument format.").respond()
 					}
-					data.birthday = set
-					event.channel.sendMessage("Removed birthday of user <@$userID>")
-				} catch (e: Exception) {
-					event.channel.sendMessage("Invalid integers after !birthday.")
 				}
-			}
 
-			else -> {
-				event.channel.sendMessage("Wrong command usage.")
+				else -> {
+					sc.createImmediateResponder().setContent("Wrong command usage.").respond()
+				}
 			}
 		}
 	}
