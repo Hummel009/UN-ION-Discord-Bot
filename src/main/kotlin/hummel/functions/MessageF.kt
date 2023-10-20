@@ -13,7 +13,6 @@ import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
 	val path = Paths.get("${data.serverID}/messages.bin")
 
