@@ -59,3 +59,7 @@ fun Path.getRandomLine(): String? {
 fun EmbedBuilder.defErrEmbed(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
 	return setAuthor(sc.user).setTitle("Error").setColor(Color.RED).setDescription(desc)
 }
+
+fun EmbedBuilder.defSuccessEmbed(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle("Error").setColor(Color.GREEN).setDescription(desc)
+}

@@ -2,6 +2,7 @@ package hummel.functions
 
 import hummel.structures.ServerData
 import hummel.utils.defErrEmbed
+import hummel.utils.defSuccessEmbed
 import hummel.utils.isGeneralMessage
 import hummel.utils.isOfficerMessage
 import org.javacord.api.entity.message.embed.EmbedBuilder
@@ -36,15 +37,16 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 		} else {
 			val arguments = sc.arguments[0].stringValue.get().split(" ")
 			if (arguments.size == 3) {
-				try {
-					val userID = arguments[0].toLong()
-					val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
-					val range = ranges[month] ?: throw Exception()
-					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-					data.birthday.add(ServerData.Birthday(userID, day, month))
-					sc.createImmediateResponder().setContent("Added birthday: @$userID.").respond()
-				} catch (e: Exception) {
-					sc.respondLater().thenAccept {
+				sc.respondLater().thenAccept {
+					try {
+						val userID = arguments[0].toLong()
+						val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
+						val range = ranges[month] ?: throw Exception()
+						val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
+						data.birthday.add(ServerData.Birthday(userID, day, month))
+						val embed = EmbedBuilder().defSuccessEmbed(sc, "Added birthday: @$userID.")
+						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+					} catch (e: Exception) {
 						val embed = EmbedBuilder().defErrEmbed(sc, "Invalid argument format.")
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
@@ -86,17 +88,21 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 			}
 		} else {
 			if (sc.arguments.isEmpty()) {
-				data.birthday.clear()
-				sc.createImmediateResponder().setContent("Birthdays cleared.").respond()
+				sc.respondLater().thenAccept {
+					data.birthday.clear()
+					val embed = EmbedBuilder().defSuccessEmbed(sc, "Birthdays cleared.")
+					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				}
 			} else {
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				if (arguments.size == 1) {
-					try {
-						val userID = arguments[0].toLong()
-						data.birthday.removeIf { it.userID == userID }
-						sc.createImmediateResponder().setContent("Removed birthday: @$userID").respond()
-					} catch (e: Exception) {
-						sc.respondLater().thenAccept {
+					sc.respondLater().thenAccept {
+						try {
+							val userID = arguments[0].toLong()
+							data.birthday.removeIf { it.userID == userID }
+							val embed = EmbedBuilder().defSuccessEmbed(sc, "Removed birthday: @$userID")
+							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+						} catch (e: Exception) {
 							val embed = EmbedBuilder().defErrEmbed(sc, "Invalid argument format.")
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						}
