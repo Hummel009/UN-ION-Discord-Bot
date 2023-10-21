@@ -1,11 +1,17 @@
 package hummel.structures
 
 data class ServerData(
-	var serverID: String,
-	var serverName: String,
+	val serverID: String,
+	val serverName: String,
 	var chance: Int,
-	var birthday: MutableSet<Birthday>,
-	var lastWish: Date,
-	var officers: MutableSet<Role>,
-	var generals: MutableSet<Role>
-)
+	val lastWish: Date,
+	val officers: MutableSet<Role>,
+	val generals: MutableSet<Role>,
+	val birthday: MutableSet<Birthday>
+) {
+	data class Date(var day: Int, var month: Int)
+
+	data class Role(var roleID: Long)
+
+	data class Birthday(var userID: Long, var day: Int, var month: Int)
+}

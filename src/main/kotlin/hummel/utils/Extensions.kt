@@ -25,35 +25,17 @@ fun MessageCreateEvent.isAllowedMessage(): Boolean {
 fun InteractionCreateEvent.isGeneralMessage(data: ServerData): Boolean {
 	val server = interaction.asSlashCommandInteraction().get().server.get()
 	val user = interaction.asSlashCommandInteraction().get().user
-	if (server.isAdmin(user)) {
-		return true
+	return server.isAdmin(user) || user.getRoles(server).any { role ->
+		data.generals.any { it.roleID == role.id }
 	}
-	val roles = user.getRoles(server)
-	var flag = false
-	for (role in roles) {
-		if (data.generals.map { it.roleID }.contains(role.id)) {
-			flag = true
-			break
-		}
-	}
-	return flag
 }
 
 fun InteractionCreateEvent.isOfficerMessage(data: ServerData): Boolean {
 	val server = interaction.asSlashCommandInteraction().get().server.get()
 	val user = interaction.asSlashCommandInteraction().get().user
-	if (server.isAdmin(user)) {
-		return true
+	return server.isAdmin(user) || user.getRoles(server).any { role ->
+		data.officers.any { it.roleID == role.id }
 	}
-	val roles = user.getRoles(server)
-	var flag = false
-	for (role in roles) {
-		if (data.officers.map { it.roleID }.contains(role.id)) {
-			flag = true
-			break
-		}
-	}
-	return flag
 }
 
 fun Path.getRandomLine(): String? {

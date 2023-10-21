@@ -1,6 +1,5 @@
 package hummel.functions
 
-import hummel.structures.Birthday
 import hummel.structures.ServerData
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
@@ -31,13 +30,13 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 				val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 				val range = ranges[month] ?: throw Exception()
 				val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-				data.birthday.add(Birthday(userID, day, month))
+				data.birthday.add(ServerData.Birthday(userID, day, month))
 				sc.createImmediateResponder().setContent("Added birthday: @$userID, \"$day.$month\".").respond()
 			} catch (e: NumberFormatException) {
 				sc.createImmediateResponder().setContent("Invalid argument format").respond()
 			}
 		} else {
-			sc.createImmediateResponder().setContent("No arguments provided.").respond()
+			sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
 		}
 	}
 }
@@ -46,46 +45,36 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 	val currentDate = LocalDate.now()
 	val currentDay = currentDate.dayOfMonth
 	val currentMonth = currentDate.monthValue
-	val set = HashSet<Long>()
-	var isBirthdayToday = false
+	val userIDs = HashSet<Long>()
+	var isBirthday = false
 
 	for ((userID, day, month) in data.birthday) {
 		if (day == currentDay && month == currentMonth) {
-			isBirthdayToday = true
-			set.add(userID)
+			isBirthday = true
+			userIDs.add(userID)
 		}
 	}
-	return isBirthdayToday to set
+	return isBirthday to userIDs
 }
 
 fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 	if (sc.fullCommandName.contains("clear_birthdays")) {
 		if (sc.arguments.isEmpty()) {
-			data.birthday = HashSet()
+			data.birthday.clear()
 			sc.createImmediateResponder().setContent("Birthdays cleared.").respond()
 		} else {
 			val arguments = sc.arguments[0].stringValue.get().split(" ")
-			when (arguments.size) {
-				1 -> {
-					try {
-						val userID = arguments[0].toLong()
-						val set = HashSet<Birthday>()
-						for (birthday in data.birthday) {
-							if (userID != birthday.userID) {
-								set.add(birthday)
-							}
-						}
-						data.birthday = set
-						sc.createImmediateResponder().setContent("Removed birthday of user @$userID").respond()
-					} catch (e: Exception) {
-						sc.createImmediateResponder().setContent("Invalid argument format.").respond()
-					}
+			if (arguments.size == 1) {
+				try {
+					val userID = arguments[0].toLong()
+					data.birthday.removeIf { it.userID == userID }
+					sc.createImmediateResponder().setContent("Removed birthday of user @$userID").respond()
+				} catch (e: Exception) {
+					sc.createImmediateResponder().setContent("Invalid argument format.").respond()
 				}
-
-				else -> {
-					sc.createImmediateResponder().setContent("Wrong command usage.").respond()
-				}
+			} else {
+				sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
 			}
 		}
 	}
