@@ -1,6 +1,7 @@
 package hummel
 
 import hummel.functions.*
+import hummel.structures.Settings
 import hummel.utils.*
 import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.entity.intent.Intent
@@ -17,50 +18,22 @@ fun main() {
 	val token = File("token.txt").readText(StandardCharsets.UTF_8)
 	val api = DiscordApiBuilder().setToken(token).addIntents(*Intent.values()).login().join()
 
-	SlashCommand.with(
-		"8ball", "/8ball [your question]", listOf(
-			SlashCommandOption.create(
-				SlashCommandOptionType.STRING, "Arguments", "The list of arguments", true
-			)
-		)
-	).createGlobal(api)
-
-	SlashCommand.with(
-		"choice", "/choice [one] [two] [three]", listOf(
-			SlashCommandOption.create(
-				SlashCommandOptionType.STRING, "Arguments", "The list of arguments", true
-			)
-		)
-	).createGlobal(api)
-
-	SlashCommand.with(
-		"set_chance", "/set_chance [number]", listOf(
-			SlashCommandOption.create(
-				SlashCommandOptionType.STRING, "Arguments", "The list of arguments", true
-			)
-		)
-	).createGlobal(api)
-
-	SlashCommand.with(
-		"add_birthday", "/add_birthday [user_id] [month_number] [day_number]", listOf(
-			SlashCommandOption.create(
-				SlashCommandOptionType.STRING, "Arguments", "The list of arguments", true
-			)
-		)
-	).createGlobal(api)
-
-	SlashCommand.with("clear_messages", "/clear_messages").createGlobal(api)
-
-	SlashCommand.with(
-		"clear_birthdays", "/clear_birthdays {user_id}", listOf(
-			SlashCommandOption.create(
-				SlashCommandOptionType.STRING, "Arguments", "The list of arguments", false
-			)
-		)
-	).createGlobal(api)
-
-	SlashCommand.with("get_messages", "/get_messages").createGlobal(api)
-	SlashCommand.with("get_data", "/get_data").createGlobal(api)
+	"8ball" with Settings("/8ball [your question]", getArgs(), api)
+	"choice" with Settings("/choice [one] [two] [three]", getArgs(), api)
+	"set_chance" with Settings("/set_chance [number]", getArgs(), api)
+	"add_birthday" with Settings("/add_birthday [user_id] [month_number] [day_number]", getArgs(), api)
+	"clear_messages" with Settings("/clear_messages", emptyList(), api)
+	"clear_birthdays" with Settings("/clear_birthdays {user_id}", getArgs(false), api)
+	"get_messages" with Settings("/get_messages", emptyList(), api)
+	"get_data" with Settings("/get_data", emptyList(), api)
+	"nuke" with Settings("/nuke [number]", getArgs(), api)
+	"complete" with Settings("/complete [text]", getArgs(), api)
+	"language" with Settings("/language [lang]", getArgs(), api)
+	"random" with Settings("/random [number]", getArgs(), api)
+	"add_officer" with Settings("/add_officer [role_id]", getArgs(), api)
+	"add_general" with Settings("/add_general [role_id]", getArgs(), api)
+	"clear_officers" with Settings("/clear_officers {role_id}", getArgs(false), api)
+	"clear_generals" with Settings("/clear_generals {role_id}", getArgs(false), api)
 
 	api.addInteractionCreateListener { event ->
 		val serverID = event.interaction.server.get().id.toString()
@@ -70,16 +43,21 @@ fun main() {
 		eightBall(event)
 		randomChoice(event)
 
-		if (event.isOfficerMessage()) {
+		if (event.isOfficerMessage(data)) {
 			setChance(event, data)
 			addBirthday(event, data)
 		}
 
-		if (event.isGeneralMessage()) {
+		if (event.isGeneralMessage(data)) {
 			clearServerMessages(event, data)
 			clearServerBirthdays(event, data)
+			clearServerGenerals(event, data)
+			clearServerOfficers(event, data)
 			getServerMessages(event, data)
 			getServerData(event, data)
+			addOfficer(event, data)
+			addGeneral(event, data)
+			nuke(event)
 		}
 
 		saveDataToJson(data, "$serverID/data.json")
@@ -100,4 +78,16 @@ fun main() {
 	}
 
 	println("You can invite the bot by using the following url: " + api.createBotInvite())
+}
+
+private infix fun String.with(settings: Settings) {
+	SlashCommand.with(this, settings.usage, settings.args).createGlobal(settings.api)
+}
+
+fun getArgs(required: Boolean = true): List<SlashCommandOption> {
+	return listOf(
+		SlashCommandOption.create(
+			SlashCommandOptionType.STRING, "Arguments", "The list of arguments", required
+		)
+	)
 }

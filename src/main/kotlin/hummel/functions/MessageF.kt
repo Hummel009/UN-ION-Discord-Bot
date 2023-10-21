@@ -33,6 +33,28 @@ fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
 	Files.write(path, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
 }
 
+fun nuke(event: InteractionCreateEvent) {
+	val sc = event.slashCommandInteraction.get()
+	if (sc.fullCommandName.contains("nuke")) {
+		val arguments = sc.arguments[0].stringValue.get().split(" ")
+		if (arguments.size == 1) {
+			try {
+				val limit = arguments[0].toInt()
+				if (limit >= 200 || limit <= 2) {
+					throw Exception()
+				}
+				val arr = sc.channel.get().getMessages(limit).get().map { it.id }.toLongArray()
+				sc.channel.get().bulkDelete(*arr)
+				sc.createImmediateResponder().setContent("Removed $limit messages.").respond()
+			} catch (e: NumberFormatException) {
+				sc.createImmediateResponder().setContent("Invalid argument format").respond()
+			}
+		} else {
+			sc.createImmediateResponder().setContent("No arguments provided.").respond()
+		}
+	}
+}
+
 fun setChance(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 	if (sc.fullCommandName.contains("set_chance")) {

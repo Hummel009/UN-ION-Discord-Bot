@@ -30,7 +30,7 @@ fun getDataFromDiscord(server: Optional<Server>, serverID: String): ServerData {
 	val yesterdayDay = yesterday.dayOfMonth
 	val yesterdayMonth = yesterday.monthValue
 
-	return ServerData(serverID, serverName, chance, HashSet(), Date(yesterdayDay, yesterdayMonth))
+	return ServerData(serverID, serverName, chance, HashSet(), Date(yesterdayDay, yesterdayMonth), HashSet(), HashSet())
 }
 
 fun saveDataToJson(data: ServerData, filePath: String) {

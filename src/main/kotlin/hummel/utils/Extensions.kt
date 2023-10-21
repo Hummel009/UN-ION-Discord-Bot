@@ -1,6 +1,7 @@
 package hummel.utils
 
 import hummel.rand
+import hummel.structures.ServerData
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
 import java.nio.file.Files
@@ -21,12 +22,38 @@ fun MessageCreateEvent.isAllowedMessage(): Boolean {
 	return messageContent.length >= 2
 }
 
-fun InteractionCreateEvent.isGeneralMessage(): Boolean {
-	return interaction.asSlashCommandInteraction().get().user.isBotOwner
+fun InteractionCreateEvent.isGeneralMessage(data: ServerData): Boolean {
+	val server = interaction.asSlashCommandInteraction().get().server.get()
+	val user = interaction.asSlashCommandInteraction().get().user
+	if (server.isAdmin(user)) {
+		return true
+	}
+	val roles = user.getRoles(server)
+	var flag = false
+	for (role in roles) {
+		if (data.generals.map { it.roleID }.contains(role.id)) {
+			flag = true
+			break
+		}
+	}
+	return flag
 }
 
-fun InteractionCreateEvent.isOfficerMessage(): Boolean {
-	return interaction.asSlashCommandInteraction().get().user.isBotOwner
+fun InteractionCreateEvent.isOfficerMessage(data: ServerData): Boolean {
+	val server = interaction.asSlashCommandInteraction().get().server.get()
+	val user = interaction.asSlashCommandInteraction().get().user
+	if (server.isAdmin(user)) {
+		return true
+	}
+	val roles = user.getRoles(server)
+	var flag = false
+	for (role in roles) {
+		if (data.officers.map { it.roleID }.contains(role.id)) {
+			flag = true
+			break
+		}
+	}
+	return flag
 }
 
 fun Path.getRandomLine(): String? {
