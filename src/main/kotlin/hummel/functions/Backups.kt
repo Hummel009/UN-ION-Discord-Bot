@@ -1,7 +1,8 @@
 package hummel.functions
 
 import hummel.structures.ServerData
-import hummel.utils.defErrEmbed
+import hummel.utils.access
+import hummel.utils.error
 import hummel.utils.isOfficerMessage
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
@@ -28,7 +29,7 @@ fun forkSendAndDelete(
 	if (sc.fullCommandName.contains("get_$fileName")) {
 		if (!event.isOfficerMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().defErrEmbed(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
@@ -42,7 +43,7 @@ fun forkSendAndDelete(
 					sc.createFollowupMessageBuilder().addAttachment(backupFile).send().get()
 					Files.delete(destinationPath)
 				} catch (e: Exception) {
-					val embed = EmbedBuilder().defErrEmbed(sc, "Error when copying and sending a file.")
+					val embed = EmbedBuilder().error(sc, "Error when copying and sending a file.")
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			}

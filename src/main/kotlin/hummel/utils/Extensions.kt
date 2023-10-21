@@ -56,10 +56,14 @@ fun Path.getRandomLine(): String? {
 	}
 }
 
-fun EmbedBuilder.defErrEmbed(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
+fun EmbedBuilder.error(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
 	return setAuthor(sc.user).setTitle("Error").setColor(Color.RED).setDescription(desc)
 }
 
-fun EmbedBuilder.defSuccessEmbed(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle("Error").setColor(Color.GREEN).setDescription(desc)
+fun EmbedBuilder.access(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle("Access").setColor(Color.ORANGE).setDescription(desc)
+}
+
+fun EmbedBuilder.success(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle("Success").setColor(Color.GREEN).setDescription(desc)
 }

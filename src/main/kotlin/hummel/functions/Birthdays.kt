@@ -1,10 +1,7 @@
 package hummel.functions
 
 import hummel.structures.ServerData
-import hummel.utils.defErrEmbed
-import hummel.utils.defSuccessEmbed
-import hummel.utils.isGeneralMessage
-import hummel.utils.isOfficerMessage
+import hummel.utils.*
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
@@ -31,7 +28,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 	if (sc.fullCommandName.contains("add_birthday")) {
 		if (!event.isOfficerMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().defErrEmbed(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
@@ -44,16 +41,16 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 						val range = ranges[month] ?: throw Exception()
 						val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
 						data.birthday.add(ServerData.Birthday(userID, day, month))
-						val embed = EmbedBuilder().defSuccessEmbed(sc, "Added birthday: @$userID.")
+						val embed = EmbedBuilder().success(sc, "Added birthday: @$userID.")
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					} catch (e: Exception) {
-						val embed = EmbedBuilder().defErrEmbed(sc, "Invalid argument format.")
+						val embed = EmbedBuilder().error(sc, "Invalid argument format.")
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
 			} else {
 				sc.respondLater().thenAccept {
-					val embed = EmbedBuilder().defErrEmbed(sc, "Invalid arguments provided.")
+					val embed = EmbedBuilder().error(sc, "Invalid arguments provided.")
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			}
@@ -83,14 +80,14 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 	if (sc.fullCommandName.contains("clear_birthdays")) {
 		if (!event.isGeneralMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().defErrEmbed(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
 			if (sc.arguments.isEmpty()) {
 				sc.respondLater().thenAccept {
 					data.birthday.clear()
-					val embed = EmbedBuilder().defSuccessEmbed(sc, "Birthdays cleared.")
+					val embed = EmbedBuilder().success(sc, "Birthdays cleared.")
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			} else {
@@ -100,16 +97,16 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 						try {
 							val userID = arguments[0].toLong()
 							data.birthday.removeIf { it.userID == userID }
-							val embed = EmbedBuilder().defSuccessEmbed(sc, "Removed birthday: @$userID")
+							val embed = EmbedBuilder().success(sc, "Removed birthday: @$userID")
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						} catch (e: Exception) {
-							val embed = EmbedBuilder().defErrEmbed(sc, "Invalid argument format.")
+							val embed = EmbedBuilder().error(sc, "Invalid argument format.")
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						}
 					}
 				} else {
 					sc.respondLater().thenAccept {
-						val embed = EmbedBuilder().defErrEmbed(sc, "Invalid arguments provided.")
+						val embed = EmbedBuilder().error(sc, "Invalid arguments provided.")
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
