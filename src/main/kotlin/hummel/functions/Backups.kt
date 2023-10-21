@@ -29,22 +29,24 @@ fun forkSendAndDelete(
 
 	if (sc.fullCommandName.contains("get_$fileName")) {
 		if (!event.isOfficerMessage(data)) {
+			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
-			sc.respondLater().thenAccept {
-				try {
-					val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
-					val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
-					val destinationPath = Paths.get("${data.serverID}/$fileName-$timeStamp.$fileExtension")
-					Files.copy(path, destinationPath)
-					val backupFile = File(destinationPath.toString())
+			try {
+				val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
+				val timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+				val destinationPath = Paths.get("${data.serverID}/$fileName-$timeStamp.$fileExtension")
+				Files.copy(path, destinationPath)
+				val backupFile = File(destinationPath.toString())
+				sc.respondLater().thenAccept {
 					sc.createFollowupMessageBuilder().addAttachment(backupFile).send().get()
-					Files.delete(destinationPath)
-				} catch (e: Exception) {
-					val embed = EmbedBuilder().error(sc, data, Lang.BACKUP_ERROR.get(data))
+				}
+				Files.delete(destinationPath)
+			} catch (e: Exception) {
+				val embed = EmbedBuilder().error(sc, data, Lang.BACKUP_ERROR.get(data))
+				sc.respondLater().thenAccept {
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			}

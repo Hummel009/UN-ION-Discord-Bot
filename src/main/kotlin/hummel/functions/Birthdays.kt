@@ -27,30 +27,32 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 
 	if (sc.fullCommandName.contains("add_birthday")) {
 		if (!event.isOfficerMessage(data)) {
+			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
 			val arguments = sc.arguments[0].stringValue.get().split(" ")
 			if (arguments.size == 3) {
-				sc.respondLater().thenAccept {
-					try {
-						val userID = arguments[0].toLong()
-						val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
-						val range = ranges[month] ?: throw Exception()
-						val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-						data.birthday.add(ServerData.Birthday(userID, day, month))
-						val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
+				try {
+					val userID = arguments[0].toLong()
+					val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
+					val range = ranges[month] ?: throw Exception()
+					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
+					data.birthday.add(ServerData.Birthday(userID, day, month))
+					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
+					sc.respondLater().thenAccept {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-					} catch (e: Exception) {
-						val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+					}
+				} catch (e: Exception) {
+					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+					sc.respondLater().thenAccept {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
 			} else {
+				val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				sc.respondLater().thenAccept {
-					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			}
@@ -79,34 +81,36 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 
 	if (sc.fullCommandName.contains("clear_birthdays")) {
 		if (!event.isGeneralMessage(data)) {
+			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
 			if (sc.arguments.isEmpty()) {
+				data.birthday.clear()
+				val embed = EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS.get(data))
 				sc.respondLater().thenAccept {
-					data.birthday.clear()
-					val embed = EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS.get(data))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			} else {
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				if (arguments.size == 1) {
-					sc.respondLater().thenAccept {
-						try {
-							val userID = arguments[0].toLong()
-							data.birthday.removeIf { it.userID == userID }
-							val embed = EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY.get(data)}: @$userID")
+					try {
+						val userID = arguments[0].toLong()
+						data.birthday.removeIf { it.userID == userID }
+						val embed = EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY.get(data)}: @$userID")
+						sc.respondLater().thenAccept {
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-						} catch (e: Exception) {
-							val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+						}
+					} catch (e: Exception) {
+						val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+						sc.respondLater().thenAccept {
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						}
 					}
 				} else {
+					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 					sc.respondLater().thenAccept {
-						val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
