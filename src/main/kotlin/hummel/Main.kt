@@ -45,10 +45,10 @@ fun main() {
 
 		eightBall(event, data)
 		choice(event, data)
+		random(event, data)
 
 		//PLACEHOLDER
 		complete(event, data)
-		random(event, data)
 
 		// OFFICER
 		setChance(event, data)
