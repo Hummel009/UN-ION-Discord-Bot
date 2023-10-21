@@ -46,6 +46,8 @@ fun main() {
 		if (event.isOfficerMessage(data)) {
 			setChance(event, data)
 			addBirthday(event, data)
+			getServerMessages(event, data)
+			getServerData(event, data)
 		}
 
 		if (event.isGeneralMessage(data)) {
@@ -53,8 +55,6 @@ fun main() {
 			clearServerBirthdays(event, data)
 			clearServerGenerals(event, data)
 			clearServerOfficers(event, data)
-			getServerMessages(event, data)
-			getServerData(event, data)
 			addOfficer(event, data)
 			addGeneral(event, data)
 			nuke(event)
