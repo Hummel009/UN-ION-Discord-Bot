@@ -1,6 +1,8 @@
 package hummel.functions
 
 import hummel.structures.ServerData
+import hummel.utils.isGeneralMessage
+import hummel.utils.isOfficerMessage
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
@@ -22,6 +24,12 @@ val ranges: Map<Int, IntRange> = mapOf(
 
 fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
+
+	if (!event.isOfficerMessage(data)) {
+		sc.createImmediateResponder().setContent("You do not have permission to use this command.").respond()
+		return
+	}
+
 	if (sc.fullCommandName.contains("add_birthday")) {
 		val arguments = sc.arguments[0].stringValue.get().split(" ")
 		if (arguments.size == 3) {
@@ -31,9 +39,9 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 				val range = ranges[month] ?: throw Exception()
 				val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
 				data.birthday.add(ServerData.Birthday(userID, day, month))
-				sc.createImmediateResponder().setContent("Added birthday: @$userID, \"$day.$month\".").respond()
+				sc.createImmediateResponder().setContent("Added birthday: @$userID.").respond()
 			} catch (e: Exception) {
-				sc.createImmediateResponder().setContent("Invalid argument format").respond()
+				sc.createImmediateResponder().setContent("Invalid argument format.").respond()
 			}
 		} else {
 			sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
@@ -59,6 +67,12 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 
 fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
+
+	if (!event.isGeneralMessage(data)) {
+		sc.createImmediateResponder().setContent("You do not have permission to use this command.").respond()
+		return
+	}
+
 	if (sc.fullCommandName.contains("clear_birthdays")) {
 		if (sc.arguments.isEmpty()) {
 			data.birthday.clear()
@@ -69,7 +83,7 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 				try {
 					val userID = arguments[0].toLong()
 					data.birthday.removeIf { it.userID == userID }
-					sc.createImmediateResponder().setContent("Removed birthday of user @$userID").respond()
+					sc.createImmediateResponder().setContent("Removed birthday: @$userID").respond()
 				} catch (e: Exception) {
 					sc.createImmediateResponder().setContent("Invalid argument format.").respond()
 				}

@@ -2,7 +2,10 @@ package hummel
 
 import hummel.functions.*
 import hummel.structures.Settings
-import hummel.utils.*
+import hummel.utils.getDataFromDiscord
+import hummel.utils.isAllowedMessage
+import hummel.utils.readDataFromJson
+import hummel.utils.saveDataToJson
 import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.entity.intent.Intent
 import org.javacord.api.interaction.SlashCommand
@@ -43,22 +46,20 @@ fun main() {
 		eightBall(event)
 		randomChoice(event)
 
-		if (event.isOfficerMessage(data)) {
-			setChance(event, data)
-			addBirthday(event, data)
-			getServerMessages(event, data)
-			getServerData(event, data)
-		}
+		// OFFICER
+		setChance(event, data)
+		addBirthday(event, data)
+		getServerMessages(event, data)
+		getServerData(event, data)
 
-		if (event.isGeneralMessage(data)) {
-			clearServerMessages(event, data)
-			clearServerBirthdays(event, data)
-			clearServerGenerals(event, data)
-			clearServerOfficers(event, data)
-			addOfficer(event, data)
-			addGeneral(event, data)
-			nuke(event)
-		}
+		//GENERAL
+		clearServerMessages(event, data)
+		clearServerBirthdays(event, data)
+		clearServerGenerals(event, data)
+		clearServerOfficers(event, data)
+		addOfficer(event, data)
+		addGeneral(event, data)
+		nuke(event, data)
 
 		saveDataToJson(data, "$serverID/data.json")
 	}

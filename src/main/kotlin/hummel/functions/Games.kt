@@ -20,7 +20,7 @@ fun eightBall(event: InteractionCreateEvent) {
 		if (arguments.isNotEmpty()) {
 			sc.createImmediateResponder().setContent(answers.random()).respond()
 		} else {
-			sc.createImmediateResponder().setContent("No arguments provided.").respond()
+			sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
 		}
 	}
 }
@@ -32,7 +32,7 @@ fun randomChoice(event: InteractionCreateEvent) {
 		if (arguments.isNotEmpty()) {
 			sc.createImmediateResponder().setContent(arguments.random()).respond()
 		} else {
-			sc.createImmediateResponder().setContent("No arguments provided.").respond()
+			sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
 		}
 	}
 }

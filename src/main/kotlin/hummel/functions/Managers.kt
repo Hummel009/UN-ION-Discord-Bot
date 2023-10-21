@@ -1,6 +1,7 @@
 package hummel.functions
 
 import hummel.structures.ServerData
+import hummel.utils.isGeneralMessage
 import org.javacord.api.event.interaction.InteractionCreateEvent
 
 fun clearServerOfficers(event: InteractionCreateEvent, data: ServerData) {
@@ -13,6 +14,12 @@ fun clearServerGenerals(event: InteractionCreateEvent, data: ServerData) {
 
 fun clearServerManagers(event: InteractionCreateEvent, data: ServerData, roleName: String) {
 	val sc = event.slashCommandInteraction.get()
+
+	if (!event.isGeneralMessage(data)) {
+		sc.createImmediateResponder().setContent("You do not have permission to use this command.").respond()
+		return
+	}
+
 	if (sc.fullCommandName.contains("clear_${roleName}s")) {
 		if (sc.arguments.isEmpty()) {
 			(if (roleName == "general") data.generals else data.officers).clear()
@@ -44,6 +51,12 @@ fun addGeneral(event: InteractionCreateEvent, data: ServerData) {
 
 fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String) {
 	val sc = event.slashCommandInteraction.get()
+
+	if (!event.isGeneralMessage(data)) {
+		sc.createImmediateResponder().setContent("You do not have permission to use this command.").respond()
+		return
+	}
+
 	if (sc.fullCommandName.contains("add_$roleName")) {
 		val arguments = sc.arguments[0].stringValue.get().split(" ")
 		if (arguments.size == 1) {
@@ -52,7 +65,7 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 				(if (roleName == "general") data.generals else data.officers).add(ServerData.Role(roleID))
 				sc.createImmediateResponder().setContent("Added manager role: @$roleID.").respond()
 			} catch (e: Exception) {
-				sc.createImmediateResponder().setContent("Invalid argument format").respond()
+				sc.createImmediateResponder().setContent("Invalid argument format.").respond()
 			}
 		} else {
 			sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
