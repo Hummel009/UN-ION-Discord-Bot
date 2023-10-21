@@ -1,5 +1,7 @@
 package hummel.functions
 
+import hummel.utils.defErrEmbed
+import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 
 val answers: Set<String> = setOf(
@@ -20,7 +22,10 @@ fun eightBall(event: InteractionCreateEvent) {
 		if (arguments.isNotEmpty()) {
 			sc.createImmediateResponder().setContent(answers.random()).respond()
 		} else {
-			sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
+			sc.respondLater().thenAccept {
+				val embed = EmbedBuilder().defErrEmbed(sc, "Invalid arguments provided.")
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+			}
 		}
 	}
 }
@@ -32,7 +37,10 @@ fun randomChoice(event: InteractionCreateEvent) {
 		if (arguments.isNotEmpty()) {
 			sc.createImmediateResponder().setContent(arguments.random()).respond()
 		} else {
-			sc.createImmediateResponder().setContent("Invalid arguments provided.").respond()
+			sc.respondLater().thenAccept {
+				val embed = EmbedBuilder().defErrEmbed(sc, "Invalid arguments provided.")
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+			}
 		}
 	}
 }

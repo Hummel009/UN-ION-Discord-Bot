@@ -2,8 +2,11 @@ package hummel.utils
 
 import hummel.rand
 import hummel.structures.ServerData
+import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
+import org.javacord.api.interaction.SlashCommandInteraction
+import java.awt.Color
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -51,4 +54,8 @@ fun Path.getRandomLine(): String? {
 	} else {
 		return null
 	}
+}
+
+fun EmbedBuilder.defErrEmbed(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle("Error").setColor(Color.RED).setDescription(desc)
 }
