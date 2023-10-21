@@ -32,7 +32,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 				val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
 				data.birthday.add(ServerData.Birthday(userID, day, month))
 				sc.createImmediateResponder().setContent("Added birthday: @$userID, \"$day.$month\".").respond()
-			} catch (e: NumberFormatException) {
+			} catch (e: Exception) {
 				sc.createImmediateResponder().setContent("Invalid argument format").respond()
 			}
 		} else {

@@ -39,7 +39,7 @@ fun saveDataToJson(data: ServerData, filePath: String) {
 		val gson = GsonBuilder().setPrettyPrinting().create()
 		val json = gson.toJson(data)
 		Files.write(Paths.get(filePath), json.toByteArray())
-	} catch (ignored: IOException) {
+	} catch (ignored: Exception) {
 	}
 }
 
@@ -48,7 +48,7 @@ fun readDataFromJson(filePath: String): ServerData? {
 		val gson = Gson()
 		val json = String(Files.readAllBytes(Paths.get(filePath)))
 		return gson.fromJson(json, ServerData::class.java)
-	} catch (ignored: IOException) {
+	} catch (ignored: Exception) {
 	}
 	return null
 }

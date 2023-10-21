@@ -51,7 +51,7 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 				val roleID = arguments[0].toLong()
 				(if (roleName == "general") data.generals else data.officers).add(ServerData.Role(roleID))
 				sc.createImmediateResponder().setContent("Added manager role: @$roleID.").respond()
-			} catch (e: NumberFormatException) {
+			} catch (e: Exception) {
 				sc.createImmediateResponder().setContent("Invalid argument format").respond()
 			}
 		} else {

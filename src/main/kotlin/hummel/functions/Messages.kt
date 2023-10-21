@@ -40,13 +40,13 @@ fun nuke(event: InteractionCreateEvent) {
 		if (arguments.size == 1) {
 			try {
 				val limit = arguments[0].toInt()
-				if (limit >= 200 || limit <= 2) {
+				if (limit >= 200 || limit <= 3) {
 					throw Exception()
 				}
 				val arr = sc.channel.get().getMessages(limit).get().map { it.id }.toLongArray()
 				sc.channel.get().bulkDelete(*arr)
 				sc.createImmediateResponder().setContent("Removed $limit messages.").respond()
-			} catch (e: NumberFormatException) {
+			} catch (e: Exception) {
 				sc.createImmediateResponder().setContent("Invalid argument format").respond()
 			}
 		} else {
@@ -63,7 +63,7 @@ fun setChance(event: InteractionCreateEvent, data: ServerData) {
 			try {
 				data.chance = arguments[0].toInt()
 				sc.createImmediateResponder().setContent("Chance changed to ${data.chance}.").respond()
-			} catch (e: NumberFormatException) {
+			} catch (e: Exception) {
 				sc.createImmediateResponder().setContent("Invalid argument format").respond()
 			}
 		} else {
