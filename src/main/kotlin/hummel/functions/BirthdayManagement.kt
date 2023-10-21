@@ -1,7 +1,6 @@
 package hummel.functions
 
 import hummel.structures.Birthday
-import hummel.structures.Role
 import hummel.structures.ServerData
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
@@ -21,42 +20,6 @@ val ranges: Map<Int, IntRange> = mapOf(
 	11 to 1..30,
 	12 to 1..31,
 )
-
-fun addOfficer(event: InteractionCreateEvent, data: ServerData) {
-	val sc = event.slashCommandInteraction.get()
-	if (sc.fullCommandName.contains("add_officer")) {
-		val arguments = sc.arguments[0].stringValue.get().split(" ")
-		if (arguments.size == 1) {
-			try {
-				val roleID = arguments[0].toLong()
-				data.officers.add(Role(roleID))
-				sc.createImmediateResponder().setContent("Added officer role: @$roleID.").respond()
-			} catch (e: NumberFormatException) {
-				sc.createImmediateResponder().setContent("Invalid argument format").respond()
-			}
-		} else {
-			sc.createImmediateResponder().setContent("No arguments provided.").respond()
-		}
-	}
-}
-
-fun addGeneral(event: InteractionCreateEvent, data: ServerData) {
-	val sc = event.slashCommandInteraction.get()
-	if (sc.fullCommandName.contains("add_general")) {
-		val arguments = sc.arguments[0].stringValue.get().split(" ")
-		if (arguments.size == 1) {
-			try {
-				val roleID = arguments[0].toLong()
-				data.generals.add(Role(roleID))
-				sc.createImmediateResponder().setContent("Added general role: @$roleID.").respond()
-			} catch (e: NumberFormatException) {
-				sc.createImmediateResponder().setContent("Invalid argument format").respond()
-			}
-		} else {
-			sc.createImmediateResponder().setContent("No arguments provided.").respond()
-		}
-	}
-}
 
 fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
@@ -139,71 +102,5 @@ fun sendBirthdayMessage(event: MessageCreateEvent, data: ServerData) {
 		userIDs.forEach { event.channel.sendMessage("<@$it>, с днём рождения!") }
 		data.lastWish.day = currentDay
 		data.lastWish.month = currentMonth
-	}
-}
-
-fun clearServerOfficers(event: InteractionCreateEvent, data: ServerData) {
-	val sc = event.slashCommandInteraction.get()
-	if (sc.fullCommandName.contains("clear_officers")) {
-		if (sc.arguments.isEmpty()) {
-			data.officers = HashSet()
-			sc.createImmediateResponder().setContent("Officers cleared.").respond()
-		} else {
-			val arguments = sc.arguments[0].stringValue.get().split(" ")
-			when (arguments.size) {
-				1 -> {
-					try {
-						val roleID = arguments[0].toLong()
-						val set = HashSet<Role>()
-						for (role in data.officers) {
-							if (roleID != role.roleID) {
-								set.add(role)
-							}
-						}
-						data.officers = set
-						sc.createImmediateResponder().setContent("Removed officer role: @$roleID").respond()
-					} catch (e: Exception) {
-						sc.createImmediateResponder().setContent("Invalid argument format.").respond()
-					}
-				}
-
-				else -> {
-					sc.createImmediateResponder().setContent("Wrong command usage.").respond()
-				}
-			}
-		}
-	}
-}
-
-fun clearServerGenerals(event: InteractionCreateEvent, data: ServerData) {
-	val sc = event.slashCommandInteraction.get()
-	if (sc.fullCommandName.contains("clear_generals")) {
-		if (sc.arguments.isEmpty()) {
-			data.generals = HashSet()
-			sc.createImmediateResponder().setContent("Generals cleared.").respond()
-		} else {
-			val arguments = sc.arguments[0].stringValue.get().split(" ")
-			when (arguments.size) {
-				1 -> {
-					try {
-						val roleID = arguments[0].toLong()
-						val set = HashSet<Role>()
-						for (role in data.generals) {
-							if (roleID != role.roleID) {
-								set.add(role)
-							}
-						}
-						data.generals = set
-						sc.createImmediateResponder().setContent("Removed general role: @$roleID").respond()
-					} catch (e: Exception) {
-						sc.createImmediateResponder().setContent("Invalid argument format.").respond()
-					}
-				}
-
-				else -> {
-					sc.createImmediateResponder().setContent("Wrong command usage.").respond()
-				}
-			}
-		}
 	}
 }
