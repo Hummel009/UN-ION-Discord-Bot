@@ -42,8 +42,8 @@ fun forkSendAndDelete(
 				val backupFile = File(destinationPath.toString())
 				sc.respondLater().thenAccept {
 					sc.createFollowupMessageBuilder().addAttachment(backupFile).send().get()
+					Files.delete(destinationPath)
 				}
-				Files.delete(destinationPath)
 			} catch (e: Exception) {
 				val embed = EmbedBuilder().error(sc, data, Lang.BACKUP_ERROR.get(data))
 				sc.respondLater().thenAccept {
