@@ -1,10 +1,7 @@
 package hummel.functions
 
 import hummel.structures.ServerData
-import hummel.utils.access
-import hummel.utils.error
-import hummel.utils.success
-import hummel.utils.isGeneralMessage
+import hummel.utils.*
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 
@@ -22,14 +19,14 @@ fun clearServerManagers(event: InteractionCreateEvent, data: ServerData, roleNam
 	if (sc.fullCommandName.contains("clear_${roleName}s")) {
 		if (!event.isGeneralMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
 			if (sc.arguments.isEmpty()) {
 				sc.respondLater().thenAccept {
 					(if (roleName == "general") data.generals else data.officers).clear()
-					val embed = EmbedBuilder().success(sc, "Manager roles cleared.")
+					val embed = EmbedBuilder().success(sc, Lang.CLEARED_MANAGERS.get(data))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			} else {
@@ -39,16 +36,16 @@ fun clearServerManagers(event: InteractionCreateEvent, data: ServerData, roleNam
 						try {
 							val roleID = arguments[0].toLong()
 							(if (roleName == "general") data.generals else data.officers).removeIf { it.roleID == roleID }
-							val embed = EmbedBuilder().success(sc, "Removed manager role: @$roleID")
+							val embed = EmbedBuilder().success(sc, "${Lang.REMOVED_MANAGER.get(data)}: @$roleID")
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						} catch (e: Exception) {
-							val embed = EmbedBuilder().error(sc, "Invalid argument format.")
+							val embed = EmbedBuilder().error(sc, Lang.INVALID_FORMAT.get(data))
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						}
 					}
 				} else {
 					sc.respondLater().thenAccept {
-						val embed = EmbedBuilder().error(sc, "Invalid arguments provided.")
+						val embed = EmbedBuilder().error(sc, Lang.INVALID_ARG.get(data))
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
@@ -71,7 +68,7 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 	if (sc.fullCommandName.contains("add_$roleName")) {
 		if (!event.isGeneralMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
@@ -81,16 +78,16 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 					try {
 						val roleID = arguments[0].toLong()
 						(if (roleName == "general") data.generals else data.officers).add(ServerData.Role(roleID))
-						val embed = EmbedBuilder().success(sc, "Added manager role: @$roleID.")
+						val embed = EmbedBuilder().success(sc, "${Lang.ADDED_MANAGER.get(data)}: @$roleID.")
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					} catch (e: Exception) {
-						val embed = EmbedBuilder().error(sc, "Invalid argument format.")
+						val embed = EmbedBuilder().error(sc, Lang.INVALID_FORMAT.get(data))
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
 			} else {
 				sc.respondLater().thenAccept {
-					val embed = EmbedBuilder().error(sc, "Invalid arguments provided.")
+					val embed = EmbedBuilder().error(sc, Lang.INVALID_ARG.get(data))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			}

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import hummel.structures.ServerData
 import org.javacord.api.entity.server.Server
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDate
@@ -28,10 +27,10 @@ fun getDataFromDiscord(server: Optional<Server>, serverID: String): ServerData {
 	val yesterday = currentDate.minusDays(1)
 	val yesterdayDay = yesterday.dayOfMonth
 	val yesterdayMonth = yesterday.monthValue
+	val date = ServerData.Date(yesterdayDay, yesterdayMonth)
+	val lang = "ru"
 
-	return ServerData(
-		serverID, serverName, chance, ServerData.Date(yesterdayDay, yesterdayMonth), HashSet(), HashSet(), HashSet()
-	)
+	return ServerData(serverID, serverName, chance, date, lang, HashSet(), HashSet(), HashSet())
 }
 
 fun saveDataToJson(data: ServerData, filePath: String) {

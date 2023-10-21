@@ -1,6 +1,7 @@
 package hummel.functions
 
 import hummel.structures.ServerData
+import hummel.utils.Lang
 import hummel.utils.access
 import hummel.utils.error
 import hummel.utils.isOfficerMessage
@@ -29,7 +30,7 @@ fun forkSendAndDelete(
 	if (sc.fullCommandName.contains("get_$fileName")) {
 		if (!event.isOfficerMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
@@ -43,7 +44,7 @@ fun forkSendAndDelete(
 					sc.createFollowupMessageBuilder().addAttachment(backupFile).send().get()
 					Files.delete(destinationPath)
 				} catch (e: Exception) {
-					val embed = EmbedBuilder().error(sc, "Error when copying and sending a file.")
+					val embed = EmbedBuilder().error(sc, data, Lang.BACKUP_ERROR.get(data))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			}

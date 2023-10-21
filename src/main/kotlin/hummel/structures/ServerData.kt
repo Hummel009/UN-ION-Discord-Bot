@@ -5,6 +5,7 @@ data class ServerData(
 	val serverName: String,
 	var chance: Int,
 	val lastWish: Date,
+	var lang: String,
 	val officers: MutableSet<Role>,
 	val generals: MutableSet<Role>,
 	val birthday: MutableSet<Birthday>

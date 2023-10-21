@@ -56,14 +56,18 @@ fun Path.getRandomLine(): String? {
 	}
 }
 
-fun EmbedBuilder.error(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle("Error").setColor(Color.RED).setDescription(desc)
+fun EmbedBuilder.error(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle(Lang.MSG_ERROR.get(data)).setColor(Color.RED).setDescription(l)
 }
 
-fun EmbedBuilder.access(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle("Access").setColor(Color.ORANGE).setDescription(desc)
+fun EmbedBuilder.access(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle(Lang.MSG_ACCESS.get(data)).setColor(Color.ORANGE).setDescription(l)
 }
 
-fun EmbedBuilder.success(sc: SlashCommandInteraction, desc: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle("Success").setColor(Color.GREEN).setDescription(desc)
+fun EmbedBuilder.success(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle(Lang.MSG_SUCCESS.get(data)).setColor(Color.GREEN).setDescription(l)
+}
+
+fun EmbedBuilder.empty(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
+	return setAuthor(sc.user).setTitle(Lang.MSG_EMPTY.get(data)).setColor(Color.DARK_GRAY).setDescription(l)
 }

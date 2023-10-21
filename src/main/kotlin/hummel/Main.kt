@@ -31,7 +31,7 @@ fun main() {
 	"get_data" with Settings("/get_data", emptyList(), api)
 	"nuke" with Settings("/nuke [number]", getArgs(), api)
 	"complete" with Settings("/complete [text]", getArgs(), api)
-	"language" with Settings("/language [lang]", getArgs(), api)
+	"language" with Settings("/language [ru/en]", getArgs(), api)
 	"random" with Settings("/random [number]", getArgs(), api)
 	"add_officer" with Settings("/add_officer [role_id]", getArgs(), api)
 	"add_general" with Settings("/add_general [role_id]", getArgs(), api)
@@ -43,8 +43,12 @@ fun main() {
 
 		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event.interaction.server, serverID)
 
-		eightBall(event)
-		randomChoice(event)
+		eightBall(event, data)
+		choice(event, data)
+
+		//PLACEHOLDER
+		complete(event, data)
+		random(event, data)
 
 		// OFFICER
 		setChance(event, data)
@@ -60,6 +64,7 @@ fun main() {
 		addOfficer(event, data)
 		addGeneral(event, data)
 		nuke(event, data)
+		setLanguage(event, data)
 
 		saveDataToJson(data, "$serverID/data.json")
 	}

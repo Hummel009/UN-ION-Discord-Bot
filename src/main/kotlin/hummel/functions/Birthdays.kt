@@ -28,7 +28,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 	if (sc.fullCommandName.contains("add_birthday")) {
 		if (!event.isOfficerMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
@@ -41,16 +41,16 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 						val range = ranges[month] ?: throw Exception()
 						val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
 						data.birthday.add(ServerData.Birthday(userID, day, month))
-						val embed = EmbedBuilder().success(sc, "Added birthday: @$userID.")
+						val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					} catch (e: Exception) {
-						val embed = EmbedBuilder().error(sc, "Invalid argument format.")
+						val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
 			} else {
 				sc.respondLater().thenAccept {
-					val embed = EmbedBuilder().error(sc, "Invalid arguments provided.")
+					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			}
@@ -80,14 +80,14 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 	if (sc.fullCommandName.contains("clear_birthdays")) {
 		if (!event.isGeneralMessage(data)) {
 			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, "You do not have permission to use this command.")
+				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
 			if (sc.arguments.isEmpty()) {
 				sc.respondLater().thenAccept {
 					data.birthday.clear()
-					val embed = EmbedBuilder().success(sc, "Birthdays cleared.")
+					val embed = EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS.get(data))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}
 			} else {
@@ -97,16 +97,16 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 						try {
 							val userID = arguments[0].toLong()
 							data.birthday.removeIf { it.userID == userID }
-							val embed = EmbedBuilder().success(sc, "Removed birthday: @$userID")
+							val embed = EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY.get(data)}: @$userID")
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						} catch (e: Exception) {
-							val embed = EmbedBuilder().error(sc, "Invalid argument format.")
+							val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 						}
 					}
 				} else {
 					sc.respondLater().thenAccept {
-						val embed = EmbedBuilder().error(sc, "Invalid arguments provided.")
+						val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
@@ -123,7 +123,7 @@ fun sendBirthdayMessage(event: MessageCreateEvent, data: ServerData) {
 	val (isBirthday, userIDs) = isBirthdayToday(data)
 
 	if (isBirthday && (currentDay != data.lastWish.day || currentMonth != data.lastWish.month)) {
-		userIDs.forEach { event.channel.sendMessage("<@$it>, с днём рождения!") }
+		userIDs.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY.get(data)}!") }
 		data.lastWish.day = currentDay
 		data.lastWish.month = currentMonth
 	}
