@@ -11,9 +11,11 @@ import org.javacord.api.entity.intent.Intent
 import org.javacord.api.interaction.SlashCommand
 import org.javacord.api.interaction.SlashCommandOption
 import org.javacord.api.interaction.SlashCommandOptionType
+import org.javacord.api.interaction.SlashCommandUpdater
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
+
 
 val rand: Random = Random()
 
@@ -23,20 +25,23 @@ fun main() {
 
 	"8ball" with Settings("/8ball [your question]", getArgs(), api)
 	"choice" with Settings("/choice [one] [two] [three]", getArgs(), api)
-	"set_chance" with Settings("/set_chance [number]", getArgs(), api)
-	"add_birthday" with Settings("/add_birthday [user_id] [month_number] [day_number]", getArgs(), api)
-	"clear_messages" with Settings("/clear_messages", emptyList(), api)
-	"clear_birthdays" with Settings("/clear_birthdays {user_id}", getArgs(false), api)
-	"get_messages" with Settings("/get_messages", emptyList(), api)
-	"get_data" with Settings("/get_data", emptyList(), api)
-	"nuke" with Settings("/nuke [number]", getArgs(), api)
 	"complete" with Settings("/complete [text]", getArgs(), api)
-	"language" with Settings("/language [ru/en]", getArgs(), api)
+	"nuke" with Settings("/nuke [number]", getArgs(), api)
 	"random" with Settings("/random [number]", getArgs(), api)
+	"set_chance" with Settings("/set_chance [number]", getArgs(), api)
+	"set_language" with Settings("/set_language [ru/en]", getArgs(), api)
+	"add_birthday" with Settings("/add_birthday [user_id] [month_number] [day_number]", getArgs(), api)
 	"add_officer" with Settings("/add_officer [role_id]", getArgs(), api)
 	"add_general" with Settings("/add_general [role_id]", getArgs(), api)
+	"clear_birthdays" with Settings("/clear_birthdays {user_id}", getArgs(false), api)
 	"clear_officers" with Settings("/clear_officers {role_id}", getArgs(false), api)
 	"clear_generals" with Settings("/clear_generals {role_id}", getArgs(false), api)
+	"clear_messages" with Settings("/clear_messages", emptyList(), api)
+	"get_messages" with Settings("/get_messages", emptyList(), api)
+	"get_data" with Settings("/get_data", emptyList(), api)
+	"get_commands" with Settings("/get_commands", emptyList(), api)
+
+	//SlashCommandUpdater(1164890540798648361).setName("set_language").updateGlobal(api).join()
 
 	api.addInteractionCreateListener { event ->
 		val serverID = event.interaction.server.get().id.toString()
@@ -55,6 +60,7 @@ fun main() {
 		addBirthday(event, data)
 		getServerMessages(event, data)
 		getServerData(event, data)
+		getCommands(event, data, api)
 
 		//GENERAL
 		clearServerMessages(event, data)

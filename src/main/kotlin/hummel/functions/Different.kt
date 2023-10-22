@@ -67,7 +67,7 @@ fun complete(event: InteractionCreateEvent, data: ServerData) {
 
 fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
-	if (sc.fullCommandName.contains("language")) {
+	if (sc.fullCommandName.contains("set_language")) {
 		if (!event.isGeneralMessage(data)) {
 			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			sc.respondLater().thenAccept {
