@@ -18,30 +18,32 @@ data class ServerDataLegacy(
 
 	fun convert(api: DiscordApi): ServerData {
 		val newData = ServerData(
-			this.serverID,
-			this.serverName,
-			this.chance,
-			this.lang,
-			this.lastWish,
-			HashSet(),
-			HashSet(),
-			HashSet()
+			this.serverID, this.serverName, this.chance, this.lang, this.lastWish, HashSet(), HashSet(), HashSet()
 		)
 		val server = api.getServerById(newData.serverID).get()
 		newData.officers.addAll(this.officers.map { (roleID) ->
-			ServerData.Role(
-				roleID, server.getRoleById(roleID).get().name
-			)
+			val name = try {
+				server.getRoleById(roleID).get().name
+			} catch (e: Exception) {
+				"This role is from another server and should be removed."
+			}
+			ServerData.Role(roleID, name)
 		})
 		newData.generals.addAll(this.generals.map { (roleID) ->
-			ServerData.Role(
-				roleID, server.getRoleById(roleID).get().name
-			)
+			val name = try {
+				server.getRoleById(roleID).get().name
+			} catch (e: Exception) {
+				"This role is from another server and should be removed."
+			}
+			ServerData.Role(roleID, name)
 		})
 		newData.birthdays.addAll(this.birthday.map { (userId, day, month) ->
-			ServerData.Birthday(
-				userId, server.getMemberById(userId).get().name, ServerData.Date(day, month)
-			)
+			val name = try {
+				server.getMemberById(userId).get().name
+			} catch (e: Exception) {
+				"This person is from another server and should be removed."
+			}
+			ServerData.Birthday(userId, name, ServerData.Date(day, month))
 		})
 		return newData
 	}
