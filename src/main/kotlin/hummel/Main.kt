@@ -11,7 +11,6 @@ import org.javacord.api.entity.intent.Intent
 import org.javacord.api.interaction.SlashCommand
 import org.javacord.api.interaction.SlashCommandOption
 import org.javacord.api.interaction.SlashCommandOptionType
-import org.javacord.api.interaction.SlashCommandUpdater
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -40,6 +39,8 @@ fun main() {
 	"get_messages" with Settings("/get_messages", emptyList(), api)
 	"get_data" with Settings("/get_data", emptyList(), api)
 	"get_commands" with Settings("/get_commands", emptyList(), api)
+	"exit" with Settings("/exit", emptyList(), api)
+	"shutdown" with Settings("/shutdown", emptyList(), api)
 
 	//SlashCommandUpdater(1164890540798648361).setName("set_language").updateGlobal(api).join()
 
@@ -51,8 +52,6 @@ fun main() {
 		eightBall(event, data)
 		choice(event, data)
 		random(event, data)
-
-		//PLACEHOLDER
 		complete(event, data)
 
 		// OFFICER
@@ -71,6 +70,10 @@ fun main() {
 		addGeneral(event, data)
 		nuke(event, data)
 		setLanguage(event, data)
+
+		//OWNER
+		exit(event, data)
+		shutdown(event, data)
 
 		saveDataToJson(data, "$serverID/data.json")
 	}

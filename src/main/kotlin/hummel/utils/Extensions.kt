@@ -25,10 +25,15 @@ fun MessageCreateEvent.isAllowedMessage(): Boolean {
 	return messageContent.length >= 2
 }
 
+fun InteractionCreateEvent.isBotOwner(): Boolean {
+	val user = interaction.asSlashCommandInteraction().get().user
+	return user.isBotOwner
+}
+
 fun InteractionCreateEvent.isGeneralMessage(data: ServerData): Boolean {
 	val server = interaction.asSlashCommandInteraction().get().server.get()
 	val user = interaction.asSlashCommandInteraction().get().user
-	return server.isAdmin(user) || user.getRoles(server).any { role ->
+	return user.isBotOwner || server.isAdmin(user) || user.getRoles(server).any { role ->
 		data.generals.any { it.roleID == role.id }
 	}
 }
@@ -36,7 +41,7 @@ fun InteractionCreateEvent.isGeneralMessage(data: ServerData): Boolean {
 fun InteractionCreateEvent.isOfficerMessage(data: ServerData): Boolean {
 	val server = interaction.asSlashCommandInteraction().get().server.get()
 	val user = interaction.asSlashCommandInteraction().get().user
-	return server.isAdmin(user) || user.getRoles(server).any { role ->
+	return user.isBotOwner || server.isAdmin(user) || user.getRoles(server).any { role ->
 		data.officers.any { it.roleID == role.id }
 	}
 }
@@ -66,8 +71,4 @@ fun EmbedBuilder.access(sc: SlashCommandInteraction, data: ServerData, l: String
 
 fun EmbedBuilder.success(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
 	return setAuthor(sc.user).setTitle(Lang.MSG_SUCCESS.get(data)).setColor(Color.GREEN).setDescription(l)
-}
-
-fun EmbedBuilder.empty(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle(Lang.MSG_EMPTY.get(data)).setColor(Color.DARK_GRAY).setDescription(l)
 }

@@ -3,9 +3,10 @@ package hummel.utils
 import hummel.structures.ServerData
 
 enum class Lang(private val ru: String, private val en: String) {
+	EXIT("Бот будет выключен.", "The bot will be turned off."),
+	SHUTDOWN("Хост-компьютер будет выключен.", "The host computer will be shut down."),
 	NUKE("Сообщения были удалены.", "Messages were removed."),
 	RANDOM("Случайное значение", "Random value"),
-	NOT_AVAILABLE("Эта функция пока недоступна.", "This function is not available yet."),
 	BACKUP_ERROR("Произошла ошибка при копировании и отправке файла.", "Error when copying and sending a file."),
 	HAPPY_BIRTHDAY("с днём рождения", "happy birthday"),
 	NO_ACCESS("У вас нет доступа к этой команде.", "You have no access to this command."),
