@@ -1,7 +1,10 @@
 package hummel.functions
 
 import hummel.structures.ServerData
-import hummel.utils.*
+import hummel.utils.Lang
+import hummel.utils.access
+import hummel.utils.isBotOwner
+import hummel.utils.success
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import kotlin.system.exitProcess

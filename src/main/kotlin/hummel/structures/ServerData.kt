@@ -8,7 +8,7 @@ data class ServerData(
 	val lastWish: Date,
 	val officers: MutableSet<Role>,
 	val generals: MutableSet<Role>,
-	val birthday: MutableSet<Birthday>
+	val birthdays: MutableSet<Birthday>
 ) {
 	data class Date(var day: Int, var month: Int)
 

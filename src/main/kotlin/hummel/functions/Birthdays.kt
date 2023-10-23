@@ -40,7 +40,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 					val range = ranges[month] ?: throw Exception()
 					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
 					val name = sc.server.get().getMemberById(userID).get().name
-					data.birthday.add(ServerData.Birthday(userID, name, ServerData.Date(day, month)))
+					data.birthdays.add(ServerData.Birthday(userID, name, ServerData.Date(day, month)))
 					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
 					sc.respondLater().thenAccept {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -68,7 +68,7 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 	val userIDs = HashSet<Long>()
 	var isBirthday = false
 
-	for ((userID, _, date) in data.birthday) {
+	for ((userID, _, date) in data.birthdays) {
 		if (date.day == currentDay && date.month == currentMonth) {
 			isBirthday = true
 			userIDs.add(userID)
@@ -88,7 +88,7 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 			}
 		} else {
 			if (sc.arguments.isEmpty()) {
-				data.birthday.clear()
+				data.birthdays.clear()
 				val embed = EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS.get(data))
 				sc.respondLater().thenAccept {
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -98,7 +98,7 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 				if (arguments.size == 1) {
 					try {
 						val userID = arguments[0].toLong()
-						data.birthday.removeIf { it.userID == userID }
+						data.birthdays.removeIf { it.userID == userID }
 						val embed = EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY.get(data)}: @$userID")
 						sc.respondLater().thenAccept {
 							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()

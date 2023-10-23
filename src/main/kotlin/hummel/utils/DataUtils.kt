@@ -3,6 +3,8 @@ package hummel.utils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import hummel.structures.ServerData
+import hummel.structures.ServerDataLegacy
+import org.javacord.api.DiscordApi
 import org.javacord.api.entity.server.Server
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -42,12 +44,18 @@ fun saveDataToJson(data: ServerData, filePath: String) {
 	}
 }
 
-fun readDataFromJson(filePath: String): ServerData? {
+fun readDataFromJson(filePath: String, api: DiscordApi): ServerData? {
 	try {
 		val gson = Gson()
 		val json = String(Files.readAllBytes(Paths.get(filePath)))
 		return gson.fromJson(json, ServerData::class.java)
 	} catch (ignored: Exception) {
+		try {
+			val gson = Gson()
+			val json = String(Files.readAllBytes(Paths.get(filePath)))
+			return gson.fromJson(json, ServerDataLegacy::class.java).convert(api)
+		} catch (ignored: Exception) {
+		}
 	}
 	return null
 }

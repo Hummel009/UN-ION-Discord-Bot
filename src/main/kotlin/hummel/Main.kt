@@ -45,9 +45,10 @@ fun main() {
 	//SlashCommandUpdater(1164890540798648361).setName("set_language").updateGlobal(api).join()
 
 	api.addInteractionCreateListener { event ->
-		val serverID = event.interaction.server.get().id.toString()
+		val server = event.interaction.server
+		val serverID = server.get().id.toString()
 
-		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event.interaction.server, serverID)
+		val data = readDataFromJson("$serverID/data.json", api) ?: getDataFromDiscord(server, serverID)
 
 		eightBall(event, data)
 		choice(event, data)
@@ -79,9 +80,10 @@ fun main() {
 	}
 
 	api.addMessageCreateListener { event ->
-		val serverID = event.server.get().id.toString()
+		val server = event.server
+		val serverID = server.get().id.toString()
 
-		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(event.server, serverID)
+		val data = readDataFromJson("$serverID/data.json", api) ?: getDataFromDiscord(server, serverID)
 
 		if (event.isAllowedMessage()) {
 			saveAllowedMessage(event, data)
