@@ -39,7 +39,8 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 					val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 					val range = ranges[month] ?: throw Exception()
 					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-					data.birthday.add(ServerData.Birthday(userID, day, month))
+					val name = sc.server.get().getMemberById(userID).get().name
+					data.birthday.add(ServerData.Birthday(userID, name, ServerData.Date(day, month)))
 					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
 					sc.respondLater().thenAccept {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -67,8 +68,8 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 	val userIDs = HashSet<Long>()
 	var isBirthday = false
 
-	for ((userID, day, month) in data.birthday) {
-		if (day == currentDay && month == currentMonth) {
+	for ((userID, _, date) in data.birthday) {
+		if (date.day == currentDay && date.month == currentMonth) {
 			isBirthday = true
 			userIDs.add(userID)
 		}
