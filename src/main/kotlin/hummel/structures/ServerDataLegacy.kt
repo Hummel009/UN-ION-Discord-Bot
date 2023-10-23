@@ -28,7 +28,7 @@ data class ServerDataLegacy(
 				val name = try {
 					server.getRoleById(roleID).get().name
 				} catch (e: Exception) {
-					"This role is from another server and should be removed."
+					"unknown"
 				}
 				ServerData.Role(roleID, name)
 			}.toMutableSet(),
@@ -36,7 +36,7 @@ data class ServerDataLegacy(
 				val name = try {
 					server.getRoleById(roleID).get().name
 				} catch (e: Exception) {
-					"This role is from another server and should be removed."
+					"unknown"
 				}
 				ServerData.Role(roleID, name)
 			}.toMutableSet(),
@@ -44,7 +44,7 @@ data class ServerDataLegacy(
 				val name = try {
 					server.getMemberById(userId).get().name
 				} catch (e: Exception) {
-					"This person is from another server and should be removed."
+					"unknown"
 				}
 				ServerData.Birthday(userId, name, ServerData.Date(day, month))
 			}.toMutableSet()
