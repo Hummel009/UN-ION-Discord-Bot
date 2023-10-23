@@ -1,7 +1,14 @@
 package hummel.functions
 
+import com.google.gson.Gson
+import hummel.structures.ApiResponse
 import hummel.structures.ServerData
 import hummel.utils.*
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.ContentType
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.util.EntityUtils
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import kotlin.random.Random
@@ -50,10 +57,11 @@ fun choice(event: InteractionCreateEvent, data: ServerData) {
 fun complete(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 	if (sc.fullCommandName.contains("complete")) {
-		val arguments = sc.arguments[0].stringValue.get().split(" ")
+		val arguments = sc.arguments[0].stringValue.get()
 		if (arguments.isNotEmpty()) {
-			val embed = EmbedBuilder().empty(sc, data, Lang.NOT_AVAILABLE.get(data))
 			sc.respondLater().thenAccept {
+				val response = getResponse(arguments)
+				val embed = EmbedBuilder().success(sc, data, response)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		} else {
@@ -63,6 +71,30 @@ fun complete(event: InteractionCreateEvent, data: ServerData) {
 			}
 		}
 	}
+}
+
+fun getResponse(text: String): String {
+	val client = HttpClients.createDefault()
+	val request = HttpPost("https://api.porfirevich.com/generate/")
+
+	val payload = """{ "prompt": "$text", "model": "xlarge", "length": 30 }"""
+	request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
+
+	request.addHeader("Accept", "*/*")
+	request.addHeader("Accept-Encoding", "gzip, deflate, br")
+	request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
+
+	val response = client.execute(request)
+	val entity = response.entity
+	val jsonResponse = EntityUtils.toString(entity)
+
+	val gson = Gson()
+	val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
+
+	response.close()
+	client.close()
+
+	return "$text${apiResponse.replies.random()}"
 }
 
 fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
