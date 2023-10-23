@@ -17,34 +17,38 @@ data class ServerDataLegacy(
 	data class BirthdayLegacy(var userID: Long, var day: Int, var month: Int)
 
 	fun convert(api: DiscordApi): ServerData {
+		val server = api.getServerById(this.serverID).get()
 		val newData = ServerData(
-			this.serverID, this.serverName, this.chance, this.lang, this.lastWish, HashSet(), HashSet(), HashSet()
+			this.serverID,
+			this.serverName,
+			this.chance,
+			this.lang,
+			this.lastWish,
+			this.officers.map { (roleID) ->
+				val name = try {
+					server.getRoleById(roleID).get().name
+				} catch (e: Exception) {
+					"This role is from another server and should be removed."
+				}
+				ServerData.Role(roleID, name)
+			}.toMutableSet(),
+			this.generals.map { (roleID) ->
+				val name = try {
+					server.getRoleById(roleID).get().name
+				} catch (e: Exception) {
+					"This role is from another server and should be removed."
+				}
+				ServerData.Role(roleID, name)
+			}.toMutableSet(),
+			this.birthday.map { (userId, day, month) ->
+				val name = try {
+					server.getMemberById(userId).get().name
+				} catch (e: Exception) {
+					"This person is from another server and should be removed."
+				}
+				ServerData.Birthday(userId, name, ServerData.Date(day, month))
+			}.toMutableSet()
 		)
-		val server = api.getServerById(newData.serverID).get()
-		newData.officers.addAll(this.officers.map { (roleID) ->
-			val name = try {
-				server.getRoleById(roleID).get().name
-			} catch (e: Exception) {
-				"This role is from another server and should be removed."
-			}
-			ServerData.Role(roleID, name)
-		})
-		newData.generals.addAll(this.generals.map { (roleID) ->
-			val name = try {
-				server.getRoleById(roleID).get().name
-			} catch (e: Exception) {
-				"This role is from another server and should be removed."
-			}
-			ServerData.Role(roleID, name)
-		})
-		newData.birthdays.addAll(this.birthday.map { (userId, day, month) ->
-			val name = try {
-				server.getMemberById(userId).get().name
-			} catch (e: Exception) {
-				"This person is from another server and should be removed."
-			}
-			ServerData.Birthday(userId, name, ServerData.Date(day, month))
-		})
 		return newData
 	}
 }
