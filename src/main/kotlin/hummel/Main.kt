@@ -38,6 +38,7 @@ fun main() {
 	"clear_messages" with Settings("/clear_messages", emptyList(), api)
 	"get_messages" with Settings("/get_messages", emptyList(), api)
 	"get_data" with Settings("/get_data", emptyList(), api)
+	"get_birthdays" with Settings("/get_birthdays", emptyList(), api)
 	"get_commands" with Settings("/get_commands", emptyList(), api)
 	"exit" with Settings("/exit", emptyList(), api)
 	"shutdown" with Settings("/shutdown", emptyList(), api)
@@ -60,6 +61,7 @@ fun main() {
 		addBirthday(event, data)
 		getServerMessages(event, data)
 		getServerData(event, data)
+		getServerBirthdays(event, data)
 		getCommands(event, data, api)
 
 		//GENERAL

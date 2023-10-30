@@ -7,6 +7,7 @@ import hummel.utils.isBotOwner
 import hummel.utils.success
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
+import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 fun exit(event: InteractionCreateEvent, data: ServerData) {
@@ -22,10 +23,9 @@ fun exit(event: InteractionCreateEvent, data: ServerData) {
 			sc.respondLater().thenAccept {
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
-			try {
+			thread {
+				Thread.sleep(10000)
 				exitProcess(0)
-			} catch (e: Exception) {
-				e.printStackTrace()
 			}
 		}
 	}
@@ -44,11 +44,9 @@ fun shutdown(event: InteractionCreateEvent, data: ServerData) {
 			sc.respondLater().thenAccept {
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
-			try {
-				val runtime = Runtime.getRuntime()
-				runtime.exec("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
-			} catch (e: Exception) {
-				e.printStackTrace()
+			thread {
+				Thread.sleep(10000)
+				Runtime.getRuntime().exec("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
+import java.time.Month
 
 val ranges: Map<Int, IntRange> = mapOf(
 	1 to 1..31,
@@ -39,11 +40,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 					val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 					val range = ranges[month] ?: throw Exception()
 					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-					val name = try {
-						sc.server.get().getMemberById(userID).get().name
-					} catch (e: Exception) {
-						"unknown"
-					}
+					val name = sc.server.get().getMemberById(userID).get().name
 					data.birthdays.add(ServerData.Birthday(userID, name, ServerData.Date(day, month)))
 					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
 					sc.respondLater().thenAccept {
@@ -119,6 +116,29 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 					}
 				}
+			}
+		}
+	}
+}
+
+fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
+	val sc = event.slashCommandInteraction.get()
+
+	if (sc.fullCommandName.contains("get_birthdays")) {
+		if (!event.isOfficerMessage(data)) {
+			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+			sc.respondLater().thenAccept {
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+			}
+		} else {
+			val text = buildString {
+				data.birthdays.joinTo(this, "\r\n") {
+					"${it.userName}: ${it.date.day} ${Month.of(it.date.month)}"
+				}
+			}
+			val embed = EmbedBuilder().success(sc, data, text)
+			sc.respondLater().thenAccept {
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}
 		}
 	}
