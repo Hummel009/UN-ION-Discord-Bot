@@ -12,7 +12,7 @@ import java.nio.file.Path
 
 fun MessageCreateEvent.isAllowedMessage(): Boolean {
 	val contain = setOf("@", "http", "\r", "\n")
-	val start = setOf("!", "?")
+	val start = setOf("!", "?", "/")
 
 	if (start.any { messageContent.startsWith(it) } || contain.any { messageContent.contains(it) }) {
 		return false
