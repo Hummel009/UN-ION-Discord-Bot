@@ -49,7 +49,7 @@ fun main() {
 		val server = event.interaction.server
 		val serverID = server.get().id.toString()
 
-		val data = readDataFromJson("$serverID/data.json", api) ?: getDataFromDiscord(server, serverID)
+		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(server, serverID)
 
 		eightBall(event, data)
 		choice(event, data)
@@ -85,7 +85,7 @@ fun main() {
 		val server = event.server
 		val serverID = server.get().id.toString()
 
-		val data = readDataFromJson("$serverID/data.json", api) ?: getDataFromDiscord(server, serverID)
+		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(server, serverID)
 
 		if (event.isAllowedMessage()) {
 			saveAllowedMessage(event, data)

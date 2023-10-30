@@ -12,7 +12,7 @@ data class ServerData(
 ) {
 	data class Date(var day: Int, var month: Int)
 
-	data class Role(var roleID: Long, var roleName: String)
+	data class Role(var roleID: Long)
 
-	data class Birthday(var userID: Long, val userName: String, var date: Date)
+	data class Birthday(var userID: Long, var date: Date)
 }

@@ -78,8 +78,7 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 			if (arguments.size == 1) {
 				try {
 					val roleID = arguments[0].toLong()
-					val name = sc.server.get().getRoleById(roleID).get().name
-					(if (roleName == "general") data.generals else data.officers).add(ServerData.Role(roleID, name))
+					(if (roleName == "general") data.generals else data.officers).add(ServerData.Role(roleID))
 					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_MANAGER.get(data)}: @$roleID.")
 					sc.respondLater().thenAccept {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()

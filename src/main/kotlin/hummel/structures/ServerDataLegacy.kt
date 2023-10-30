@@ -1,54 +1,29 @@
 package hummel.structures
 
-import org.javacord.api.DiscordApi
-
 data class ServerDataLegacy(
 	val serverID: String,
 	val serverName: String,
 	var chance: Int,
-	val lastWish: ServerData.Date,
 	var lang: String,
+	val lastWish: ServerData.Date,
 	val officers: MutableSet<RoleLegacy>,
 	val generals: MutableSet<RoleLegacy>,
-	val birthday: MutableSet<BirthdayLegacy>
+	val birthdays: MutableSet<BirthdayLegacy>
 ) {
-	data class RoleLegacy(var roleID: Long)
+	data class RoleLegacy(var roleID: Long, var roleName: String)
 
-	data class BirthdayLegacy(var userID: Long, var day: Int, var month: Int)
+	data class BirthdayLegacy(var userID: Long, val userName: String, var date: ServerData.Date)
 
-	fun convert(api: DiscordApi): ServerData {
-		val server = api.getServerById(this.serverID).get()
-		val newData = ServerData(
-			this.serverID,
-			this.serverName,
-			this.chance,
-			this.lang,
-			this.lastWish,
-			this.officers.map { (roleID) ->
-				val name = try {
-					server.getRoleById(roleID).get().name
-				} catch (e: Exception) {
-					"unknown"
-				}
-				ServerData.Role(roleID, name)
-			}.toMutableSet(),
-			this.generals.map { (roleID) ->
-				val name = try {
-					server.getRoleById(roleID).get().name
-				} catch (e: Exception) {
-					"unknown"
-				}
-				ServerData.Role(roleID, name)
-			}.toMutableSet(),
-			this.birthday.map { (userId, day, month) ->
-				val name = try {
-					server.getMemberById(userId).get().name
-				} catch (e: Exception) {
-					"unknown"
-				}
-				ServerData.Birthday(userId, name, ServerData.Date(day, month))
-			}.toMutableSet()
+	fun convert(): ServerData {
+		return ServerData(
+			serverID,
+			serverName,
+			chance,
+			lang,
+			lastWish,
+			officers.map { (roleID, _) -> ServerData.Role(roleID) }.toMutableSet(),
+			generals.map { (roleID, _) -> ServerData.Role(roleID) }.toMutableSet(),
+			birthdays.map { (userID, _, date) -> ServerData.Birthday(userID, date) }.toMutableSet()
 		)
-		return newData
 	}
 }

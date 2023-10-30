@@ -40,8 +40,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 					val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 					val range = ranges[month] ?: throw Exception()
 					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-					val name = sc.server.get().getMemberById(userID).get().name
-					data.birthdays.add(ServerData.Birthday(userID, name, ServerData.Date(day, month)))
+					data.birthdays.add(ServerData.Birthday(userID, ServerData.Date(day, month)))
 					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
 					sc.respondLater().thenAccept {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -69,7 +68,7 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 	val userIDs = HashSet<Long>()
 	var isBirthday = false
 
-	for ((userID, _, date) in data.birthdays) {
+	for ((userID, date) in data.birthdays) {
 		if (date.day == currentDay && date.month == currentMonth) {
 			isBirthday = true
 			userIDs.add(userID)
@@ -133,7 +132,8 @@ fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 		} else {
 			val text = buildString {
 				data.birthdays.joinTo(this, "\r\n") {
-					"${it.userName}: ${it.date.day} ${Month.of(it.date.month)}"
+					val userName = sc.server.get().getMemberById(it.userID).get().name
+					"$userName: ${it.date.day} ${Month.of(it.date.month)}"
 				}
 			}
 			val embed = EmbedBuilder().success(sc, data, text)
