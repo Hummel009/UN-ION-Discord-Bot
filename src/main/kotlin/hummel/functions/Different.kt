@@ -57,12 +57,37 @@ fun choice(event: InteractionCreateEvent, data: ServerData) {
 fun complete(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 	if (sc.fullCommandName.contains("complete")) {
-		val arguments = sc.arguments[0].stringValue.get()
-		if (arguments.isNotEmpty()) {
-			sc.respondLater().thenAccept {
-				val response = getResponse(arguments)
-				val embed = EmbedBuilder().success(sc, data, response)
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+		val text = sc.arguments[0].stringValue.get()
+		if (text.isNotEmpty()) {
+			HttpClients.createDefault().use { client ->
+				val request = HttpPost("https://api.porfirevich.com/generate/")
+
+				val payload = """{ "prompt": "$text", "model": "xlarge", "length": 30 }"""
+				request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
+
+				request.addHeader("Accept", "*/*")
+				request.addHeader("Accept-Encoding", "gzip, deflate, br")
+				request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
+
+				client.execute(request).use { response ->
+					if (response.statusLine.statusCode in 200..299) {
+						val entity = response.entity
+						val jsonResponse = EntityUtils.toString(entity)
+
+						val gson = Gson()
+						val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
+
+						val embed = EmbedBuilder().success(sc, data, "$text${apiResponse.replies.random()}")
+						sc.respondLater().thenAccept {
+							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+						}
+					} else {
+						val embed = EmbedBuilder().error(sc, data, Lang.NO_CONNECTION.get(data))
+						sc.respondLater().thenAccept {
+							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+						}
+					}
+				}
 			}
 		} else {
 			val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
@@ -71,30 +96,6 @@ fun complete(event: InteractionCreateEvent, data: ServerData) {
 			}
 		}
 	}
-}
-
-fun getResponse(text: String): String {
-	val client = HttpClients.createDefault()
-	val request = HttpPost("https://api.porfirevich.com/generate/")
-
-	val payload = """{ "prompt": "$text", "model": "xlarge", "length": 30 }"""
-	request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
-
-	request.addHeader("Accept", "*/*")
-	request.addHeader("Accept-Encoding", "gzip, deflate, br")
-	request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
-
-	val response = client.execute(request)
-	val entity = response.entity
-	val jsonResponse = EntityUtils.toString(entity)
-
-	val gson = Gson()
-	val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
-
-	response.close()
-	client.close()
-
-	return "$text${apiResponse.replies.random()}"
 }
 
 fun setLanguage(event: InteractionCreateEvent, data: ServerData) {

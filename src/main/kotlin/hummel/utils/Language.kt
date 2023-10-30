@@ -3,6 +3,7 @@ package hummel.utils
 import hummel.structures.ServerData
 
 enum class Lang(private val ru: String, private val en: String) {
+	NO_CONNECTION("Сайт с нейросетью временно недоступен.", "The neural network site is temporarily unavailable."),
 	EXIT("Бот будет выключен.", "The bot will be turned off."),
 	SHUTDOWN("Хост-компьютер будет выключен.", "The host computer will be shut down."),
 	NUKE("Сообщения были удалены.", "Messages were removed."),
@@ -31,8 +32,7 @@ enum class Lang(private val ru: String, private val en: String) {
 	GAME_NO_4("Точно нет, я уверен на 100%", "Definitely not, I'm 100% sure."),
 	MSG_ACCESS("Доступ", "Access"),
 	MSG_ERROR("Ошибка", "Error"),
-	MSG_SUCCESS("Успех", "Success"),
-	MSG_EMPTY("Заглушка", "Placeholder");
+	MSG_SUCCESS("Успех", "Success");
 
 	fun get(data: ServerData): String = if (data.lang == "ru") ru else en
 }

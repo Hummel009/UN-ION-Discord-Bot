@@ -20,7 +20,7 @@ val rand: Random = Random()
 
 fun main() {
 	val token = File("token.txt").readText(StandardCharsets.UTF_8)
-	val api = DiscordApiBuilder().setToken(token).addIntents(*Intent.values()).login().join()
+	val api = DiscordApiBuilder().setToken(token).addIntents(*Intent.entries.toTypedArray()).login().join()
 
 	"8ball" with Settings("/8ball [your question]", getArgs(), api)
 	"choice" with Settings("/choice [one] [two] [three]", getArgs(), api)
