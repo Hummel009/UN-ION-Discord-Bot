@@ -139,7 +139,7 @@ fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 			}
 		} else {
 			val text = buildString {
-				data.birthdays.joinTo(this, "\r\n") {
+				data.birthdays.sortedWith(compareBy({ it.date.month }, { it.date.day })).joinTo(this, "\r\n") {
 					val userName = sc.server.get().getMemberById(it.userID).get().name
 					"$userName: ${it.date.day} ${Month.of(it.date.month)}"
 				}
