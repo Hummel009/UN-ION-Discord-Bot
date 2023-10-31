@@ -40,6 +40,9 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 					val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 					val range = ranges[month] ?: throw Exception()
 					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
+					if (sc.server.get().getMemberById(userID) == null) {
+						throw Exception()
+					}
 					data.birthdays.add(ServerData.Birthday(userID, ServerData.Date(day, month)))
 					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
 					sc.respondLater().thenAccept {

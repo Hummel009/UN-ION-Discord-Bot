@@ -78,6 +78,9 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 			if (arguments.size == 1) {
 				try {
 					val roleID = arguments[0].toLong()
+					if (sc.server.get().getRoleById(roleID) == null) {
+						throw Exception()
+					}
 					(if (roleName == "general") data.generals else data.officers).add(ServerData.Role(roleID))
 					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_MANAGER.get(data)}: @$roleID.")
 					sc.respondLater().thenAccept {

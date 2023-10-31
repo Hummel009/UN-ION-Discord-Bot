@@ -44,12 +44,12 @@ fun nuke(event: InteractionCreateEvent, data: ServerData) {
 			val arguments = sc.arguments[0].stringValue.get().split(" ")
 			if (arguments.size == 1) {
 				try {
-					val limit = arguments[0].toInt()
-					if (limit >= 200 || limit <= 3) {
+					val range = arguments[0].toInt()
+					if (range !in 2..200) {
 						throw Exception()
 					}
-					val arr = sc.channel.get().getMessages(limit).get().map { it.id }.toLongArray()
-					sc.channel.get().bulkDelete(*arr)
+					val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
+					sc.channel.get().bulkDelete(*messageIds).get()
 					val embed = EmbedBuilder().success(sc, data, Lang.NUKE.get(data))
 					sc.respondLater().thenAccept {
 						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
