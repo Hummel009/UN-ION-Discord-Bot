@@ -10,8 +10,8 @@ import java.nio.file.Paths
 import java.time.LocalDate
 import java.util.*
 
-fun getDataFromDiscord(server: Optional<Server>, serverID: String): ServerData {
-	val serverName = server.get().name
+fun getDataFromDiscord(server: Server, serverID: String): ServerData {
+	val serverName = server.name
 	val chance = 10
 
 	val folderPath = Paths.get(serverID)

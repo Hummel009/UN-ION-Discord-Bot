@@ -5,6 +5,7 @@ import hummel.utils.*
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
+import org.javacord.api.event.server.member.ServerMemberEvent
 import java.time.LocalDate
 import java.time.Month
 
@@ -78,6 +79,10 @@ fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 		}
 	}
 	return isBirthday to userIDs
+}
+
+fun refreshServerBirthdays(event: ServerMemberEvent, data: ServerData) {
+	data.birthdays.removeIf { event.server.getMemberById(it.userID) == null }
 }
 
 fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
