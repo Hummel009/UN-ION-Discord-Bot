@@ -93,14 +93,13 @@ fun complete(event: InteractionCreateEvent, data: ServerData) {
 	}
 }
 
-fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
+fun setLanguage(event: InteractionCreateEvent, data: AtomicReference<ServerData>) {
 	val sc = event.slashCommandInteraction.get()
-	val dataRef = AtomicReference(data)
 
 	if (sc.fullCommandName.contains("set_language")) {
 		sc.respondLater().thenAccept {
-			val embed = if (!event.isGeneralMessage(dataRef.get())) {
-				EmbedBuilder().access(sc, dataRef.get(), Lang.NO_ACCESS.get(dataRef.get()))
+			val embed = if (!event.isGeneralMessage(data.get())) {
+				EmbedBuilder().access(sc, data.get(), Lang.NO_ACCESS.get(data.get()))
 			} else {
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				if (arguments.size == 1) {
@@ -109,13 +108,13 @@ fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
 						if (lang != "ru" && lang != "en") {
 							throw Exception()
 						}
-						dataRef.getAndUpdate { it.copy(lang = lang) }
-						EmbedBuilder().success(sc, dataRef.get(), "${Lang.SET_LANGUAGE.get(dataRef.get())}: $lang")
+						data.getAndUpdate { it.copy(lang = lang) }
+						EmbedBuilder().success(sc, data.get(), "${Lang.SET_LANGUAGE.get(data.get())}: $lang")
 					} catch (e: Exception) {
-						EmbedBuilder().error(sc, dataRef.get(), Lang.INVALID_ARG.get(dataRef.get()))
+						EmbedBuilder().error(sc, data.get(), Lang.INVALID_ARG.get(data.get()))
 					}
 				} else {
-					EmbedBuilder().error(sc, dataRef.get(), Lang.INVALID_ARG.get(dataRef.get()))
+					EmbedBuilder().error(sc, data.get(), Lang.INVALID_ARG.get(data.get()))
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
