@@ -28,39 +28,30 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("add_birthday")) {
-		if (!event.isOfficerMessage(data)) {
-			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}
-		} else {
-			val arguments = sc.arguments[0].stringValue.get().split(" ")
-			if (arguments.size == 3) {
-				try {
-					val userID = arguments[0].toLong()
-					val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
-					val range = ranges[month] ?: throw Exception()
-					val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-					if (sc.server.get().getMemberById(userID) == null) {
-						throw Exception()
-					}
-					data.birthdays.add(ServerData.Birthday(userID, ServerData.Date(day, month)))
-					val embed = EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
-					sc.respondLater().thenAccept {
-						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-					}
-				} catch (e: Exception) {
-					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
-					sc.respondLater().thenAccept {
-						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-					}
-				}
+		sc.respondLater().thenAccept {
+			val embed = if (!event.isOfficerMessage(data)) {
+				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			} else {
-				val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
-				sc.respondLater().thenAccept {
-					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				val arguments = sc.arguments[0].stringValue.get().split(" ")
+				if (arguments.size == 3) {
+					try {
+						val userID = arguments[0].toLong()
+						val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
+						val range = ranges[month] ?: throw Exception()
+						val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
+						if (sc.server.get().getMemberById(userID) == null) {
+							throw Exception()
+						}
+						data.birthdays.add(ServerData.Birthday(userID, ServerData.Date(day, month)))
+						EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userID.")
+					} catch (e: Exception) {
+						EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+					}
+				} else {
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
+			sc.createFollowupMessageBuilder().addEmbed(embed).send()
 		}
 	}
 }
@@ -89,41 +80,29 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("clear_birthdays")) {
-		if (!event.isGeneralMessage(data)) {
-			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}
-		} else {
-			if (sc.arguments.isEmpty()) {
-				data.birthdays.clear()
-				val embed = EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS.get(data))
-				sc.respondLater().thenAccept {
-					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-				}
+		sc.respondLater().thenAccept {
+			val embed = if (!event.isGeneralMessage(data)) {
+				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			} else {
-				val arguments = sc.arguments[0].stringValue.get().split(" ")
-				if (arguments.size == 1) {
-					try {
-						val userID = arguments[0].toLong()
-						data.birthdays.removeIf { it.userID == userID }
-						val embed = EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY.get(data)}: @$userID")
-						sc.respondLater().thenAccept {
-							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-						}
-					} catch (e: Exception) {
-						val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
-						sc.respondLater().thenAccept {
-							sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-						}
-					}
+				if (sc.arguments.isEmpty()) {
+					data.birthdays.clear()
+					EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS.get(data))
 				} else {
-					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
-					sc.respondLater().thenAccept {
-						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+					val arguments = sc.arguments[0].stringValue.get().split(" ")
+					if (arguments.size == 1) {
+						try {
+							val userID = arguments[0].toLong()
+							data.birthdays.removeIf { it.userID == userID }
+							EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY.get(data)}: @$userID")
+						} catch (e: Exception) {
+							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+						}
+					} else {
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 					}
 				}
 			}
+			sc.createFollowupMessageBuilder().addEmbed(embed).send()
 		}
 	}
 }
@@ -132,22 +111,19 @@ fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("get_birthdays")) {
-		if (!event.isOfficerMessage(data)) {
-			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}
-		} else {
-			val text = buildString {
-				data.birthdays.sortedWith(compareBy({ it.date.month }, { it.date.day })).joinTo(this, "\r\n") {
-					val userName = sc.server.get().getMemberById(it.userID).get().name
-					"$userName: ${it.date.day} ${Month.of(it.date.month)}"
+		sc.respondLater().thenAccept {
+			val embed = if (!event.isOfficerMessage(data)) {
+				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+			} else {
+				val text = buildString {
+					data.birthdays.sortedWith(compareBy({ it.date.month }, { it.date.day })).joinTo(this, "\r\n") {
+						val userName = sc.server.get().getMemberById(it.userID).get().name
+						"$userName: ${it.date.day} ${Month.of(it.date.month)}"
+					}
 				}
+				EmbedBuilder().success(sc, data, text)
 			}
-			val embed = EmbedBuilder().success(sc, data, text)
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}
+			sc.createFollowupMessageBuilder().addEmbed(embed).send()
 		}
 	}
 }

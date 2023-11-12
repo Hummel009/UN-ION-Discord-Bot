@@ -35,37 +35,28 @@ fun nuke(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("nuke")) {
-		if (!event.isGeneralMessage(data)) {
-			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}
-		} else {
-			val arguments = sc.arguments[0].stringValue.get().split(" ")
-			if (arguments.size == 1) {
-				try {
-					val range = arguments[0].toInt()
-					if (range !in 2..200) {
-						throw Exception()
-					}
-					val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
-					sc.channel.get().bulkDelete(*messageIds).get()
-					val embed = EmbedBuilder().success(sc, data, Lang.NUKE.get(data))
-					sc.respondLater().thenAccept {
-						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-					}
-				} catch (e: Exception) {
-					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
-					sc.respondLater().thenAccept {
-						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-					}
-				}
+		sc.respondLater().thenAccept {
+			val embed = if (!event.isGeneralMessage(data)) {
+				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			} else {
-				val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
-				sc.respondLater().thenAccept {
-					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				val arguments = sc.arguments[0].stringValue.get().split(" ")
+				if (arguments.size == 1) {
+					try {
+						val range = arguments[0].toInt()
+						if (range !in 2..200) {
+							throw Exception()
+						}
+						val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
+						sc.channel.get().bulkDelete(*messageIds).get()
+						EmbedBuilder().success(sc, data, Lang.NUKE.get(data))
+					} catch (e: Exception) {
+						EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+					}
+				} else {
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
+			sc.createFollowupMessageBuilder().addEmbed(embed).send()
 		}
 	}
 }
@@ -74,33 +65,24 @@ fun setChance(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("set_chance")) {
-		if (!event.isOfficerMessage(data)) {
-			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}
-		} else {
-			val arguments = sc.arguments[0].stringValue.get().split(" ")
-			if (arguments.size == 1) {
-				try {
-					val chance = arguments[0].toInt()
-					data.chance = chance
-					val embed = EmbedBuilder().success(sc, data, "${Lang.SET_CHANCE.get(data)}: $chance.")
-					sc.respondLater().thenAccept {
-						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-					}
-				} catch (e: Exception) {
-					val embed = EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
-					sc.respondLater().thenAccept {
-						sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-					}
-				}
+		sc.respondLater().thenAccept {
+			val embed = if (!event.isOfficerMessage(data)) {
+				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			} else {
-				val embed = EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
-				sc.respondLater().thenAccept {
-					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				val arguments = sc.arguments[0].stringValue.get().split(" ")
+				if (arguments.size == 1) {
+					try {
+						val chance = arguments[0].toInt()
+						data.chance = chance
+						EmbedBuilder().success(sc, data, "${Lang.SET_CHANCE.get(data)}: $chance.")
+					} catch (e: Exception) {
+						EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+					}
+				} else {
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
+			sc.createFollowupMessageBuilder().addEmbed(embed).send()
 		}
 	}
 }
@@ -109,18 +91,15 @@ fun clearServerMessages(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("clear_messages")) {
-		if (!event.isGeneralMessage(data)) {
-			val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+		sc.respondLater().thenAccept {
+			val embed = if (!event.isGeneralMessage(data)) {
+				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+			} else {
+				val path = Paths.get("${data.serverID}/messages.bin")
+				Files.write(path, byteArrayOf())
+				EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES.get(data))
 			}
-		} else {
-			val path = Paths.get("${data.serverID}/messages.bin")
-			Files.write(path, byteArrayOf())
-			val embed = EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES.get(data))
-			sc.respondLater().thenAccept {
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}
+			sc.createFollowupMessageBuilder().addEmbed(embed).send()
 		}
 	}
 }
