@@ -51,7 +51,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -98,7 +98,7 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -119,7 +119,7 @@ fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 				EmbedBuilder().success(sc, data, text)
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 

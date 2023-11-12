@@ -14,7 +14,6 @@ import org.javacord.api.interaction.SlashCommandOptionType
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
-import java.util.concurrent.atomic.AtomicReference
 
 
 val rand: Random = Random()
@@ -51,7 +50,6 @@ fun main() {
 		val serverID = server.id.toString()
 
 		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(server, serverID)
-		val dataRef = AtomicReference(data)
 
 		eightBall(event, data)
 		choice(event, data)
@@ -75,10 +73,8 @@ fun main() {
 		addGeneral(event, data)
 		nuke(event, data)
 		println("DATA" + data.lang)
-		println("DATA REF" + dataRef.get().lang)
-		setLanguage(event, dataRef)
+		setLanguage(event, data)
 		println("DATA" + data.lang)
-		println("DATA REF" + dataRef.get().lang)
 
 		//OWNER
 		exit(event, data)

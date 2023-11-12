@@ -11,7 +11,6 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.random.Random
 
 val answers: Set<Lang> = setOf(
@@ -36,7 +35,7 @@ fun eightBall(event: InteractionCreateEvent, data: ServerData) {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -51,7 +50,7 @@ fun choice(event: InteractionCreateEvent, data: ServerData) {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -89,17 +88,17 @@ fun complete(event: InteractionCreateEvent, data: ServerData) {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
-fun setLanguage(event: InteractionCreateEvent, data: AtomicReference<ServerData>) {
+fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("set_language")) {
 		sc.respondLater().thenAccept {
-			val embed = if (!event.isGeneralMessage(data.get())) {
-				EmbedBuilder().access(sc, data.get(), Lang.NO_ACCESS.get(data.get()))
+			val embed = if (!event.isGeneralMessage(data)) {
+				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			} else {
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				if (arguments.size == 1) {
@@ -108,17 +107,17 @@ fun setLanguage(event: InteractionCreateEvent, data: AtomicReference<ServerData>
 						if (lang != "ru" && lang != "en") {
 							throw Exception()
 						}
-						data.updateAndGet { it.copy(lang = lang) }
-						EmbedBuilder().success(sc, data.get(), "${Lang.SET_LANGUAGE.get(data.get())}: $lang")
+						data.lang = lang
+						EmbedBuilder().success(sc, data, "${Lang.SET_LANGUAGE.get(data)}: $lang")
 					} catch (e: Exception) {
-						EmbedBuilder().error(sc, data.get(), Lang.INVALID_ARG.get(data.get()))
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 					}
 				} else {
-					EmbedBuilder().error(sc, data.get(), Lang.INVALID_ARG.get(data.get()))
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -138,6 +137,6 @@ fun random(event: InteractionCreateEvent, data: ServerData) {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }

@@ -40,7 +40,7 @@ fun clearServerManagers(event: InteractionCreateEvent, data: ServerData, roleNam
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -77,6 +77,6 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }

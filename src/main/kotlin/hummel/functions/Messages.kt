@@ -57,7 +57,7 @@ fun nuke(event: InteractionCreateEvent, data: ServerData) {
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -83,7 +83,7 @@ fun setChance(event: InteractionCreateEvent, data: ServerData) {
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
 
@@ -100,6 +100,6 @@ fun clearServerMessages(event: InteractionCreateEvent, data: ServerData) {
 				EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES.get(data))
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
-		}
+		}.get()
 	}
 }
