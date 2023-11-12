@@ -38,7 +38,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 						val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 						val range = ranges[month] ?: throw Exception()
 						val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-						if (sc.server.get().getMemberById(userID) == null) {
+						if (!sc.server.get().getMemberById(userID).isPresent) {
 							throw Exception()
 						}
 						data.birthdays.add(ServerData.Birthday(userID, ServerData.Date(day, month)))
@@ -110,7 +110,8 @@ fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 			val embed = if (!event.isOfficerMessage(data)) {
 				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			} else {
-				val text = buildString {
+				data.birthdays.removeIf { !sc.server.get().getMemberById(it.userID).isPresent }
+				val text = if (data.birthdays.isEmpty()) Lang.NO_BIRTHDAYS.get(data) else buildString {
 					data.birthdays.sortedWith(compareBy({ it.date.month }, { it.date.day })).joinTo(this, "\r\n") {
 						val userName = sc.server.get().getMemberById(it.userID).get().name
 						"$userName: ${it.date.day} ${Month.of(it.date.month)}"
@@ -124,8 +125,6 @@ fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 }
 
 fun sendBirthdayMessage(event: MessageCreateEvent, data: ServerData) {
-	data.birthdays.removeIf { event.server.get().getMemberById(it.userID) == null }
-
 	val currentDate = LocalDate.now()
 	val currentDay = currentDate.dayOfMonth
 	val currentMonth = currentDate.monthValue

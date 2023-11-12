@@ -64,7 +64,7 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 				if (arguments.size == 1) {
 					try {
 						val roleID = arguments[0].toLong()
-						if (sc.server.get().getRoleById(roleID) == null) {
+						if (!sc.server.get().getRoleById(roleID).isPresent) {
 							throw Exception()
 						}
 						(if (roleName == "general") data.generals else data.officers).add(ServerData.Role(roleID))

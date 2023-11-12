@@ -28,9 +28,9 @@ fun eightBall(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 	if (sc.fullCommandName.contains("8ball")) {
 		sc.respondLater().thenAccept {
-			val arguments = sc.arguments[0].stringValue.get().split(" ")
-			val embed = if (arguments.isNotEmpty()) {
-				EmbedBuilder().success(sc, data, answers.random().get(data))
+			val text = sc.arguments[0].stringValue.get()
+			val embed = if (text.contains("?")) {
+				EmbedBuilder().success(sc, data, "— $text\r\n— ${answers.random().get(data)}")
 			} else {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
@@ -45,7 +45,7 @@ fun choice(event: InteractionCreateEvent, data: ServerData) {
 		sc.respondLater().thenAccept {
 			val arguments = sc.arguments[0].stringValue.get().split(" ")
 			val embed = if (arguments.isNotEmpty()) {
-				EmbedBuilder().success(sc, data, arguments.random())
+				EmbedBuilder().success(sc, data, "$arguments\r\n${arguments.random()}")
 			} else {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}

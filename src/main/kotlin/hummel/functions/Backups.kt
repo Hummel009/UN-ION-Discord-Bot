@@ -55,7 +55,7 @@ fun forkSendAndDelete(
 				val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
 				Files.copy(path, destinationPath)
 				val backupFile = File(destinationPath.toString())
-				sc.createFollowupMessageBuilder().addAttachment(backupFile).send()
+				sc.createFollowupMessageBuilder().addAttachment(backupFile).send().get()
 			}.get()
 			Files.delete(destinationPath)
 		}

@@ -73,6 +73,9 @@ fun setChance(event: InteractionCreateEvent, data: ServerData) {
 				if (arguments.size == 1) {
 					try {
 						val chance = arguments[0].toInt()
+						if (chance == 0) {
+							throw Exception()
+						}
 						data.chance = chance
 						EmbedBuilder().success(sc, data, "${Lang.SET_CHANCE.get(data)}: $chance.")
 					} catch (e: Exception) {
