@@ -16,7 +16,7 @@ repositories {
 val embed: Configuration by configurations.creating
 
 dependencies {
-	embed("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20")
+	embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
 	embed("com.google.code.gson:gson:2.10.1")
 	embed("org.apache.httpcomponents:httpclient:4.5.14")
 	embed("org.javacord:javacord:3.8.0") {
@@ -29,6 +29,18 @@ dependencies {
 	}
 }
 
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+	jvmToolchain(17)
+}
+
 application {
 	mainClass = "hummel.MainKt"
 }
@@ -36,10 +48,14 @@ application {
 tasks {
 	jar {
 		manifest {
-			attributes(mapOf("Main-Class" to "hummel.MainKt"))
+			attributes(
+				mapOf(
+					"Main-Class" to "hummel.MainKt"
+				)
+			)
 		}
 		from(embed.map {
-			if (it.isDirectory) it else zipTree(it)
+			if (it.isDirectory()) it else zipTree(it)
 		})
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	}
