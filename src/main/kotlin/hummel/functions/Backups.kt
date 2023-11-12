@@ -44,20 +44,20 @@ fun forkSendAndDelete(
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("get_$fileName")) {
-		sc.respondLater().thenAccept {
-			if (!event.isOfficerMessage(data)) {
+		if (!event.isOfficerMessage(data)) {
+			sc.respondLater().thenAccept {
 				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 				sc.createFollowupMessageBuilder().addEmbed(embed).send()
-			} else {
-				val destinationPath = Paths.get("${data.serverID}/$fileName-backup.$fileExtension")
-				sc.respondLater().thenAccept {
-					val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
-					Files.copy(path, destinationPath)
-					val backupFile = File(destinationPath.toString())
-					sc.createFollowupMessageBuilder().addAttachment(backupFile).send()
-				}.get()
-				Files.delete(destinationPath)
 			}
+		} else {
+			val destinationPath = Paths.get("${data.serverID}/$fileName-backup.$fileExtension")
+			sc.respondLater().thenAccept {
+				val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
+				Files.copy(path, destinationPath)
+				val backupFile = File(destinationPath.toString())
+				sc.createFollowupMessageBuilder().addAttachment(backupFile).send()
+			}.get()
+			Files.delete(destinationPath)
 		}
 	}
 }

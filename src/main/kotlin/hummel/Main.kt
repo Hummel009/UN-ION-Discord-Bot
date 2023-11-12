@@ -45,20 +45,6 @@ fun main() {
 
 	//SlashCommandUpdater(1164890540798648361).setName("set_language").updateGlobal(api).join()
 
-	api.addServerMemberLeaveListener { event ->
-		val server = event.server
-		val serverID = server.id.toString()
-		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(server, serverID)
-		refreshServerBirthdays(event, data)
-	}
-
-	api.addServerMemberBanListener { event ->
-		val server = event.server
-		val serverID = server.id.toString()
-		val data = readDataFromJson("$serverID/data.json") ?: getDataFromDiscord(server, serverID)
-		refreshServerBirthdays(event, data)
-	}
-
 	api.addInteractionCreateListener { event ->
 		val server = event.interaction.server.get()
 		val serverID = server.id.toString()
