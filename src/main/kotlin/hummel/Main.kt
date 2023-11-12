@@ -72,9 +72,7 @@ fun main() {
 		addOfficer(event, data)
 		addGeneral(event, data)
 		nuke(event, data)
-		println("DATA" + data.lang)
 		setLanguage(event, data)
-		println("DATA" + data.lang)
 
 		//OWNER
 		exit(event, data)
