@@ -11,6 +11,7 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.random.Random
 
 val answers: Set<Lang> = setOf(
@@ -94,10 +95,12 @@ fun complete(event: InteractionCreateEvent, data: ServerData) {
 
 fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
+	val dataRef = AtomicReference(data)
+
 	if (sc.fullCommandName.contains("set_language")) {
 		sc.respondLater().thenAccept {
-			val embed = if (!event.isGeneralMessage(data)) {
-				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+			val embed = if (!event.isGeneralMessage(dataRef.get())) {
+				EmbedBuilder().access(sc, dataRef.get(), Lang.NO_ACCESS.get(dataRef.get()))
 			} else {
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				if (arguments.size == 1) {
@@ -106,13 +109,13 @@ fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
 						if (lang != "ru" && lang != "en") {
 							throw Exception()
 						}
-						data.lang = lang
-						EmbedBuilder().success(sc, data, "${Lang.SET_LANGUAGE.get(data)}: $lang")
+						dataRef.getAndUpdate { it.copy(lang = lang) }
+						EmbedBuilder().success(sc, dataRef.get(), "${Lang.SET_LANGUAGE.get(dataRef.get())}: $lang")
 					} catch (e: Exception) {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+						EmbedBuilder().error(sc, dataRef.get(), Lang.INVALID_ARG.get(dataRef.get()))
 					}
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+					EmbedBuilder().error(sc, dataRef.get(), Lang.INVALID_ARG.get(dataRef.get()))
 				}
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send()
