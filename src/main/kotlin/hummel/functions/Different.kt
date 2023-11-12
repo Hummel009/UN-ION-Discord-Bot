@@ -108,7 +108,7 @@ fun setLanguage(event: InteractionCreateEvent, data: AtomicReference<ServerData>
 						if (lang != "ru" && lang != "en") {
 							throw Exception()
 						}
-						data.getAndUpdate { it.copy(lang = lang) }
+						data.updateAndGet { it.copy(lang = lang) }
 						EmbedBuilder().success(sc, data.get(), "${Lang.SET_LANGUAGE.get(data.get())}: $lang")
 					} catch (e: Exception) {
 						EmbedBuilder().error(sc, data.get(), Lang.INVALID_ARG.get(data.get()))
