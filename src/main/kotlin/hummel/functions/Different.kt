@@ -34,7 +34,7 @@ fun eightBall(event: InteractionCreateEvent, data: ServerData) {
 			} else {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -49,7 +49,7 @@ fun choice(event: InteractionCreateEvent, data: ServerData) {
 			} else {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -87,7 +87,7 @@ fun complete(event: InteractionCreateEvent, data: ServerData) {
 			} else {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -116,7 +116,7 @@ fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
 					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -136,7 +136,7 @@ fun random(event: InteractionCreateEvent, data: ServerData) {
 			} else {
 				EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }

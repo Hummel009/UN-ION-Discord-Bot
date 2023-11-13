@@ -56,7 +56,7 @@ fun nuke(event: InteractionCreateEvent, data: ServerData) {
 					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -85,7 +85,7 @@ fun setChance(event: InteractionCreateEvent, data: ServerData) {
 					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -102,7 +102,7 @@ fun clearServerMessages(event: InteractionCreateEvent, data: ServerData) {
 				Files.write(path, byteArrayOf())
 				EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES.get(data))
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }

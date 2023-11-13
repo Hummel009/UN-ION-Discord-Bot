@@ -39,7 +39,7 @@ fun clearServerManagers(event: InteractionCreateEvent, data: ServerData, roleNam
 					}
 				}
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -76,7 +76,7 @@ fun addManager(event: InteractionCreateEvent, data: ServerData, roleName: String
 					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }

@@ -50,7 +50,7 @@ fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
 					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -97,7 +97,7 @@ fun clearServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 					}
 				}
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -119,7 +119,7 @@ fun getServerBirthdays(event: InteractionCreateEvent, data: ServerData) {
 				}
 				EmbedBuilder().success(sc, data, text)
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }

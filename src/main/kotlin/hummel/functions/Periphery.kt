@@ -21,7 +21,7 @@ fun exit(event: InteractionCreateEvent, data: ServerData) {
 				exit = true
 				EmbedBuilder().success(sc, data, Lang.EXIT.get(data))
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 
 		if (exit) {
@@ -42,7 +42,7 @@ fun shutdown(event: InteractionCreateEvent, data: ServerData) {
 				shutdown = true
 				EmbedBuilder().success(sc, data, Lang.SHUTDOWN.get(data))
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 
 		if (shutdown) {

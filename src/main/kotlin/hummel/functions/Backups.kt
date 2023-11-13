@@ -25,7 +25,7 @@ fun getCommands(event: InteractionCreateEvent, data: ServerData, api: DiscordApi
 				}
 				EmbedBuilder().success(sc, data, text)
 			}
-			sc.createFollowupMessageBuilder().addEmbed(embed).send()
+			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 		}.get()
 	}
 }
@@ -47,7 +47,7 @@ fun forkSendAndDelete(
 		if (!event.isOfficerMessage(data)) {
 			sc.respondLater().thenAccept {
 				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
-				sc.createFollowupMessageBuilder().addEmbed(embed).send()
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		} else {
 			val destinationPath = Paths.get("${data.serverID}/$fileName-backup.$fileExtension")
