@@ -4,6 +4,8 @@ import java.time.format.DateTimeFormatter
 plugins {
 	id("org.jetbrains.kotlin.jvm") version "1.9.20"
 	id("application")
+	id("idea")
+	id("eclipse")
 }
 
 group = "org.example"
@@ -35,8 +37,17 @@ java {
 	}
 }
 
-kotlin {
-	jvmToolchain(17)
+idea {
+	module {
+		jdkName = "17"
+	}
+}
+
+eclipse {
+	jdt {
+		sourceCompatibility = JavaVersion.VERSION_17
+		targetCompatibility = JavaVersion.VERSION_17
+	}
 }
 
 application {
