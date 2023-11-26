@@ -1,5 +1,6 @@
 package hummel.functions
 
+import android.content.Context
 import hummel.structures.ServerData
 import hummel.utils.Lang
 import hummel.utils.access
@@ -10,7 +11,6 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Paths
 
 fun getCommands(event: InteractionCreateEvent, data: ServerData, api: DiscordApi) {
 	val sc = event.slashCommandInteraction.get()
@@ -30,16 +30,16 @@ fun getCommands(event: InteractionCreateEvent, data: ServerData, api: DiscordApi
 	}
 }
 
-fun getServerMessages(event: InteractionCreateEvent, data: ServerData) {
-	forkSendAndDelete(event, data, "messages", "bin")
+fun getServerMessages(context: Context, event: InteractionCreateEvent, data: ServerData) {
+	forkSendAndDelete(context, event, data, "messages", "bin")
 }
 
-fun getServerData(event: InteractionCreateEvent, data: ServerData) {
-	forkSendAndDelete(event, data, "data", "json")
+fun getServerData(context: Context, event: InteractionCreateEvent, data: ServerData) {
+	forkSendAndDelete(context, event, data, "data", "json")
 }
 
 fun forkSendAndDelete(
-	event: InteractionCreateEvent, data: ServerData, fileName: String, fileExtension: String
+	context: Context, event: InteractionCreateEvent, data: ServerData, fileName: String, fileExtension: String
 ) {
 	val sc = event.slashCommandInteraction.get()
 
@@ -50,14 +50,16 @@ fun forkSendAndDelete(
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		} else {
-			val destinationPath = Paths.get("${data.serverID}/$fileName-backup.$fileExtension")
+			val downloadsDir = context.filesDir
+			val destinationPath = File(downloadsDir, "${data.serverID}/$fileName-backup.$fileExtension")
+
 			sc.respondLater().thenAccept {
-				val path = Paths.get("${data.serverID}/$fileName.$fileExtension")
-				Files.copy(path, destinationPath)
-				val backupFile = File(destinationPath.toString())
-				sc.createFollowupMessageBuilder().addAttachment(backupFile).send().get()
+				val path = File(downloadsDir, "${data.serverID}/$fileName.$fileExtension")
+				Files.copy(path.toPath(), destinationPath.toPath())
+				sc.createFollowupMessageBuilder().addAttachment(destinationPath).send().get()
 			}.get()
-			Files.delete(destinationPath)
+
+			Files.deleteIfExists(destinationPath.toPath())
 		}
 	}
 }

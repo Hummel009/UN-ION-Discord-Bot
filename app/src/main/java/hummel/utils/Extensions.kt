@@ -6,9 +6,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
 import org.javacord.api.interaction.SlashCommandInteraction
-import java.awt.Color
-import java.nio.file.Files
-import java.nio.file.Path
+import java.io.File
 
 fun MessageCreateEvent.isAllowedMessage(): Boolean {
 	val contain = setOf("@", "http", "\r", "\n")
@@ -46,8 +44,8 @@ fun InteractionCreateEvent.isOfficerMessage(data: ServerData): Boolean {
 	}
 }
 
-fun Path.getRandomLine(): String? {
-	val lines = Files.readAllLines(this)
+fun File.getRandomLine(): String? {
+	val lines = readLines()
 	if (lines.isNotEmpty()) {
 		val randomLine = lines[rand.nextInt(lines.size)]
 		if (randomLine.isNotEmpty()) {
@@ -55,20 +53,18 @@ fun Path.getRandomLine(): String? {
 			val unicodeChars = unicodeCodes.map { it.toChar() }.toCharArray()
 			return String(unicodeChars)
 		}
-		return null
-	} else {
-		return null
 	}
+	return null
 }
 
 fun EmbedBuilder.error(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle(Lang.MSG_ERROR.get(data)).setColor(Color.RED).setDescription(l)
+	return setAuthor(sc.user).setTitle(Lang.MSG_ERROR.get(data)).setDescription(l)
 }
 
 fun EmbedBuilder.access(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle(Lang.MSG_ACCESS.get(data)).setColor(Color.ORANGE).setDescription(l)
+	return setAuthor(sc.user).setTitle(Lang.MSG_ACCESS.get(data)).setDescription(l)
 }
 
 fun EmbedBuilder.success(sc: SlashCommandInteraction, data: ServerData, l: String): EmbedBuilder {
-	return setAuthor(sc.user).setTitle(Lang.MSG_SUCCESS.get(data)).setColor(Color.GREEN).setDescription(l)
+	return setAuthor(sc.user).setTitle(Lang.MSG_SUCCESS.get(data)).setDescription(l)
 }

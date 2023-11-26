@@ -1,18 +1,22 @@
 package hummel.functions
 
+import android.content.Context
+import android.os.Environment
 import hummel.rand
 import hummel.structures.ServerData
 import hummel.utils.*
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import org.javacord.api.event.message.MessageCreateEvent
+import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 
-fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
-	val path = Paths.get("${data.serverID}/messages.bin")
+fun sendRandomMessage(context: Context, event: MessageCreateEvent, data: ServerData) {
+	val downloadsDir = context.filesDir
+	val path = File(downloadsDir, "${data.serverID}/messages.bin")
 
 	if (rand.nextInt(data.chance) == 0) {
 		val randomLine = path.getRandomLine()
@@ -22,13 +26,17 @@ fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
 	}
 }
 
-fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
-	val path = Paths.get("${data.serverID}/messages.bin")
+fun saveAllowedMessage(context: Context, event: MessageCreateEvent, data: ServerData) {
+	val downloadsDir = context.filesDir
+	val path = File(downloadsDir, "${data.serverID}/messages.bin")
+
 	val ints = event.messageContent.codePoints().toArray()
 	Files.write(
-		path, ints.joinToString(" ").toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND
+		path.toPath(),
+		ints.joinToString(" ").toByteArray(StandardCharsets.UTF_8),
+		StandardOpenOption.APPEND
 	)
-	Files.write(path, "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
+	Files.write(path.toPath(), "\r\n".toByteArray(StandardCharsets.UTF_8), StandardOpenOption.APPEND)
 }
 
 fun nuke(event: InteractionCreateEvent, data: ServerData) {
@@ -90,7 +98,7 @@ fun setChance(event: InteractionCreateEvent, data: ServerData) {
 	}
 }
 
-fun clearServerMessages(event: InteractionCreateEvent, data: ServerData) {
+fun clearServerMessages(context: Context, event: InteractionCreateEvent, data: ServerData) {
 	val sc = event.slashCommandInteraction.get()
 
 	if (sc.fullCommandName.contains("clear_messages")) {
@@ -98,8 +106,9 @@ fun clearServerMessages(event: InteractionCreateEvent, data: ServerData) {
 			val embed = if (!event.isGeneralMessage(data)) {
 				EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
 			} else {
-				val path = Paths.get("${data.serverID}/messages.bin")
-				Files.write(path, byteArrayOf())
+				val downloadsDir = context.filesDir
+				val path = File(downloadsDir, "${data.serverID}/messages.bin")
+				Files.write(Paths.get(path.absolutePath), byteArrayOf())
 				EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES.get(data))
 			}
 			sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
