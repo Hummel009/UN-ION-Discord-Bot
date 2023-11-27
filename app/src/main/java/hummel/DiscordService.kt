@@ -16,7 +16,7 @@ class DiscordService : Service() {
 		DaoFactory.context = this
 		val dao = DaoFactory.dao
 		val token = dao.readFromFile("token.txt")
-		api = DiscordApiBuilder().setToken(token).setAllIntents().login().join()
+		api = DiscordApiBuilder().setToken(String(token)).setAllIntents().login().join()
 
 		val loginService = ServiceFactory.loginService
 		loginService.registerCommands(api)
@@ -58,6 +58,7 @@ class DiscordService : Service() {
 
 			ownerService.exit(it, data)
 			ownerService.shutdown(it, data)
+			ownerService.import(it, data)
 
 			dataService.saveData(server, data)
 		}

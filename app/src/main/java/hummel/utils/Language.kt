@@ -11,6 +11,7 @@ enum class Lang(private val ru: String, private val en: String) {
 	NO_BIRTHDAYS("Дней рождения нет.", "No birthdays."),
 	HAPPY_BIRTHDAY("с днём рождения", "happy birthday"),
 	NO_ACCESS("У вас нет доступа к этой команде.", "You have no access to this command."),
+	IMPORT("Данные импортированы.", "Data was imported."),
 	INVALID_ARG("Недопустимые аргументы.", "Invalid arguments provided."),
 	INVALID_FORMAT("Недопустимый формат аргумента.", "Invalid argument format."),
 	SET_LANGUAGE("Установлен язык", "Set language"),

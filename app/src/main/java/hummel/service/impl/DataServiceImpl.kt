@@ -43,16 +43,16 @@ class DataServiceImpl : DataService {
 	private fun readDataFromJson(server: Server): ServerData? {
 		val serverID = server.id.toString()
 		val filePath = "$serverID/data.json"
-		var json: String
+		var json: ByteArray
 		val gson = Gson()
 
 		try {
 			json = dao.readFromFile(filePath)
-			return gson.fromJson(json, ServerData::class.java)
+			return gson.fromJson(String(json), ServerData::class.java)
 		} catch (ignored: Exception) {
 			try {
 				json = dao.readFromFile(filePath)
-				return gson.fromJson(json, ServerDataLegacy::class.java).convert()
+				return gson.fromJson(String(json), ServerDataLegacy::class.java).convert()
 			} catch (ignored: Exception) {
 			}
 		}
@@ -68,7 +68,7 @@ class DataServiceImpl : DataService {
 			val filePath = "$serverID/data.json"
 
 			dao.createFile(filePath)
-			dao.writeToFile(filePath, json)
+			dao.writeToFile(filePath, json.toByteArray())
 
 		} catch (ignored: Exception) {
 		}

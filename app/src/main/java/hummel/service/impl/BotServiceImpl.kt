@@ -21,8 +21,8 @@ class BotServiceImpl : BotService {
 				val crypt = cryptService.encodeMessage(msg)
 
 				val filePath = "${data.serverID}/messages.bin"
-				dao.appendToFile(filePath, crypt)
-				dao.appendToFile(filePath, "\r\n")
+				dao.appendToFile(filePath, crypt.toByteArray())
+				dao.appendToFile(filePath, "\r\n".toByteArray())
 			}
 		}
 	}

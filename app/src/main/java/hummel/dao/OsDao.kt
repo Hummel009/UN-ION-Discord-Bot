@@ -9,8 +9,9 @@ interface OsDao {
 	fun removeFile(filePath: String)
 	fun getFile(filePath: String): File
 	fun getFolder(folderPath: String): File
-	fun readFromFile(filePath: String): String
-	fun writeToFile(filePath: String, text: String)
-	fun appendToFile(filePath: String, text: String)
+	fun readFromFile(filePath: String): ByteArray
+	fun writeToFile(filePath: String, byteArray: ByteArray)
+	fun appendToFile(filePath: String, byteArray: ByteArray)
 	fun getRandomLine(filePath: String): String?
+	fun unzipFile(filePath: String)
 }

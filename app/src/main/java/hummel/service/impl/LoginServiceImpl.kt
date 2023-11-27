@@ -31,6 +31,7 @@ class LoginServiceImpl : LoginService {
 		"get_commands" with Settings("/get_commands", emptyList(), api)
 		"exit" with Settings("/exit", emptyList(), api)
 		"shutdown" with Settings("/shutdown", emptyList(), api)
+		"import" with Settings("/import", file(), api)
 
 		//SlashCommandUpdater(1164890540798648361).setName("set_language").updateGlobal(api).join()
 	}
@@ -43,6 +44,14 @@ class LoginServiceImpl : LoginService {
 		return listOf(
 			SlashCommandOption.create(
 				SlashCommandOptionType.STRING, "Arguments", "The list of arguments", required
+			)
+		)
+	}
+
+	private fun file(required: Boolean = true): List<SlashCommandOption> {
+		return listOf(
+			SlashCommandOption.create(
+				SlashCommandOptionType.ATTACHMENT, "Arguments", "The list of arguments", required
 			)
 		)
 	}

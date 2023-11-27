@@ -1,6 +1,7 @@
 package hummel.service.impl
 
 import hummel.bean.ServerData
+import hummel.factory.DaoFactory
 import hummel.service.OwnerService
 import hummel.utils.Lang
 import hummel.utils.access
@@ -10,6 +11,8 @@ import org.javacord.api.event.interaction.InteractionCreateEvent
 import kotlin.system.exitProcess
 
 class OwnerServiceImpl : OwnerService {
+	private val dao = DaoFactory.dao
+
 	override fun exit(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("exit")) {
@@ -49,6 +52,25 @@ class OwnerServiceImpl : OwnerService {
 			if (shutdown) {
 				Runtime.getRuntime().exec("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
 			}
+		}
+	}
+
+	override fun import(event: InteractionCreateEvent, data: ServerData) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("import")) {
+			sc.respondLater().thenAccept {
+				val embed = if (!event.fromOwnerAtLeast()) {
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+				} else {
+					val byteArray = sc.arguments[0].attachmentValue.get().asByteArray().join()
+					dao.writeToFile("bot.zip", byteArray)
+					dao.unzipFile("bot.zip")
+					dao.removeFile("bot.zip")
+					EmbedBuilder().success(sc, data, Lang.IMPORT.get(data))
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+			}.get()
 		}
 	}
 
