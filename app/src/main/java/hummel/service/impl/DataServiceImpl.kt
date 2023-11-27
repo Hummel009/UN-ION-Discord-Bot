@@ -43,13 +43,15 @@ class DataServiceImpl : DataService {
 	private fun readDataFromJson(server: Server): ServerData? {
 		val serverID = server.id.toString()
 		val filePath = "$serverID/data.json"
-		val json = dao.readFromFile(filePath)
+		var json: String
 		val gson = Gson()
 
 		try {
+			json = dao.readFromFile(filePath)
 			return gson.fromJson(json, ServerData::class.java)
 		} catch (ignored: Exception) {
 			try {
+				json = dao.readFromFile(filePath)
 				return gson.fromJson(json, ServerDataLegacy::class.java).convert()
 			} catch (ignored: Exception) {
 			}
