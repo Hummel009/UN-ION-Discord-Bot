@@ -38,14 +38,16 @@ class AndroidDaoImpl(private val context: Context) : OsDao {
 	}
 
 	override fun writeToFile(filePath: String, text: String) {
-		FileOutputStream(filePath).use {
+		val file = getFile(filePath)
+		FileOutputStream(file).use {
 			it.write(text.toByteArray(StandardCharsets.UTF_8))
 		}
 	}
 
 	override fun readFromFile(filePath: String): String {
 		var byteArray: ByteArray
-		FileInputStream(filePath).use {
+		val file = getFile(filePath)
+		FileInputStream(file).use {
 			byteArray = ByteArray(it.available())
 			it.read(byteArray)
 		}
@@ -53,7 +55,8 @@ class AndroidDaoImpl(private val context: Context) : OsDao {
 	}
 
 	override fun appendToFile(filePath: String, text: String) {
-		FileOutputStream(filePath, true).use {
+		val file = getFile(filePath)
+		FileOutputStream(file, true).use {
 			it.write(text.toByteArray(StandardCharsets.UTF_8))
 		}
 	}
