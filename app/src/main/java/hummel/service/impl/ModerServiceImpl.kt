@@ -151,15 +151,16 @@ class ModerServiceImpl : ModerService {
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				}.get()
 			} else {
-				val destinationPath = "${data.serverID}/$fileName-backup.$fileExtension"
+				val backupFilePath = "${data.serverID}/$fileName-backup.$fileExtension"
 				sc.respondLater().thenAccept {
 					val filePath = "${data.serverID}/$fileName.$fileExtension"
 					val text = dao.readFromFile(filePath)
-					dao.writeToFile(destinationPath, text)
-					val backupFile = dao.getFile(destinationPath)
+					dao.createFile(backupFilePath)
+					dao.writeToFile(backupFilePath, text)
+					val backupFile = dao.getFile(backupFilePath)
 					sc.createFollowupMessageBuilder().addAttachment(backupFile).send().get()
 				}.get()
-				dao.removeFile(destinationPath)
+				dao.removeFile(backupFilePath)
 			}
 		}
 	}
