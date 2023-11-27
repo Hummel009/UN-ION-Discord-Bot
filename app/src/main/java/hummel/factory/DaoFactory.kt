@@ -2,9 +2,9 @@ package hummel.factory
 
 import android.content.Context
 import hummel.dao.OsDao
-import hummel.dao.impl.AndroidDaoImpl
+import hummel.dao.impl.OsDaoImpl
 
 object DaoFactory {
 	var context: Context? = null
-	val dao: OsDao by lazy { AndroidDaoImpl(context!!) }
+	val dao: OsDao by lazy { OsDaoImpl(context!!) }
 }

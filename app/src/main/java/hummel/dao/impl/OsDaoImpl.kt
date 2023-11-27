@@ -8,7 +8,7 @@ import java.io.FileOutputStream
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-class AndroidDaoImpl(private val context: Context) : OsDao {
+class OsDaoImpl(private val context: Context) : OsDao {
 	override fun createFolder(folderPath: String) {
 		val folder = getFolder(folderPath)
 		if (!folder.exists()) {
