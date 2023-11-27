@@ -3,104 +3,77 @@ package hummel
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import hummel.functions.*
-import hummel.structures.Settings
-import hummel.utils.getDataFromDiscord
-import hummel.utils.isAllowedMessage
-import hummel.utils.readDataFromJson
-import hummel.utils.saveDataToJson
+import hummel.factory.DaoFactory
+import hummel.factory.ServiceFactory
 import org.javacord.api.DiscordApi
 import org.javacord.api.DiscordApiBuilder
-import org.javacord.api.interaction.SlashCommand
-import org.javacord.api.interaction.SlashCommandOption
-import org.javacord.api.interaction.SlashCommandOptionType
-import java.io.File
-import java.nio.charset.StandardCharsets
-import java.util.*
-
-val rand: Random = Random()
 
 class DiscordService : Service() {
 	private lateinit var api: DiscordApi
 
 	override fun onCreate() {
 		super.onCreate()
-		val downloadsDir = this.filesDir
-		val token = File(downloadsDir, "token.txt").readText(StandardCharsets.UTF_8)
+		DaoFactory.context = this
+		val dao = DaoFactory.dao
+		val token = dao.readFromFile("token.txt")
 		api = DiscordApiBuilder().setToken(token).setAllIntents().login().join()
 
-		"8ball" with Settings("/8ball [your question]", getArgs(), api)
-		"choice" with Settings("/choice [one] [two] [three]", getArgs(), api)
-		"complete" with Settings("/complete [text]", getArgs(), api)
-		"nuke" with Settings("/nuke [number]", getArgs(), api)
-		"random" with Settings("/random [number]", getArgs(), api)
-		"set_chance" with Settings("/set_chance [number]", getArgs(), api)
-		"set_language" with Settings("/set_language [ru/en]", getArgs(), api)
-		"add_birthday" with Settings("/add_birthday [user_id] [month_number] [day_number]", getArgs(), api)
-		"add_officer" with Settings("/add_officer [role_id]", getArgs(), api)
-		"add_general" with Settings("/add_general [role_id]", getArgs(), api)
-		"clear_birthdays" with Settings("/clear_birthdays {user_id}", getArgs(false), api)
-		"clear_officers" with Settings("/clear_officers {role_id}", getArgs(false), api)
-		"clear_generals" with Settings("/clear_generals {role_id}", getArgs(false), api)
-		"clear_messages" with Settings("/clear_messages", emptyList(), api)
-		"get_messages" with Settings("/get_messages", emptyList(), api)
-		"get_data" with Settings("/get_data", emptyList(), api)
-		"get_birthdays" with Settings("/get_birthdays", emptyList(), api)
-		"get_commands" with Settings("/get_commands", emptyList(), api)
-		"exit" with Settings("/exit", emptyList(), api)
-		"shutdown" with Settings("/shutdown", emptyList(), api)
+		val loginService = ServiceFactory.loginService
+		loginService.registerCommands(api)
 	}
 
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-		api.addInteractionCreateListener { event ->
-			val server = event.interaction.server.get()
-			val serverID = server.id.toString()
+		api.addInteractionCreateListener {
+			val dataService = ServiceFactory.dataService
+			val userService = ServiceFactory.userService
+			val moderService = ServiceFactory.moderService
+			val adminService = ServiceFactory.adminService
+			val ownerService = ServiceFactory.ownerService
 
-			val data = readDataFromJson(this, "$serverID/data.json") ?: getDataFromDiscord(this, server, serverID)
+			val server = it.interaction.server.get()
+			val data = dataService.loadData(server)
 
-			eightBall(event, data)
-			choice(event, data)
-			random(event, data)
-			complete(event, data)
+			userService.eightBall(it, data)
+			userService.choice(it, data)
+			userService.random(it, data)
+			userService.complete(it, data)
 
-			// OFFICER
-			setChance(event, data)
-			addBirthday(event, data)
-			getServerMessages(this, event, data)
-			getServerData(this, event, data)
-			getServerBirthdays(event, data)
-			getCommands(event, data, api)
+			moderService.setChance(it, data)
+			moderService.addBirthday(it, data)
+			moderService.getServerMessages(it, data)
+			moderService.getServerData(it, data)
+			moderService.getServerBirthdays(it, data)
+			moderService.getCommands(it, data, api)
 
-			//GENERAL
-			clearServerMessages(this, event, data)
-			clearServerBirthdays(event, data)
-			clearServerGenerals(event, data)
-			clearServerOfficers(event, data)
-			addOfficer(event, data)
-			addGeneral(event, data)
-			nuke(event, data)
-			setLanguage(event, data)
+			adminService.clearServerMessages(it, data)
+			adminService.clearServerBirthdays(it, data)
+			adminService.clearServerGenerals(it, data)
+			adminService.clearServerOfficers(it, data)
+			adminService.clearSecretChannels(it, data)
+			adminService.addSecretChannel(it, data)
+			adminService.addOfficer(it, data)
+			adminService.addGeneral(it, data)
+			adminService.nuke(it, data)
+			adminService.setLanguage(it, data)
 
-			//OWNER
-			exit(event, data)
-			shutdown(event, data)
+			ownerService.exit(it, data)
+			ownerService.shutdown(it, data)
 
-			saveDataToJson(this, data, "$serverID/data.json")
+			dataService.saveData(server, data)
 		}
 
-		api.addMessageCreateListener { event ->
-			val server = event.server.get()
-			val serverID = server.id.toString()
+		api.addMessageCreateListener {
+			val dataService = ServiceFactory.dataService
+			val botService = ServiceFactory.botService
 
-			val data = readDataFromJson(this, "$serverID/data.json") ?: getDataFromDiscord(this, server, serverID)
+			val server = it.server.get()
+			val data = dataService.loadData(server)
 
-			if (event.isAllowedMessage()) {
-				saveAllowedMessage(this, event, data)
-				sendRandomMessage(this, event, data)
-				sendBirthdayMessage(event, data)
-			}
+			botService.saveAllowedMessage(it, data)
+			botService.sendRandomMessage(it, data)
+			botService.sendBirthdayMessage(it, data)
 
-			saveDataToJson(this, data, "$serverID/data.json")
+			dataService.saveData(server, data)
 		}
 
 		return START_STICKY
@@ -109,16 +82,4 @@ class DiscordService : Service() {
 	override fun onBind(intent: Intent?): IBinder? {
 		return null
 	}
-}
-
-infix fun String.with(settings: Settings) {
-	SlashCommand.with(this, settings.usage, settings.args).createGlobal(settings.api)
-}
-
-fun getArgs(required: Boolean = true): List<SlashCommandOption> {
-	return listOf(
-		SlashCommandOption.create(
-			SlashCommandOptionType.STRING, "Arguments", "The list of arguments", required
-		)
-	)
 }

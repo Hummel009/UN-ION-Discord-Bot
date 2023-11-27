@@ -1,6 +1,6 @@
 package hummel.utils
 
-import hummel.structures.ServerData
+import hummel.bean.ServerData
 
 enum class Lang(private val ru: String, private val en: String) {
 	NO_CONNECTION("Сайт с нейросетью временно недоступен.", "The neural network site is temporarily unavailable."),
@@ -16,9 +16,12 @@ enum class Lang(private val ru: String, private val en: String) {
 	SET_LANGUAGE("Установлен язык", "Set language"),
 	SET_CHANCE("Установлен шанс сообщения", "Set chance"),
 	ADDED_MANAGER("Добавлена управляющая роль", "Added manager role"),
+	ADDED_CHANNEL("Добавлен исключённый канал", "Added excluded channel"),
 	ADDED_BIRTHDAY("Добавлен день рождения", "Added birthday"),
 	REMOVED_BIRTHDAY("Удалён день рождения", "Removed birthday"),
 	REMOVED_MANAGER("Удалена управляющая роль", "Removed manager role"),
+	REMOVED_CHANNEL("Удалён секретный канал", "Removed secret channel"),
+	CLEARED_CHANNELS("Секретные каналы сервера очищены.", "Server secret channels cleared."),
 	CLEARED_MANAGERS("Управляющие роли сервера очищены.", "Server manager roles cleared."),
 	CLEARED_MESSAGES("Сообщения сервера очищены.", "Server messages cleared."),
 	CLEARED_BIRTHDAYS("Дни рождения сервера очищены.", "Server birthdays cleared."),

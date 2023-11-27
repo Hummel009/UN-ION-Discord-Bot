@@ -1,4 +1,4 @@
-package hummel.structures
+package hummel.bean
 
 data class ApiResponse(
 	val replies: List<String>

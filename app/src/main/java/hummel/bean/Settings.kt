@@ -1,4 +1,4 @@
-package hummel.structures
+package hummel.bean
 
 import org.javacord.api.DiscordApi
 import org.javacord.api.interaction.SlashCommandOption

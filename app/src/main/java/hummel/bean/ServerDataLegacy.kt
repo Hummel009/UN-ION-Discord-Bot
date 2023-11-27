@@ -1,4 +1,4 @@
-package hummel.structures
+package hummel.bean
 
 data class ServerDataLegacy(
 	val serverID: String,
