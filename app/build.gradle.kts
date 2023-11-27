@@ -59,6 +59,6 @@ dependencies {
 	implementation("androidx.compose.ui:ui-tooling-preview")
 
 	implementation("com.google.code.gson:gson:2.10.1")
-	implementation("org.apache.httpcomponents:httpclient:4.5.14")
+	implementation("org.apache.httpcomponents.client5:httpclient5:5.0.3")
 	implementation("org.javacord:javacord:3.8.0")
 }

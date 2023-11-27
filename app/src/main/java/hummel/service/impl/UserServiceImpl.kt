@@ -7,11 +7,11 @@ import hummel.service.UserService
 import hummel.utils.Lang
 import hummel.utils.error
 import hummel.utils.success
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.ContentType
-import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.util.EntityUtils
+import org.apache.hc.client5.http.classic.methods.HttpPost
+import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.core5.http.ContentType
+import org.apache.hc.core5.http.io.entity.EntityUtils
+import org.apache.hc.core5.http.io.entity.StringEntity
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import kotlin.random.Random
@@ -75,7 +75,7 @@ class UserServiceImpl : UserService {
 						request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
 
 						client.execute(request).use { response ->
-							if (response.statusLine.statusCode in 200..299) {
+							if (response.code in 200..299) {
 								val entity = response.entity
 								val jsonResponse = EntityUtils.toString(entity)
 
@@ -95,7 +95,6 @@ class UserServiceImpl : UserService {
 			}.get()
 		}
 	}
-
 
 	override fun random(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
