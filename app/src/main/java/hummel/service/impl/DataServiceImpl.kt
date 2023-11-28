@@ -10,7 +10,7 @@ import org.javacord.api.entity.server.Server
 import java.time.LocalDate
 
 class DataServiceImpl : DataService {
-	private val dao = DaoFactory.dao
+	private val dao = DaoFactory.osDao
 
 	override fun loadData(server: Server): ServerData {
 		return readDataFromJson(server) ?: getDataFromDiscord(server)

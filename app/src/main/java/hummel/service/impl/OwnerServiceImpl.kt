@@ -11,7 +11,7 @@ import org.javacord.api.event.interaction.InteractionCreateEvent
 import kotlin.system.exitProcess
 
 class OwnerServiceImpl : OwnerService {
-	private val dao = DaoFactory.dao
+	private val dao = DaoFactory.osDao
 
 	override fun exit(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()

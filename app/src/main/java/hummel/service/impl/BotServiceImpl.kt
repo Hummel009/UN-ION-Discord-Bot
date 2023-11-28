@@ -10,7 +10,7 @@ import java.time.LocalDate
 import java.util.*
 
 class BotServiceImpl : BotService {
-	private val dao = DaoFactory.dao
+	private val dao = DaoFactory.osDao
 	private val cryptService = ServiceFactory.cryptService
 
 	override fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {

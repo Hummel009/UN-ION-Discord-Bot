@@ -14,7 +14,7 @@ class DiscordService : Service() {
 	override fun onCreate() {
 		super.onCreate()
 		DaoFactory.context = this
-		val dao = DaoFactory.dao
+		val dao = DaoFactory.osDao
 		val token = dao.readFromFile("token.txt")
 		api = DiscordApiBuilder().setToken(String(token)).setAllIntents().login().join()
 

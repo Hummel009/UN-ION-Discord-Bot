@@ -13,7 +13,7 @@ import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
 
 class ModerServiceImpl : ModerService {
-	private val dao = DaoFactory.dao
+	private val dao = DaoFactory.osDao
 
 	private val ranges: Map<Int, IntRange> = mapOf(
 		1 to 1..31,

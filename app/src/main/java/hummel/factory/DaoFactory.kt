@@ -6,5 +6,5 @@ import hummel.dao.impl.OsDaoImpl
 
 object DaoFactory {
 	var context: Context? = null
-	val dao: OsDao by lazy { OsDaoImpl(context!!) }
+	val osDao: OsDao by lazy { OsDaoImpl(context!!) }
 }

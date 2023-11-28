@@ -11,7 +11,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 
 class AdminServiceImpl : AdminService {
-	private val dao = DaoFactory.dao
+	private val dao = DaoFactory.osDao
 
 	override fun clearServerMessages(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
