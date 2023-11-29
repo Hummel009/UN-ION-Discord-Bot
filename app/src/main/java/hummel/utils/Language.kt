@@ -24,6 +24,7 @@ enum class Lang(private val ru: String, private val en: String) {
 	REMOVED_CHANNEL("Удалён секретный канал", "Removed secret channel"),
 	CLEARED_CHANNELS("Секретные каналы сервера очищены.", "Server secret channels cleared."),
 	CLEARED_MANAGERS("Управляющие роли сервера очищены.", "Server manager roles cleared."),
+	CLEARED_DATA("Данные сервера очищены.", "Server data cleared."),
 	CLEARED_MESSAGES("Сообщения сервера очищены.", "Server messages cleared."),
 	CLEARED_BIRTHDAYS("Дни рождения сервера очищены.", "Server birthdays cleared."),
 	GAME_YES_1("Да.", "Yes."),

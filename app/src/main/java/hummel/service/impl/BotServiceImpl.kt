@@ -1,8 +1,8 @@
 package hummel.service.impl
 
 import hummel.bean.ServerData
+import hummel.dao.FileDao
 import hummel.factory.DaoFactory
-import hummel.factory.ServiceFactory
 import hummel.service.BotService
 import hummel.utils.Lang
 import org.javacord.api.event.message.MessageCreateEvent
@@ -10,19 +10,18 @@ import java.time.LocalDate
 import java.util.*
 
 class BotServiceImpl : BotService {
-	private val dao = DaoFactory.osDao
-	private val cryptService = ServiceFactory.cryptService
+	private val fileDao: FileDao = DaoFactory.fileDao
 
 	override fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
 		if (event.containsAllowedMessage()) {
-			val channelID = event.channel.id
-			if (!data.channels.any { it.channelID == channelID }) {
+			val channelId = event.channel.id
+			if (!data.secretChannels.any { it.id == channelId }) {
 				val msg = event.messageContent
-				val crypt = cryptService.encodeMessage(msg)
+				val crypt = encodeMessage(msg)
 
-				val filePath = "${data.serverID}/messages.bin"
-				dao.appendToFile(filePath, crypt.toByteArray())
-				dao.appendToFile(filePath, "\r\n".toByteArray())
+				val filePath = "${data.serverId}/messages.bin"
+				fileDao.appendToFile(filePath, crypt.toByteArray())
+				fileDao.appendToFile(filePath, "\r\n".toByteArray())
 			}
 		}
 	}
@@ -30,12 +29,12 @@ class BotServiceImpl : BotService {
 	override fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
 		if (event.containsAllowedMessage()) {
 			val rand = Random()
-			val path = "${data.serverID}/messages.bin"
+			val path = "${data.serverId}/messages.bin"
 
 			if (rand.nextInt(data.chance) == 0) {
-				val crypt = dao.getRandomLine(path)
+				val crypt = fileDao.getRandomLine(path)
 				crypt?.let {
-					val msg = cryptService.decodeMessage(it)
+					val msg = decodeMessage(it)
 					event.channel.sendMessage(msg)
 				}
 			}
@@ -48,30 +47,40 @@ class BotServiceImpl : BotService {
 			val currentDay = currentDate.dayOfMonth
 			val currentMonth = currentDate.monthValue
 
-			val (isBirthday, userIDs) = isBirthdayToday(data)
+			val (isBirthday, userIds) = isBirthdayToday(data)
 
 			if (isBirthday && (currentDay != data.lastWish.day || currentMonth != data.lastWish.month)) {
-				userIDs.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY.get(data)}!") }
+				userIds.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY.get(data)}!") }
 				data.lastWish.day = currentDay
 				data.lastWish.month = currentMonth
 			}
 		}
 	}
 
+	private fun encodeMessage(msg: String): String {
+		return msg.codePoints().toArray().joinToString(" ")
+	}
+
+	private fun decodeMessage(msg: String): String {
+		val unicodeCodes = msg.split(" ").map { it.toInt() }
+		val unicodeChars = unicodeCodes.map { it.toChar() }.toCharArray()
+		return String(unicodeChars)
+	}
+
 	private fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
 		val currentDate = LocalDate.now()
 		val currentDay = currentDate.dayOfMonth
 		val currentMonth = currentDate.monthValue
-		val userIDs = HashSet<Long>()
+		val userIds = HashSet<Long>()
 		var isBirthday = false
 
-		for ((userID, date) in data.birthdays) {
+		for ((userId, date) in data.birthdays) {
 			if (date.day == currentDay && date.month == currentMonth) {
 				isBirthday = true
-				userIDs.add(userID)
+				userIds.add(userId)
 			}
 		}
-		return isBirthday to userIDs
+		return isBirthday to userIds
 	}
 
 	private fun MessageCreateEvent.containsAllowedMessage(): Boolean {

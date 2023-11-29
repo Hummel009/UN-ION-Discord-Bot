@@ -1,34 +1,35 @@
 package hummel.service.impl
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import hummel.DATA_VER
 import hummel.bean.ServerData
-import hummel.bean.ServerDataLegacy
+import hummel.dao.FileDao
+import hummel.dao.JsonDao
 import hummel.factory.DaoFactory
 import hummel.service.DataService
 import org.javacord.api.entity.server.Server
 import java.time.LocalDate
 
 class DataServiceImpl : DataService {
-	private val dao = DaoFactory.osDao
+	private val fileDao: FileDao = DaoFactory.fileDao
+	private val jsonDao: JsonDao = DaoFactory.jsonDao
 
 	override fun loadData(server: Server): ServerData {
-		return readDataFromJson(server) ?: getDataFromDiscord(server)
+		return jsonDao.readFromJson(server) ?: getDataFromDiscord(server)
 	}
 
 	override fun saveData(server: Server, data: ServerData) {
-		saveDataToJson(server, data)
+		jsonDao.writeToJson(server, data)
 	}
 
 	private fun getDataFromDiscord(server: Server): ServerData {
 		val serverName = server.name
-		val serverID = server.id.toString()
+		val serverId = server.id.toString()
 		val chance = 10
 
-		val (folderPath, filePath) = serverID to "$serverID/messages.bin"
+		val (folderPath, filePath) = serverId to "$serverId/messages.bin"
 
-		dao.createFolder(folderPath)
-		dao.createFile(filePath)
+		fileDao.createFolder(folderPath)
+		fileDao.createFile(filePath)
 
 		val currentDate = LocalDate.now()
 		val yesterday = currentDate.minusDays(1)
@@ -37,40 +38,16 @@ class DataServiceImpl : DataService {
 		val date = ServerData.Date(yesterdayDay, yesterdayMonth)
 		val lang = "ru"
 
-		return ServerData(serverID, serverName, chance, lang, date)
-	}
-
-	private fun readDataFromJson(server: Server): ServerData? {
-		val serverID = server.id.toString()
-		val filePath = "$serverID/data.json"
-		var json: ByteArray
-		val gson = Gson()
-
-		try {
-			json = dao.readFromFile(filePath)
-			return gson.fromJson(String(json), ServerData::class.java)
-		} catch (ignored: Exception) {
-			try {
-				json = dao.readFromFile(filePath)
-				return gson.fromJson(String(json), ServerDataLegacy::class.java).convert()
-			} catch (ignored: Exception) {
-			}
-		}
-		return null
-	}
-
-	private fun saveDataToJson(server: Server, data: ServerData) {
-		try {
-			val serverID = server.id.toString()
-			val gson = GsonBuilder().setPrettyPrinting().create()
-			val json = gson.toJson(data)
-
-			val filePath = "$serverID/data.json"
-
-			dao.createFile(filePath)
-			dao.writeToFile(filePath, json.toByteArray())
-
-		} catch (ignored: Exception) {
-		}
+		return ServerData(
+			dataVer = DATA_VER,
+			serverId = serverId,
+			serverName = serverName,
+			chance = chance,
+			lang = lang,
+			lastWish = date,
+			secretChannels = mutableSetOf(),
+			managers = mutableSetOf(),
+			birthdays = mutableSetOf(),
+		)
 	}
 }

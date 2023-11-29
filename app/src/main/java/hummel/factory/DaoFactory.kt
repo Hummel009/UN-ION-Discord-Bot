@@ -1,10 +1,16 @@
 package hummel.factory
 
 import android.content.Context
-import hummel.dao.OsDao
-import hummel.dao.impl.OsDaoImpl
+import hummel.dao.FileDao
+import hummel.dao.JsonDao
+import hummel.dao.ZipDao
+import hummel.dao.impl.FileDaoImpl
+import hummel.dao.impl.JsonDaoImpl
+import hummel.dao.impl.ZipDaoImpl
 
 object DaoFactory {
 	var context: Context? = null
-	val osDao: OsDao by lazy { OsDaoImpl(context!!) }
+	val fileDao: FileDao by lazy { FileDaoImpl(context!!) }
+	val jsonDao: JsonDao by lazy { JsonDaoImpl() }
+	val zipDao: ZipDao by lazy { ZipDaoImpl() }
 }

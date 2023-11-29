@@ -14,6 +14,7 @@ import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.apache.hc.core5.http.io.entity.StringEntity
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
+import java.time.Month
 import kotlin.random.Random
 
 class UserServiceImpl : UserService {
@@ -28,9 +29,9 @@ class UserServiceImpl : UserService {
 		Lang.GAME_NO_4
 	)
 
-	override fun eightBall(event: InteractionCreateEvent, data: ServerData) {
+	override fun answer(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("8ball")) {
+		if (sc.fullCommandName.contains("answer")) {
 			sc.respondLater().thenAccept {
 				val text = sc.arguments[0].stringValue.get()
 				val embed = if (text.contains("?")) {
@@ -111,6 +112,24 @@ class UserServiceImpl : UserService {
 				} else {
 					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
 				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+			}.get()
+		}
+	}
+
+	override fun info(event: InteractionCreateEvent, data: ServerData) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("info")) {
+			sc.respondLater().thenAccept {
+				data.birthdays.removeIf { !sc.server.get().getMemberById(it.id).isPresent }
+				val text = if (data.birthdays.isEmpty()) Lang.NO_BIRTHDAYS.get(data) else buildString {
+					data.birthdays.sortedWith(compareBy({ it.date.month }, { it.date.day })).joinTo(this, "\r\n") {
+						val userName = sc.server.get().getMemberById(it.id).get().name
+						"$userName: ${it.date.day} ${Month.of(it.date.month)}"
+					}
+				}
+				val embed = EmbedBuilder().success(sc, data, text)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
