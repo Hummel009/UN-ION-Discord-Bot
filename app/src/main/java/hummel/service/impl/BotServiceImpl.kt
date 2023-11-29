@@ -3,11 +3,11 @@ package hummel.service.impl
 import hummel.bean.ServerData
 import hummel.dao.FileDao
 import hummel.factory.DaoFactory
+import hummel.random
 import hummel.service.BotService
 import hummel.utils.Lang
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
-import java.util.*
 
 class BotServiceImpl : BotService {
 	private val fileDao: FileDao = DaoFactory.fileDao
@@ -28,10 +28,9 @@ class BotServiceImpl : BotService {
 
 	override fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
 		if (event.containsAllowedMessage()) {
-			val rand = Random()
 			val path = "${data.serverId}/messages.bin"
 
-			if (rand.nextInt(data.chance) == 0) {
+			if (random.nextInt(data.chance) == 0) {
 				val crypt = fileDao.getRandomLine(path)
 				crypt?.let {
 					val msg = decodeMessage(it)

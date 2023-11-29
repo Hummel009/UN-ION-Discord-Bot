@@ -2,7 +2,7 @@ package hummel.dao.impl
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import hummel.DATA_VER
+import hummel.dataVer
 import hummel.bean.ServerData
 import hummel.bean.ServerDataLegacy
 import hummel.dao.FileDao
@@ -22,7 +22,7 @@ class JsonDaoImpl : JsonDao {
 		try {
 			json = fileDao.readFromFile(filePath)
 			val data = gson.fromJson(String(json), ServerData::class.java)
-			if (data.dataVer != DATA_VER) {
+			if (data.dataVer != dataVer) {
 				throw Exception()
 			}
 			return data

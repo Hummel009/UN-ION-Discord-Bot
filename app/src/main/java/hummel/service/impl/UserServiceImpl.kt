@@ -1,6 +1,7 @@
 package hummel.service.impl
 
 import com.google.gson.Gson
+import hummel.random
 import hummel.bean.ApiResponse
 import hummel.bean.ServerData
 import hummel.service.UserService
@@ -15,7 +16,6 @@ import org.apache.hc.core5.http.io.entity.StringEntity
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
-import kotlin.random.Random
 
 class UserServiceImpl : UserService {
 	private val answers: Set<Lang> = setOf(
@@ -104,8 +104,8 @@ class UserServiceImpl : UserService {
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				val embed = if (arguments.size == 1) {
 					try {
-						val long = arguments[0].toLong()
-						EmbedBuilder().success(sc, data, "${Lang.RANDOM.get(data)}: ${Random.nextLong(long)}")
+						val int = arguments[0].toInt()
+						EmbedBuilder().success(sc, data, "${Lang.RANDOM.get(data)}: ${random.nextInt(int)}")
 					} catch (e: Exception) {
 						EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
 					}

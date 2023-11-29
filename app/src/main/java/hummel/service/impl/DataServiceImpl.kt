@@ -1,6 +1,6 @@
 package hummel.service.impl
 
-import hummel.DATA_VER
+import hummel.dataVer
 import hummel.bean.ServerData
 import hummel.dao.FileDao
 import hummel.dao.JsonDao
@@ -39,7 +39,7 @@ class DataServiceImpl : DataService {
 		val lang = "ru"
 
 		return ServerData(
-			dataVer = DATA_VER,
+			dataVer = dataVer,
 			serverId = serverId,
 			serverName = serverName,
 			chance = chance,

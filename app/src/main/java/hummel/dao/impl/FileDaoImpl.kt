@@ -2,10 +2,10 @@ package hummel.dao.impl
 
 import android.content.Context
 import hummel.dao.FileDao
+import hummel.random
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
 
 class FileDaoImpl(private var context: Context) : FileDao {
 	override fun createFile(filePath: String) {
@@ -38,7 +38,9 @@ class FileDaoImpl(private var context: Context) : FileDao {
 
 	override fun getFile(filePath: String): File = File(context.filesDir, filePath)
 
-	override fun getFolder(folderPath: String?): File = folderPath?.let { File(context.filesDir, it) } ?: File("files")
+	override fun getFolder(folderPath: String?): File {
+		return folderPath?.let { File(context.filesDir, it) } ?: File(context.filesDir.path)
+	}
 
 	override fun readFromFile(filePath: String): ByteArray {
 		var byteArray: ByteArray
@@ -68,7 +70,6 @@ class FileDaoImpl(private var context: Context) : FileDao {
 		val file = getFile(filePath)
 		val lines = file.readLines()
 		if (lines.isNotEmpty()) {
-			val random = Random()
 			val randomLine = lines[random.nextInt(lines.size)]
 			if (randomLine.isNotEmpty()) {
 				return randomLine

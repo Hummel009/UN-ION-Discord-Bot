@@ -7,8 +7,10 @@ import hummel.factory.DaoFactory
 import hummel.factory.ServiceFactory
 import org.javacord.api.DiscordApi
 import org.javacord.api.DiscordApiBuilder
+import java.util.*
 
-const val DATA_VER: Int = 3
+const val dataVer: Int = 3
+val random: Random = Random()
 
 class DiscordService : Service() {
 	private lateinit var api: DiscordApi
