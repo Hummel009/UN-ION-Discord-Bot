@@ -49,16 +49,14 @@ class BotServiceImpl : BotService {
 			val (isBirthday, userIds) = isBirthdayToday(data)
 
 			if (isBirthday && (currentDay != data.lastWish.day || currentMonth != data.lastWish.month)) {
-				userIds.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY.get(data)}!") }
+				userIds.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY[data]}!") }
 				data.lastWish.day = currentDay
 				data.lastWish.month = currentMonth
 			}
 		}
 	}
 
-	private fun encodeMessage(msg: String): String {
-		return msg.codePoints().toArray().joinToString(" ")
-	}
+	private fun encodeMessage(msg: String): String = msg.codePoints().toArray().joinToString(" ")
 
 	private fun decodeMessage(msg: String): String {
 		val unicodeCodes = msg.split(" ").map { it.toInt() }

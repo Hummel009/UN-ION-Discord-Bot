@@ -13,9 +13,7 @@ class DataServiceImpl : DataService {
 	private val fileDao: FileDao = DaoFactory.fileDao
 	private val jsonDao: JsonDao = DaoFactory.jsonDao
 
-	override fun loadData(server: Server): ServerData {
-		return jsonDao.readFromJson(server) ?: getDataFromDiscord(server)
-	}
+	override fun loadData(server: Server): ServerData = jsonDao.readFromJson(server) ?: getDataFromDiscord(server)
 
 	override fun saveData(server: Server, data: ServerData) {
 		jsonDao.writeToJson(server, data)

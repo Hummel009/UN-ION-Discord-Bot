@@ -38,9 +38,8 @@ class FileDaoImpl(private var context: Context) : FileDao {
 
 	override fun getFile(filePath: String): File = File(context.filesDir, filePath)
 
-	override fun getFolder(folderPath: String?): File {
-		return folderPath?.let { File(context.filesDir, it) } ?: File(context.filesDir.path)
-	}
+	override fun getFolder(folderPath: String?): File =
+		folderPath?.let { File(context.filesDir, it) } ?: File(context.filesDir.path)
 
 	override fun readFromFile(filePath: String): ByteArray {
 		var byteArray: ByteArray
@@ -75,8 +74,7 @@ class FileDaoImpl(private var context: Context) : FileDao {
 				return randomLine
 			}
 			return null
-		} else {
-			return null
 		}
+		return null
 	}
 }

@@ -23,7 +23,7 @@ class OwnerServiceImpl : OwnerService {
 		if (sc.fullCommandName.contains("commands")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val text = buildString {
 						api.globalApplicationCommands.get().joinTo(this, "\r\n") { "${it.name}: ${it.id}" }
@@ -41,13 +41,13 @@ class OwnerServiceImpl : OwnerService {
 		if (sc.fullCommandName.contains("import")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val byteArray = sc.arguments[0].attachmentValue.get().asByteArray().join()
 					fileDao.writeToFile("bot.zip", byteArray)
 					zipDao.unzip("bot.zip")
 					fileDao.removeFile("bot.zip")
-					EmbedBuilder().success(sc, data, Lang.IMPORT.get(data))
+					EmbedBuilder().success(sc, data, Lang.IMPORT[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -60,7 +60,7 @@ class OwnerServiceImpl : OwnerService {
 		if (sc.fullCommandName.contains("export")) {
 			sc.respondLater().thenAccept {
 				if (!event.fromOwnerAtLeast()) {
-					val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				} else {
 					zipDao.zip("bot.zip")
@@ -79,10 +79,10 @@ class OwnerServiceImpl : OwnerService {
 
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					exit = true
-					EmbedBuilder().success(sc, data, Lang.EXIT.get(data))
+					EmbedBuilder().success(sc, data, Lang.EXIT[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -100,10 +100,10 @@ class OwnerServiceImpl : OwnerService {
 
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					shutdown = true
-					EmbedBuilder().success(sc, data, Lang.SHUTDOWN.get(data))
+					EmbedBuilder().success(sc, data, Lang.SHUTDOWN[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()

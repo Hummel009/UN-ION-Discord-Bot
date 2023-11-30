@@ -83,7 +83,5 @@ class DiscordService : Service() {
 		return START_STICKY
 	}
 
-	override fun onBind(intent: Intent?): IBinder? {
-		return null
-	}
+	override fun onBind(intent: Intent?): IBinder? = null
 }

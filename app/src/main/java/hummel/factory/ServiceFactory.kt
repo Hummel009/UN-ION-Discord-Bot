@@ -4,6 +4,7 @@ import hummel.service.*
 import hummel.service.impl.*
 
 object ServiceFactory {
+	@Suppress("unused")
 	val loginService: LoginService by lazy { LoginServiceImpl() }
 	val botService: BotService by lazy { BotServiceImpl() }
 	val userService: UserService by lazy { UserServiceImpl() }

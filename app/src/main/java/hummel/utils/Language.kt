@@ -39,5 +39,5 @@ enum class Lang(private val ru: String, private val en: String) {
 	MSG_ERROR("Ошибка", "Error"),
 	MSG_SUCCESS("Успех", "Success");
 
-	fun get(data: ServerData): String = if (data.lang == "ru") ru else en
+	operator fun get(data: ServerData): String = if (data.lang == "ru") ru else en
 }

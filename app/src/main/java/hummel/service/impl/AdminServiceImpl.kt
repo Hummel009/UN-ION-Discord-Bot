@@ -35,7 +35,7 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("add_birthday")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 3) {
@@ -48,12 +48,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							data.birthdays.add(ServerData.Birthday(userId, ServerData.Date(day, month)))
-							EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY.get(data)}: @$userId.")
+							EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY[data]}: @$userId.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -67,7 +67,7 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("add_manager")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -77,12 +77,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							data.managers.add(ServerData.Role(roleId))
-							EmbedBuilder().success(sc, data, "${Lang.ADDED_MANAGER.get(data)}: @$roleId.")
+							EmbedBuilder().success(sc, data, "${Lang.ADDED_MANAGER[data]}: @$roleId.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -96,7 +96,7 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("add_secret_channel")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -106,12 +106,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							data.secretChannels.add(ServerData.Channel(channelId))
-							EmbedBuilder().success(sc, data, "${Lang.ADDED_CHANNEL.get(data)}: @$channelId.")
+							EmbedBuilder().success(sc, data, "${Lang.ADDED_CHANNEL[data]}: @$channelId.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -125,23 +125,23 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("clear_birthdays")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					if (sc.arguments.isEmpty()) {
 						data.birthdays.clear()
-						EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS.get(data))
+						EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS[data])
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
 							try {
 								val userId = arguments[0].toLong()
 								data.birthdays.removeIf { it.id == userId }
-								EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY.get(data)}: @$userId")
+								EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY[data]}: @$userId")
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 							}
 						} else {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 						}
 					}
 				}
@@ -156,23 +156,23 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("clear_managers")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					if (sc.arguments.isEmpty()) {
 						data.managers.clear()
-						EmbedBuilder().success(sc, data, Lang.CLEARED_MANAGERS.get(data))
+						EmbedBuilder().success(sc, data, Lang.CLEARED_MANAGERS[data])
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
 							try {
 								val roleId = arguments[0].toLong()
 								data.managers.removeIf { it.id == roleId }
-								EmbedBuilder().success(sc, data, "${Lang.REMOVED_MANAGER.get(data)}: @$roleId")
+								EmbedBuilder().success(sc, data, "${Lang.REMOVED_MANAGER[data]}: @$roleId")
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 							}
 						} else {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 						}
 					}
 				}
@@ -187,23 +187,23 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("clear_secret_channels")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					if (sc.arguments.isEmpty()) {
 						data.secretChannels.clear()
-						EmbedBuilder().success(sc, data, Lang.CLEARED_CHANNELS.get(data))
+						EmbedBuilder().success(sc, data, Lang.CLEARED_CHANNELS[data])
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
 							try {
 								val channelId = arguments[0].toLong()
 								data.secretChannels.removeIf { it.id == channelId }
-								EmbedBuilder().success(sc, data, "${Lang.REMOVED_CHANNEL.get(data)}: @$channelId")
+								EmbedBuilder().success(sc, data, "${Lang.REMOVED_CHANNEL[data]}: @$channelId")
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 							}
 						} else {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 						}
 					}
 				}
@@ -218,12 +218,12 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("clear_messages")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val filePath = "${data.serverId}/messages.bin"
 					fileDao.removeFile(filePath)
 					fileDao.createFile(filePath)
-					EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES.get(data))
+					EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -236,12 +236,12 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("clear_data")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val filePath = "${data.serverId}/data.json"
 					fileDao.removeFile(filePath)
 					fileDao.createFile(filePath)
-					EmbedBuilder().success(sc, data, Lang.CLEARED_DATA.get(data))
+					EmbedBuilder().success(sc, data, Lang.CLEARED_DATA[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -254,7 +254,7 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("set_language")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -264,12 +264,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							data.lang = lang
-							EmbedBuilder().success(sc, data, "${Lang.SET_LANGUAGE.get(data)}: $lang")
+							EmbedBuilder().success(sc, data, "${Lang.SET_LANGUAGE[data]}: $lang")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -283,7 +283,7 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("set_chance")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -293,12 +293,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							data.chance = chance
-							EmbedBuilder().success(sc, data, "${Lang.SET_CHANCE.get(data)}: $chance.")
+							EmbedBuilder().success(sc, data, "${Lang.SET_CHANCE[data]}: $chance.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -312,7 +312,7 @@ class AdminServiceImpl : AdminService {
 		if (sc.fullCommandName.contains("nuke")) {
 			sc.respondLater().thenAccept {
 				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS.get(data))
+					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -323,12 +323,12 @@ class AdminServiceImpl : AdminService {
 							}
 							val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
 							sc.channel.get().bulkDelete(*messageIds).get()
-							EmbedBuilder().success(sc, data, Lang.NUKE.get(data))
+							EmbedBuilder().success(sc, data, Lang.NUKE[data])
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
