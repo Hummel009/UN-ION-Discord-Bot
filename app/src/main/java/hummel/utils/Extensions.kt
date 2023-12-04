@@ -16,13 +16,11 @@ fun EmbedBuilder.success(sc: SlashCommandInteraction, data: ServerData, desc: St
 	setAuthor(sc.user).setTitle(Lang.MSG_SUCCESS[data]).setDescription(desc)
 
 fun ZipFile.addFolderContent(folder: File) {
-	val files = folder.listFiles() ?: return
-
-	for (file in files) {
-		if (file.isDirectory) {
-			addFolder(file)
+	folder.listFiles()?.forEach {
+		if (it.isDirectory) {
+			addFolder(it)
 		} else {
-			addFile(file)
+			addFile(it)
 		}
 	}
 }

@@ -1,9 +1,9 @@
 package hummel.service.impl
 
 import com.google.gson.Gson
-import hummel.random
 import hummel.bean.ApiResponse
 import hummel.bean.ServerData
+import hummel.random
 import hummel.service.UserService
 import hummel.utils.Lang
 import hummel.utils.error
@@ -35,9 +35,9 @@ class UserServiceImpl : UserService {
 			sc.respondLater().thenAccept {
 				val text = sc.arguments[0].stringValue.get()
 				val embed = if (text.contains("?")) {
-					EmbedBuilder().success(sc, data, "— $text\r\n— ${answers.random().get(data)}")
+					EmbedBuilder().success(sc, data, "— $text\r\n— ${answers.random()[data]}")
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -52,7 +52,7 @@ class UserServiceImpl : UserService {
 				val embed = if (arguments.isNotEmpty()) {
 					EmbedBuilder().success(sc, data, "$arguments\r\n${arguments.random()}")
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -85,12 +85,12 @@ class UserServiceImpl : UserService {
 
 								EmbedBuilder().success(sc, data, "$text${apiResponse.replies.random()}")
 							} else {
-								EmbedBuilder().error(sc, data, Lang.NO_CONNECTION.get(data))
+								EmbedBuilder().error(sc, data, Lang.NO_CONNECTION[data])
 							}
 						}
 					}
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -105,12 +105,12 @@ class UserServiceImpl : UserService {
 				val embed = if (arguments.size == 1) {
 					try {
 						val int = arguments[0].toInt()
-						EmbedBuilder().success(sc, data, "${Lang.RANDOM.get(data)}: ${random.nextInt(int)}")
+						EmbedBuilder().success(sc, data, "${Lang.RANDOM[data]}: ${random.nextInt(int)}")
 					} catch (e: Exception) {
-						EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT.get(data))
+						EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
 					}
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG.get(data))
+					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -123,8 +123,10 @@ class UserServiceImpl : UserService {
 		if (sc.fullCommandName.contains("info")) {
 			sc.respondLater().thenAccept {
 				data.birthdays.removeIf { !sc.server.get().getMemberById(it.id).isPresent }
-				val text = if (data.birthdays.isEmpty()) Lang.NO_BIRTHDAYS.get(data) else buildString {
-					data.birthdays.sortedWith(compareBy({ it.date.month }, { it.date.day })).joinTo(this, "\r\n") {
+				val text = if (data.birthdays.isEmpty()) Lang.NO_BIRTHDAYS[data] else buildString {
+					data.birthdays.sortedWith(
+						compareBy({ it.date.month }, { it.date.day })
+					).joinTo(this, "\r\n") {
 						val userName = sc.server.get().getMemberById(it.id).get().name
 						"$userName: ${it.date.day} ${Month.of(it.date.month)}"
 					}

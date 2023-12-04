@@ -96,21 +96,10 @@ class OwnerServiceImpl : OwnerService {
 	override fun shutdown(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("shutdown")) {
-			var shutdown = false
-
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
-				} else {
-					shutdown = true
-					EmbedBuilder().success(sc, data, Lang.SHUTDOWN[data])
-				}
+				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
-
-			if (shutdown) {
-				Runtime.getRuntime().exec("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
-			}
 		}
 	}
 

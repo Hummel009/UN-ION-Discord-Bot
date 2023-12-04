@@ -8,7 +8,7 @@ import hummel.dao.impl.FileDaoImpl
 import hummel.dao.impl.JsonDaoImpl
 import hummel.dao.impl.ZipDaoImpl
 
-@Suppress("unused")
+@Suppress("unused", "RedundantSuppression")
 object DaoFactory {
 	var context: Context? = null
 	val fileDao: FileDao by lazy { FileDaoImpl(context!!) }
