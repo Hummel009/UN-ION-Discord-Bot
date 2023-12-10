@@ -7,6 +7,7 @@ import hummel.random
 import hummel.service.UserService
 import hummel.utils.Lang
 import hummel.utils.error
+import hummel.utils.getFormattedTranslatedDate
 import hummel.utils.success
 import org.apache.hc.client5.http.classic.methods.HttpPost
 import org.apache.hc.client5.http.impl.classic.HttpClients
@@ -75,7 +76,7 @@ class UserServiceImpl : UserService {
 						request.addHeader("Accept-Encoding", "gzip, deflate, br")
 						request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
 
-						client.execute(request).use { response ->
+						client.execute(request) { response ->
 							if (response.code in 200..299) {
 								val entity = response.entity
 								val jsonResponse = EntityUtils.toString(entity)
@@ -127,8 +128,12 @@ class UserServiceImpl : UserService {
 					data.birthdays.sortedWith(
 						compareBy({ it.date.month }, { it.date.day })
 					).joinTo(this, "\r\n") {
-						val userName = sc.server.get().getMemberById(it.id).get().name
-						"$userName: ${it.date.day} ${Month.of(it.date.month)}"
+						val server = sc.server.get()
+						val userId = server.getMemberById(it.id).get().id
+						val month = Month.of(it.date.month)
+						val day = it.date.day
+						val format = getFormattedTranslatedDate(month, data, day)
+						"<@$userId>: $format"
 					}
 				}
 				val embed = EmbedBuilder().success(sc, data, text)

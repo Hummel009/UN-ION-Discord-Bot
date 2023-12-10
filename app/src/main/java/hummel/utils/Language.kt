@@ -1,6 +1,7 @@
 package hummel.utils
 
 import hummel.bean.ServerData
+import java.time.Month
 
 enum class Lang(private val ru: String, private val en: String) {
 	NO_CONNECTION("Сайт с нейросетью временно недоступен.", "The neural network site is temporarily unavailable."),
@@ -40,4 +41,21 @@ enum class Lang(private val ru: String, private val en: String) {
 	MSG_SUCCESS("Успех", "Success");
 
 	operator fun get(data: ServerData): String = if (data.lang == "ru") ru else en
+}
+
+fun getFormattedTranslatedDate(month: Month, data: ServerData, day: Int): String {
+	return when (month) {
+		Month.JANUARY -> if (data.lang == "ru") "$day января" else "January $day"
+		Month.FEBRUARY -> if (data.lang == "ru") "$day февраля" else "February $day"
+		Month.MARCH -> if (data.lang == "ru") "$day марта" else "March $day"
+		Month.APRIL -> if (data.lang == "ru") "$day апреля" else "April $day"
+		Month.MAY -> if (data.lang == "ru") "$day мая" else "May $day"
+		Month.JUNE -> if (data.lang == "ru") "$day июня" else "June $day"
+		Month.JULY -> if (data.lang == "ru") "$day июля" else "July $day"
+		Month.AUGUST -> if (data.lang == "ru") "$day августа" else "August $day"
+		Month.SEPTEMBER -> if (data.lang == "ru") "$day сентября" else "September $day"
+		Month.OCTOBER -> if (data.lang == "ru") "$day октября" else "October $day"
+		Month.NOVEMBER -> if (data.lang == "ru") "$day ноября" else "November $day"
+		Month.DECEMBER -> if (data.lang == "ru") "$day декабря" else "December $day"
+	}
 }
