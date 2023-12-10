@@ -25,7 +25,9 @@ class MainActivity : FragmentActivity() {
 		setContent {
 			MaterialTheme {
 				Column(
-					modifier = Modifier.fillMaxSize().background(Color(0xFF2B2D30)),
+					modifier = Modifier
+						.fillMaxSize()
+						.background(Color(0xFF2B2D30)),
 					verticalArrangement = Arrangement.Center,
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {

@@ -2,11 +2,11 @@ package hummel.dao.impl
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import hummel.dataVer
 import hummel.bean.ServerData
 import hummel.bean.ServerDataLegacy
 import hummel.dao.FileDao
 import hummel.dao.JsonDao
+import hummel.dataVer
 import hummel.factory.DaoFactory
 import org.javacord.api.entity.server.Server
 
