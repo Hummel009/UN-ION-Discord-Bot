@@ -2,6 +2,7 @@ package hummel
 
 import android.content.Context
 import android.os.Bundle
+import android.os.PowerManager
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +25,14 @@ import kotlin.system.exitProcess
 class MainActivity : FragmentActivity() {
 	private val context: Context = this
 
+	@Suppress("WakelockTimeout")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		(getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag").apply {
+				acquire()
+			}
+		}
 		setContent {
 			MaterialTheme {
 				Column(
