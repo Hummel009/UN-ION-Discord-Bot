@@ -1,35 +1,29 @@
 package hummel
 
-import android.app.Service
-import android.content.Intent
-import android.os.IBinder
+import android.content.Context
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import hummel.factory.DaoFactory
 import hummel.factory.ServiceFactory
-import org.javacord.api.DiscordApi
 import org.javacord.api.DiscordApiBuilder
 import java.util.*
 
 const val dataVer: Int = 3
 val random: Random = Random()
 
-class DiscordService : Service() {
-	private lateinit var api: DiscordApi
-
-	override fun onCreate() {
-		super.onCreate()
-		DaoFactory.context = this
+class DiscordService(private var context: Context, params: WorkerParameters) : Worker(context, params) {
+	override fun doWork(): Result {
+		DaoFactory.context = context
 		val fileDao = DaoFactory.fileDao
 		val token = fileDao.readFromFile("token.txt")
-		api = DiscordApiBuilder().setToken(String(token)).setAllIntents().login().join()
+		val api = DiscordApiBuilder().setToken(String(token)).setAllIntents().login().join()
 
 		/**
 		 * val loginService = ServiceFactory.loginService
 		 * loginService.deleteCommands(api)
 		 * loginService.registerCommands(api)
 		 **/
-	}
 
-	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 		api.addInteractionCreateListener {
 			val dataService = ServiceFactory.dataService
 			val userService = ServiceFactory.userService
@@ -81,8 +75,6 @@ class DiscordService : Service() {
 			dataService.saveData(server, data)
 		}
 
-		return START_STICKY
+		return Result.success()
 	}
-
-	override fun onBind(intent: Intent?): IBinder? = null
 }
