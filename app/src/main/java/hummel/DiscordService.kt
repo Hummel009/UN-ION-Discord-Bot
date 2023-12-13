@@ -73,6 +73,7 @@ class DiscordService : Service() {
 			val server = it.server.get()
 			val data = dataService.loadData(server)
 
+			botService.addRandomEmoji(it, data)
 			botService.saveAllowedMessage(it, data)
 			botService.sendRandomMessage(it, data)
 			botService.sendBirthdayMessage(it, data)

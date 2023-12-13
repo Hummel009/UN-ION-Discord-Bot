@@ -12,6 +12,15 @@ import java.time.LocalDate
 class BotServiceImpl : BotService {
 	private val fileDao: FileDao = DaoFactory.fileDao
 
+	override fun addRandomEmoji(event: MessageCreateEvent, data: ServerData) {
+		if (event.containsAllowedMessage()) {
+			if (random.nextInt(data.chance) == 0) {
+				val emoji = event.server.get().customEmojis.random()
+				event.addReactionToMessage(emoji)
+			}
+		}
+	}
+
 	override fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
 		if (event.containsAllowedMessage()) {
 			val channelId = event.channel.id
