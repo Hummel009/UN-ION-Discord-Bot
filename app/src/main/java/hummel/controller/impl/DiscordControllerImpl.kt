@@ -21,12 +21,13 @@ object DiscordControllerImpl : DiscordController {
 	}
 
 	override fun onStartCommand() {
-		api.addInteractionCreateListener {
-			val dataService = ServiceFactory.dataService
-			val userService = ServiceFactory.userService
-			val adminService = ServiceFactory.adminService
-			val ownerService = ServiceFactory.ownerService
+		val dataService = ServiceFactory.dataService
+		val userService = ServiceFactory.userService
+		val adminService = ServiceFactory.adminService
+		val ownerService = ServiceFactory.ownerService
+		val botService = ServiceFactory.botService
 
+		api.addInteractionCreateListener {
 			val server = it.interaction.server.get()
 			val data = dataService.loadData(server)
 			val prev = data.copy()
@@ -61,18 +62,18 @@ object DiscordControllerImpl : DiscordController {
 		}
 
 		api.addMessageCreateListener {
-			val dataService = ServiceFactory.dataService
-			val botService = ServiceFactory.botService
-
 			val server = it.server.get()
 			val data = dataService.loadData(server)
+			val prev = data.copy()
 
 			botService.addRandomEmoji(it, data)
 			botService.saveAllowedMessage(it, data)
 			botService.sendRandomMessage(it, data)
 			botService.sendBirthdayMessage(it, data)
 
-			dataService.saveData(server, data)
+			if (data != prev) {
+				dataService.saveData(server, data)
+			}
 		}
 	}
 }
