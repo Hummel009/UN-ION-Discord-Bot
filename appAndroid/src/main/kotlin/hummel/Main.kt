@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import kotlin.system.exitProcess
 
 class Main : FragmentActivity() {
 	private var context: Context = this
@@ -47,7 +46,7 @@ class Main : FragmentActivity() {
 
 					Button(
 						onClick = {
-							exitProcess(0)
+							finish()
 						}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 							contentColor = Color(0xFFCED0D6), backgroundColor = Color(0xFFC94F4F)
 						)
