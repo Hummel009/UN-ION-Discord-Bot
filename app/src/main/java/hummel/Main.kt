@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import kotlin.system.exitProcess
 
-class MainActivity : FragmentActivity() {
+class Main : FragmentActivity() {
 	private var context: Context = this
 
 	override fun onCreate(savedInstanceState: Bundle?) {
