@@ -25,7 +25,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
-          name: compiled-artifact
+          name: android-app
           path: ./appAndroid/build/outputs/apk/debug/*.apk
   buildWindows:
     runs-on: windows-latest
@@ -43,5 +43,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
-          name: compiled-artifact
+          name: windows-app
           path: ./appWindows/build/libs/*.jar
