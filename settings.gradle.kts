@@ -16,4 +16,5 @@ dependencyResolutionManagement {
 	}
 }
 
-include(":android")
+include(":appAndroid")
+include(":appWindows")
