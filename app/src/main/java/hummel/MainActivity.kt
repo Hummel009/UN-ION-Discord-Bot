@@ -1,6 +1,6 @@
 package hummel
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -17,13 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import androidx.work.*
-import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 class MainActivity : FragmentActivity() {
-	private val context: Context = this
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {
@@ -37,7 +33,7 @@ class MainActivity : FragmentActivity() {
 				) {
 					Button(
 						onClick = {
-							initializeWorkManager()
+							launchService()
 						}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 							contentColor = Color(0xFFCED0D6), backgroundColor = Color(0xFF57965C)
 						)
@@ -59,14 +55,8 @@ class MainActivity : FragmentActivity() {
 		}
 	}
 
-	private fun initializeWorkManager() {
-		val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-
-		val myWorkRequest =
-			PeriodicWorkRequestBuilder<DiscordService>(10, TimeUnit.MINUTES).setConstraints(constraints).build()
-
-		WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-			"MyWork", ExistingPeriodicWorkPolicy.KEEP, myWorkRequest
-		)
+	private fun launchService() {
+		val serviceIntent = Intent(this, DiscordService::class.java)
+		startService(serviceIntent)
 	}
 }

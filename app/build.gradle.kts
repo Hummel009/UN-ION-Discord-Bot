@@ -62,5 +62,4 @@ dependencies {
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3")
 	implementation("org.javacord:javacord:3.8.0")
 	implementation("net.lingala.zip4j:zip4j:2.11.5")
-	implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
