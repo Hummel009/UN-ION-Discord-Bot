@@ -1,8 +1,11 @@
 package hummel
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import android.os.PowerManager
+import android.os.PowerManager.WakeLock
 import hummel.factory.DaoFactory
 import hummel.factory.ServiceFactory
 import org.javacord.api.DiscordApi
@@ -13,11 +16,16 @@ const val dataVer: Int = 3
 val random: Random = Random()
 
 class DiscordService : Service() {
+	private lateinit var wakeLock: WakeLock
 	private lateinit var api: DiscordApi
 
 	override fun onCreate() {
 		super.onCreate()
 		DaoFactory.context = this
+		wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Hundom::MyWakeLock")
+		}
+
 		val fileDao = DaoFactory.fileDao
 		val token = fileDao.readFromFile("token.txt")
 		api = DiscordApiBuilder().setToken(String(token)).setAllIntents().login().join()
@@ -29,7 +37,9 @@ class DiscordService : Service() {
 		 **/
 	}
 
+	@Suppress("WakelockTimeout")
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+		wakeLock.acquire()
 		api.addInteractionCreateListener {
 			val dataService = ServiceFactory.dataService
 			val userService = ServiceFactory.userService
@@ -85,4 +95,9 @@ class DiscordService : Service() {
 	}
 
 	override fun onBind(intent: Intent?): IBinder? = null
+
+	override fun onDestroy() {
+		super.onDestroy()
+		wakeLock.release()
+	}
 }
