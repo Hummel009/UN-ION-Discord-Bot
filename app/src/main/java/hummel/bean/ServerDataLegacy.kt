@@ -1,6 +1,6 @@
 package hummel.bean
 
-import hummel.dataVer
+import hummel.utils.version
 
 data class ServerDataLegacy(
 	val serverID: String,
@@ -18,7 +18,7 @@ data class ServerDataLegacy(
 
 	fun convert(): ServerData {
 		return ServerData(
-			dataVer = dataVer,
+			dataVer = version,
 			serverId = serverID,
 			serverName = serverName,
 			chance = chance,

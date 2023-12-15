@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--suppress ProblematicWhitespace -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 		  xmlns:tools="http://schemas.android.com/tools"
 >
@@ -22,7 +23,7 @@
 			android:roundIcon="@mipmap/ic_launcher_round"
 			android:supportsRtl="true"
 			android:theme="@style/Theme.Hundroid">
-		<service android:name="hummel.DiscordService"/>
+		<service android:name="hummel.DiscordAdapter"/>
 		<activity
 				android:name="hummel.MainActivity"
 				android:exported="true"

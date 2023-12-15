@@ -56,7 +56,7 @@ class MainActivity : FragmentActivity() {
 	}
 
 	private fun launchService() {
-		val serviceIntent = Intent(this, DiscordService::class.java)
+		val serviceIntent = Intent(this, DiscordAdapter::class.java)
 		startService(serviceIntent)
 	}
 }

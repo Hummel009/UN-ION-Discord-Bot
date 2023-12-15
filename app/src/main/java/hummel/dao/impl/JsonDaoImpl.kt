@@ -6,8 +6,8 @@ import hummel.bean.ServerData
 import hummel.bean.ServerDataLegacy
 import hummel.dao.FileDao
 import hummel.dao.JsonDao
-import hummel.dataVer
 import hummel.factory.DaoFactory
+import hummel.utils.version
 import org.javacord.api.entity.server.Server
 
 class JsonDaoImpl : JsonDao {
@@ -22,7 +22,7 @@ class JsonDaoImpl : JsonDao {
 		try {
 			json = fileDao.readFromFile(filePath)
 			val data = gson.fromJson(String(json), ServerData::class.java)
-			if (data.dataVer != dataVer) {
+			if (data.dataVer != version) {
 				throw Exception()
 			}
 			return data

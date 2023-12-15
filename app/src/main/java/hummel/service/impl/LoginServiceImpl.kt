@@ -43,14 +43,13 @@ class LoginServiceImpl : LoginService {
 	override fun deleteCommands(api: DiscordApi) {
 		val token = fileDao.readFromFile("token.txt")
 		api.globalApplicationCommands.get().forEach { c ->
-			//val appId = api.requestApplicationInfo().get().clientId
 			val url = "https://discord.com/api/v10/applications/1147449520565801001/commands/${c.id}"
 			HttpClients.createDefault().use { client ->
 				val request = HttpDelete(url)
 
 				request.setHeader("Authorization", "Bot $token")
 
-				client.execute(request).use { response ->
+				client.execute(request) { response ->
 					println("${response.code}: ${response.reasonPhrase}")
 				}
 			}

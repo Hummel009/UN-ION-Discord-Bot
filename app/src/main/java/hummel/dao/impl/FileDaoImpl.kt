@@ -2,7 +2,7 @@ package hummel.dao.impl
 
 import android.content.Context
 import hummel.dao.FileDao
-import hummel.random
+import hummel.utils.random
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

@@ -3,9 +3,9 @@ package hummel.service.impl
 import hummel.bean.ServerData
 import hummel.dao.FileDao
 import hummel.factory.DaoFactory
-import hummel.random
 import hummel.service.BotService
 import hummel.utils.Lang
+import hummel.utils.random
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 
