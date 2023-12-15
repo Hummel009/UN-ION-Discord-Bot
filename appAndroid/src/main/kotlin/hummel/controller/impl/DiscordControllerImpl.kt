@@ -30,7 +30,6 @@ object DiscordControllerImpl : DiscordController {
 		api.addInteractionCreateListener {
 			val server = it.interaction.server.get()
 			val data = dataService.loadData(server)
-			val prev = data.copy()
 
 			userService.answer(it, data)
 			userService.choice(it, data)
@@ -56,24 +55,19 @@ object DiscordControllerImpl : DiscordController {
 			ownerService.exit(it, data)
 			ownerService.shutdown(it, data)
 
-			if (data != prev) {
-				dataService.saveData(server, data)
-			}
+			dataService.saveData(server, data)
 		}
 
 		api.addMessageCreateListener {
 			val server = it.server.get()
 			val data = dataService.loadData(server)
-			val prev = data.copy()
 
 			botService.addRandomEmoji(it, data)
 			botService.saveAllowedMessage(it, data)
 			botService.sendRandomMessage(it, data)
 			botService.sendBirthdayMessage(it, data)
 
-			if (data != prev) {
-				dataService.saveData(server, data)
-			}
+			dataService.saveData(server, data)
 		}
 	}
 }
