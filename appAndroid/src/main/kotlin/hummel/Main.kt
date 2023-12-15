@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import kotlin.system.exitProcess
 
 class Main : FragmentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +42,7 @@ class Main : FragmentActivity() {
 
 					Button(
 						onClick = {
-							exitProcess(0)
+							stopService()
 						}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 							contentColor = Color(0xFFCED0D6), backgroundColor = Color(0xFFC94F4F)
 						)
@@ -58,5 +57,10 @@ class Main : FragmentActivity() {
 	private fun launchService() {
 		val serviceIntent = Intent(this, DiscordAdapter::class.java)
 		startService(serviceIntent)
+	}
+
+	private fun stopService() {
+		val serviceIntent = Intent(this, DiscordAdapter::class.java)
+		stopService(serviceIntent)
 	}
 }

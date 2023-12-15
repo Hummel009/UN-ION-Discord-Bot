@@ -72,6 +72,7 @@ class OwnerServiceImpl : OwnerService {
 		}
 	}
 
+	@Deprecated("Use mobile app instead")
 	override fun exit(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("exit")) {
@@ -93,6 +94,7 @@ class OwnerServiceImpl : OwnerService {
 		}
 	}
 
+	@Deprecated("Use mobile app instead")
 	override fun shutdown(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("shutdown")) {
