@@ -1,5 +1,6 @@
 package hummel
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -20,6 +21,8 @@ import androidx.fragment.app.FragmentActivity
 import kotlin.system.exitProcess
 
 class MainActivity : FragmentActivity() {
+	private var context: Context = this
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {
@@ -33,7 +36,8 @@ class MainActivity : FragmentActivity() {
 				) {
 					Button(
 						onClick = {
-							launchService()
+							val serviceIntent = Intent(context, DiscordAdapter::class.java)
+							startService(serviceIntent)
 						}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 							contentColor = Color(0xFFCED0D6), backgroundColor = Color(0xFF57965C)
 						)
@@ -53,10 +57,5 @@ class MainActivity : FragmentActivity() {
 				}
 			}
 		}
-	}
-
-	private fun launchService() {
-		val serviceIntent = Intent(this, DiscordAdapter::class.java)
-		startService(serviceIntent)
 	}
 }

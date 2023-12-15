@@ -18,10 +18,11 @@ import hummel.union.R
 class DiscordAdapter : Service() {
 	private lateinit var wakeLock: WakeLock
 	private val controller: DiscordController = DiscordControllerImpl
+	private var context: Context = this
 
 	override fun onCreate() {
 		super.onCreate()
-		DaoFactory.context = this
+		DaoFactory.context = context
 		wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
 			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Hundom::MyWakeLock")
 		}
