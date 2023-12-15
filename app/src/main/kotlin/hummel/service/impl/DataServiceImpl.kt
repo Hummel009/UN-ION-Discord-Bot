@@ -3,9 +3,9 @@ package hummel.service.impl
 import hummel.bean.ServerData
 import hummel.dao.FileDao
 import hummel.dao.JsonDao
-import hummel.dataVer
 import hummel.factory.DaoFactory
 import hummel.service.DataService
+import hummel.utils.version
 import org.javacord.api.entity.server.Server
 import java.time.LocalDate
 
@@ -37,7 +37,7 @@ class DataServiceImpl : DataService {
 		val lang = "ru"
 
 		return ServerData(
-			dataVer = dataVer,
+			dataVer = version,
 			serverId = serverId,
 			serverName = serverName,
 			chance = chance,
