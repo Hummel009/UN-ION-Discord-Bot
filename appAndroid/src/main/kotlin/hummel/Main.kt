@@ -46,7 +46,6 @@ class Main : FragmentActivity() {
 					Button(
 						onClick = {
 							stopService()
-							finish()
 						}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 							contentColor = Color(0xFFCED0D6), backgroundColor = Color(0xFFC94F4F)
 						)
@@ -60,11 +59,12 @@ class Main : FragmentActivity() {
 
 	private fun launchService() {
 		val serviceIntent = Intent(context, DiscordAdapter::class.java)
-		startForegroundService(serviceIntent)
+		startService(serviceIntent)
 	}
 
 	private fun stopService() {
 		val serviceIntent = Intent(context, DiscordAdapter::class.java)
 		stopService(serviceIntent)
+		finish()
 	}
 }
