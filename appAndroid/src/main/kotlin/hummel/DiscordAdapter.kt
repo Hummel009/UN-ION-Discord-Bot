@@ -45,7 +45,7 @@ class DiscordAdapter : Service() {
 		val notification = notificationBuilder.build()
 		startForeground(1, notification)
 		controller.onStartCommand()
-		return START_NOT_STICKY
+		return START_STICKY
 	}
 
 	override fun onDestroy() {
