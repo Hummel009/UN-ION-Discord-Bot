@@ -11,7 +11,6 @@ import hummel.utils.success
 import org.javacord.api.DiscordApi
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
-import kotlin.system.exitProcess
 
 class OwnerServiceImpl : OwnerService {
 	private val fileDao: FileDao = DaoFactory.fileDao
@@ -76,21 +75,10 @@ class OwnerServiceImpl : OwnerService {
 	override fun exit(event: InteractionCreateEvent, data: ServerData) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("exit")) {
-			var exit = false
-
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
-				} else {
-					exit = true
-					EmbedBuilder().success(sc, data, Lang.EXIT[data])
-				}
+				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
-
-			if (exit) {
-				exitProcess(0)
-			}
 		}
 	}
 
