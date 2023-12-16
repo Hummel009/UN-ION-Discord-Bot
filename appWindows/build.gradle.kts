@@ -29,7 +29,7 @@ java {
 compose {
 	desktop {
 		application {
-			mainClass = "MainKt"
+			mainClass = "hummel.MainKt"
 
 			nativeDistributions {
 				targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
