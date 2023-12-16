@@ -6,13 +6,11 @@ pluginManagement {
 	}
 }
 dependencyResolutionManagement {
-	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+	repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
 	repositories {
 		google()
 		mavenCentral()
-		maven {
-			url = uri("https://androidx.dev/storage/compose-compiler/repository/")
-		}
+		gradlePluginPortal()
 	}
 }
 
