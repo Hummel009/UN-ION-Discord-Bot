@@ -18,10 +18,11 @@ import hummel.union.R
 class DiscordAdapter : Service() {
 	private lateinit var wakeLock: WakeLock
 	private val controller: DiscordController = DiscordControllerImpl
+	private val context: Context = this
 
 	override fun onCreate() {
 		super.onCreate()
-		DaoFactory.context = this
+		DaoFactory.context = context
 		wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
 			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Hundom::MyWakeLock")
 		}
@@ -50,6 +51,7 @@ class DiscordAdapter : Service() {
 
 	override fun onDestroy() {
 		super.onDestroy()
+		stopForeground(STOP_FOREGROUND_REMOVE)
 		wakeLock.release()
 	}
 
