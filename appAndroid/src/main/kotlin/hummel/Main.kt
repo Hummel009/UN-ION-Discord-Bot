@@ -60,7 +60,7 @@ class Main : FragmentActivity() {
 
 	private fun launchService() {
 		val serviceIntent = Intent(context, DiscordAdapter::class.java)
-		startService(serviceIntent)
+		startForegroundService(serviceIntent)
 	}
 
 	private fun stopService() {
