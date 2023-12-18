@@ -108,6 +108,6 @@ class OwnerServiceImpl : OwnerService {
 	private fun InteractionCreateEvent.fromOwnerAtLeast(): Boolean {
 		val sc = interaction.asSlashCommandInteraction().get()
 		val user = sc.user
-		return user.isBotOwner
+		return user.isBotOwnerOrTeamMember
 	}
 }

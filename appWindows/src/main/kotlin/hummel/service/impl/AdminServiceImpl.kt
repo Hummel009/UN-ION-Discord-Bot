@@ -340,7 +340,7 @@ class AdminServiceImpl : AdminService {
 		val sc = interaction.asSlashCommandInteraction().get()
 		val server = sc.server.get()
 		val user = sc.user
-		return user.isBotOwner || server.isAdmin(user) || user.getRoles(server).any { role ->
+		return user.isBotOwnerOrTeamMember || server.isAdmin(user) || user.getRoles(server).any { role ->
 			data.managers.any { it.id == role.id }
 		}
 	}
