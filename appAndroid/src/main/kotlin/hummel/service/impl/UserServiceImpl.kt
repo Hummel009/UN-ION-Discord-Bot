@@ -60,7 +60,7 @@ class UserServiceImpl : UserService {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("complete")) {
 			sc.respondLater().thenAccept {
-				val text = sc.arguments[0].stringValue.get()
+				val text = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
 				val embed = if (text.isNotEmpty()) {
 					HttpClients.createDefault().use { client ->
 						val request = HttpPost("https://api.porfirevich.com/generate/")
