@@ -4,6 +4,7 @@ import hummel.dao.FileDao
 import hummel.dao.ZipDao
 import hummel.factory.DaoFactory
 import net.lingala.zip4j.ZipFile
+import java.io.File
 
 class ZipDaoImpl : ZipDao {
 	private val fileDao: FileDao = DaoFactory.fileDao
@@ -22,14 +23,13 @@ class ZipDaoImpl : ZipDao {
 		try {
 			val folder = fileDao.getFolder(folderPath)
 			val file = fileDao.getFile(filePath)
-			ZipFile(file.path).compressAll(folder.path)
+			ZipFile(file.path).compressAll(folder)
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
 	}
 
-	private fun ZipFile.compressAll(folderPath: String) {
-		val folder = fileDao.getFolder(folderPath)
+	private fun ZipFile.compressAll(folder: File) {
 		folder.listFiles()?.forEach {
 			if (it.isDirectory) {
 				addFolder(it)
