@@ -13,13 +13,19 @@ class DataServiceImpl : DataService {
 	private val fileDao: FileDao = DaoFactory.fileDao
 	private val jsonDao: JsonDao = DaoFactory.jsonDao
 
-	override fun loadData(server: Server): ServerData = jsonDao.readFromJson(server) ?: getDataFromDiscord(server)
-
-	override fun saveData(server: Server, data: ServerData) {
-		jsonDao.writeToJson(server, data)
+	override fun loadServerData(server: Server): ServerData {
+		val folderName = server.id.toString()
+		val filePath = "$folderName/data.json"
+		return jsonDao.readFromJson(filePath, ServerData::class.java) ?: getServerDataFromDiscord(server)
 	}
 
-	private fun getDataFromDiscord(server: Server): ServerData {
+	override fun saveServerData(server: Server, serverData: ServerData) {
+		val folderName = server.id.toString()
+		val filePath = "$folderName/data.json"
+		jsonDao.writeToJson(filePath, serverData)
+	}
+
+	private fun getServerDataFromDiscord(server: Server): ServerData {
 		val serverName = server.name
 		val serverId = server.id.toString()
 		val chance = 10

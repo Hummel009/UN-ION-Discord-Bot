@@ -4,10 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +20,9 @@ import androidx.compose.ui.window.application
 import kotlin.system.exitProcess
 
 fun main(): Unit = application {
+	var token: String by remember { mutableStateOf("TOKEN") }
+	var ownerId: String by remember { mutableStateOf("0") }
+
 	Window(
 		onCloseRequest = ::exitApplication,
 		state = WindowState(width = 900.dp, height = 400.dp, position = WindowPosition(Alignment.Center)),
@@ -31,9 +35,12 @@ fun main(): Unit = application {
 				verticalArrangement = Arrangement.Center,
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
+				OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text("Token") })
+				OutlinedTextField(value = ownerId, onValueChange = { ownerId = it }, label = { Text("Owner ID") })
+
 				Button(
 					onClick = {
-						launchService()
+						launchService(token, ownerId)
 					}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 						contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 					)
@@ -55,8 +62,8 @@ fun main(): Unit = application {
 	}
 }
 
-private fun launchService() {
-	val adapter = DiscordAdapter()
+private fun launchService(token: String, ownerId: String) {
+	val adapter = DiscordAdapter(token, ownerId)
 	adapter.launch()
 }
 

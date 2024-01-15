@@ -1,69 +1,57 @@
 package hummel.service.impl
 
-import hummel.bean.ServerData
 import hummel.dao.FileDao
 import hummel.dao.ZipDao
 import hummel.factory.DaoFactory
+import hummel.factory.ServiceFactory
+import hummel.service.AccessService
+import hummel.service.DataService
 import hummel.service.OwnerService
 import hummel.utils.Lang
 import hummel.utils.access
 import hummel.utils.success
-import org.javacord.api.DiscordApi
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import kotlin.system.exitProcess
 
 class OwnerServiceImpl : OwnerService {
+	private val dataService: DataService = ServiceFactory.dataService
+	private val accessService: AccessService = ServiceFactory.accessService
 	private val fileDao: FileDao = DaoFactory.fileDao
 	private val zipDao: ZipDao = DaoFactory.zipDao
 
-	override fun commands(event: InteractionCreateEvent, data: ServerData, api: DiscordApi) {
-		val sc = event.slashCommandInteraction.get()
-
-		if (sc.fullCommandName.contains("commands")) {
-			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
-				} else {
-					val text = buildString {
-						api.globalApplicationCommands.get().joinTo(this, "\r\n") { "${it.name}: ${it.id}" }
-					}
-					EmbedBuilder().success(sc, data, text)
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
-	override fun import(event: InteractionCreateEvent, data: ServerData) {
+	override fun import(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("import")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val serverData = dataService.loadServerData(sc.server.get())
+				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val byteArray = sc.arguments[0].attachmentValue.get().asByteArray().join()
+					fileDao.createFile("bot.zip")
 					fileDao.writeToFile("bot.zip", byteArray)
-					zipDao.unzip("bot.zip")
+					zipDao.unzipFile("bot.zip", "")
 					fileDao.removeFile("bot.zip")
-					EmbedBuilder().success(sc, data, Lang.IMPORT[data])
+					EmbedBuilder().success(sc, serverData, Lang.IMPORT[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun export(event: InteractionCreateEvent, data: ServerData) {
+	override fun export(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("export")) {
 			sc.respondLater().thenAccept {
-				if (!event.fromOwnerAtLeast()) {
-					val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				if (!accessService.fromOwnerAtLeast(sc)) {
+					val serverData = dataService.loadServerData(sc.server.get())
+					val embed = EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				} else {
-					zipDao.zip("bot.zip")
+					zipDao.zipFolder("", "bot.zip")
 					val file = fileDao.getFile("bot.zip")
 					sc.createFollowupMessageBuilder().addAttachment(file).send().get()
 					fileDao.removeFile("bot.zip")
@@ -72,17 +60,18 @@ class OwnerServiceImpl : OwnerService {
 		}
 	}
 
-	override fun exit(event: InteractionCreateEvent, data: ServerData) {
+	override fun exit(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("exit")) {
 			var exit = false
+			val serverData = dataService.loadServerData(sc.server.get())
 
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					exit = true
-					EmbedBuilder().success(sc, data, Lang.EXIT[data])
+					EmbedBuilder().success(sc, serverData, Lang.EXIT[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -91,43 +80,5 @@ class OwnerServiceImpl : OwnerService {
 				exitProcess(0)
 			}
 		}
-	}
-
-	override fun shutdown(event: InteractionCreateEvent, data: ServerData) {
-		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("shutdown")) {
-			var shutdown = false
-
-			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
-				} else {
-					shutdown = true
-					EmbedBuilder().success(sc, data, Lang.SHUTDOWN[data])
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-
-			if (shutdown) {
-				try {
-					val processBuilder = ProcessBuilder("rundll32.exe", "powrprof.dll,SetSuspendState", "0,1,0")
-					val process = processBuilder.start()
-					val exitCode = process.waitFor()
-					if (exitCode == 0) {
-						println("Command executed successfully.")
-					} else {
-						println("Command execution failed with exit code: $exitCode")
-					}
-				} catch (e: Exception) {
-					e.printStackTrace()
-				}
-			}
-		}
-	}
-
-	private fun InteractionCreateEvent.fromOwnerAtLeast(): Boolean {
-		val sc = interaction.asSlashCommandInteraction().get()
-		val user = sc.user
-		return user.isBotOwnerOrTeamMember
 	}
 }

@@ -1,8 +1,10 @@
 package hummel.service
 
-import org.javacord.api.DiscordApi
+import hummel.controller.impl.DiscordControllerImpl
 
 interface LoginService {
-	fun registerCommands(api: DiscordApi)
-	fun deleteCommands(api: DiscordApi)
+	fun loginBot(impl: DiscordControllerImpl)
+	fun configureFactory(impl: DiscordControllerImpl)
+	fun deleteCommands(impl: DiscordControllerImpl)
+	fun registerCommands(impl: DiscordControllerImpl)
 }

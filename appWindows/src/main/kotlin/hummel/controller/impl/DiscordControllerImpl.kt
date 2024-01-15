@@ -1,73 +1,55 @@
 package hummel.controller.impl
 
 import hummel.controller.DiscordController
-import hummel.factory.DaoFactory
 import hummel.factory.ServiceFactory
 import org.javacord.api.DiscordApi
-import org.javacord.api.DiscordApiBuilder
 
-object DiscordControllerImpl : DiscordController {
-	private lateinit var api: DiscordApi
+class DiscordControllerImpl(val token: String, val ownerId: Long, val context: Any) : DiscordController {
+	lateinit var api: DiscordApi
 
 	override fun onCreate() {
-		val fileDao = DaoFactory.fileDao
-		val token = fileDao.readFromFile("token.txt")
-		api = DiscordApiBuilder().setToken(String(token)).setAllIntents().login().join()
-		/**
-		 * val loginService = ServiceFactory.loginService
-		 * loginService.deleteCommands(api)
-		 * loginService.registerCommands(api)
-		 **/
+		val loginService = ServiceFactory.loginService
+		loginService.loginBot(this)
+		loginService.configureFactory(this)
+		loginService.deleteCommands(this)
+		loginService.registerCommands(this)
 	}
 
 	override fun onStartCommand() {
-		val dataService = ServiceFactory.dataService
 		val userService = ServiceFactory.userService
 		val adminService = ServiceFactory.adminService
 		val ownerService = ServiceFactory.ownerService
 		val botService = ServiceFactory.botService
 
 		api.addInteractionCreateListener {
-			val server = it.interaction.server.get()
-			val data = dataService.loadData(server)
+			userService.answer(it)
+			userService.choice(it)
+			userService.random(it)
+			userService.complete(it)
+			userService.info(it)
 
-			userService.answer(it, data)
-			userService.choice(it, data)
-			userService.random(it, data)
-			userService.complete(it, data)
-			userService.info(it, data)
+			adminService.addBirthday(it)
+			adminService.addManager(it)
+			adminService.addSecretChannel(it)
+			adminService.clearBirthdays(it)
+			adminService.clearManagers(it)
+			adminService.clearSecretChannels(it)
+			adminService.clearMessages(it)
+			adminService.clearData(it)
+			adminService.setLanguage(it)
+			adminService.setChance(it)
+			adminService.nuke(it)
 
-			adminService.addBirthday(it, data)
-			adminService.addManager(it, data)
-			adminService.addSecretChannel(it, data)
-			adminService.clearBirthdays(it, data)
-			adminService.clearManagers(it, data)
-			adminService.clearSecretChannels(it, data)
-			adminService.clearMessages(it, data)
-			adminService.clearData(it, data)
-			adminService.setLanguage(it, data)
-			adminService.setChance(it, data)
-			adminService.nuke(it, data)
-
-			ownerService.commands(it, data, api)
-			ownerService.import(it, data)
-			ownerService.export(it, data)
-			ownerService.exit(it, data)
-			ownerService.shutdown(it, data)
-
-			dataService.saveData(server, data)
+			ownerService.import(it)
+			ownerService.export(it)
+			ownerService.exit(it)
 		}
 
 		api.addMessageCreateListener {
-			val server = it.server.get()
-			val data = dataService.loadData(server)
-
-			botService.addRandomEmoji(it, data)
-			botService.saveAllowedMessage(it, data)
-			botService.sendRandomMessage(it, data)
-			botService.sendBirthdayMessage(it, data)
-
-			dataService.saveData(server, data)
+			botService.addRandomEmoji(it)
+			botService.saveAllowedMessage(it)
+			botService.sendRandomMessage(it)
+			botService.sendBirthdayMessage(it)
 		}
 	}
 }

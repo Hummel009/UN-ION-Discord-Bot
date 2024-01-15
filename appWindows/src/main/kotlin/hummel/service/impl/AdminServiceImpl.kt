@@ -3,7 +3,10 @@ package hummel.service.impl
 import hummel.bean.ServerData
 import hummel.dao.FileDao
 import hummel.factory.DaoFactory
+import hummel.factory.ServiceFactory
+import hummel.service.AccessService
 import hummel.service.AdminService
+import hummel.service.DataService
 import hummel.utils.Lang
 import hummel.utils.access
 import hummel.utils.error
@@ -12,6 +15,8 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 
 class AdminServiceImpl : AdminService {
+	private val dataService: DataService = ServiceFactory.dataService
+	private val accessService: AccessService = ServiceFactory.accessService
 	private val fileDao: FileDao = DaoFactory.fileDao
 
 	private val ranges: Map<Int, IntRange> = mapOf(
@@ -29,13 +34,15 @@ class AdminServiceImpl : AdminService {
 		12 to 1..31,
 	)
 
-	override fun addBirthday(event: InteractionCreateEvent, data: ServerData) {
+	override fun addBirthday(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("add_birthday")) {
+			val server = sc.server.get()
+			val serverData = dataService.loadServerData(server)
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 3) {
@@ -47,27 +54,30 @@ class AdminServiceImpl : AdminService {
 							if (!sc.server.get().getMemberById(userId).isPresent) {
 								throw Exception()
 							}
-							data.birthdays.add(ServerData.Birthday(userId, ServerData.Date(day, month)))
-							EmbedBuilder().success(sc, data, "${Lang.ADDED_BIRTHDAY[data]}: <@$userId>.")
+							serverData.birthdays.add(ServerData.Birthday(userId, ServerData.Date(day, month)))
+							EmbedBuilder().success(sc, serverData, "${Lang.ADDED_BIRTHDAY[serverData]}: <@$userId>.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
 
-	override fun addManager(event: InteractionCreateEvent, data: ServerData) {
+	override fun addManager(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("add_manager")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -76,27 +86,30 @@ class AdminServiceImpl : AdminService {
 							if (!sc.server.get().getRoleById(roleId).isPresent) {
 								throw Exception()
 							}
-							data.managers.add(ServerData.Role(roleId))
-							EmbedBuilder().success(sc, data, "${Lang.ADDED_MANAGER[data]}: <@$roleId>.")
+							serverData.managers.add(ServerData.Role(roleId))
+							EmbedBuilder().success(sc, serverData, "${Lang.ADDED_MANAGER[serverData]}: <@$roleId>.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
 
-	override fun addSecretChannel(event: InteractionCreateEvent, data: ServerData) {
+	override fun addSecretChannel(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("add_secret_channel")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -105,156 +118,176 @@ class AdminServiceImpl : AdminService {
 							if (!sc.server.get().getChannelById(channelId).isPresent) {
 								throw Exception()
 							}
-							data.secretChannels.add(ServerData.Channel(channelId))
-							EmbedBuilder().success(sc, data, "${Lang.ADDED_CHANNEL[data]}: <@$channelId>.")
+							serverData.secretChannels.add(ServerData.Channel(channelId))
+							EmbedBuilder().success(sc, serverData, "${Lang.ADDED_CHANNEL[serverData]}: <@$channelId>.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
 
-	override fun clearBirthdays(event: InteractionCreateEvent, data: ServerData) {
+	override fun clearBirthdays(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("clear_birthdays")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					if (sc.arguments.isEmpty()) {
-						data.birthdays.clear()
-						EmbedBuilder().success(sc, data, Lang.CLEARED_BIRTHDAYS[data])
+						serverData.birthdays.clear()
+						EmbedBuilder().success(sc, serverData, Lang.CLEARED_BIRTHDAYS[serverData])
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
 							try {
 								val userId = arguments[0].toLong()
-								data.birthdays.removeIf { it.id == userId }
-								EmbedBuilder().success(sc, data, "${Lang.REMOVED_BIRTHDAY[data]}: <@$userId>")
+								serverData.birthdays.removeIf { it.id == userId }
+								EmbedBuilder().success(
+									sc, serverData, "${Lang.REMOVED_BIRTHDAY[serverData]}: <@$userId>"
+								)
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 							}
 						} else {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 						}
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
 
-	override fun clearManagers(event: InteractionCreateEvent, data: ServerData) {
+	override fun clearManagers(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("clear_managers")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					if (sc.arguments.isEmpty()) {
-						data.managers.clear()
-						EmbedBuilder().success(sc, data, Lang.CLEARED_MANAGERS[data])
+						serverData.managers.clear()
+						EmbedBuilder().success(sc, serverData, Lang.CLEARED_MANAGERS[serverData])
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
 							try {
 								val roleId = arguments[0].toLong()
-								data.managers.removeIf { it.id == roleId }
-								EmbedBuilder().success(sc, data, "${Lang.REMOVED_MANAGER[data]}: <@$roleId>")
+								serverData.managers.removeIf { it.id == roleId }
+								EmbedBuilder().success(
+									sc, serverData, "${Lang.REMOVED_MANAGER[serverData]}: <@$roleId>"
+								)
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 							}
 						} else {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 						}
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
 
-	override fun clearSecretChannels(event: InteractionCreateEvent, data: ServerData) {
+	override fun clearSecretChannels(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("clear_secret_channels")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					if (sc.arguments.isEmpty()) {
-						data.secretChannels.clear()
-						EmbedBuilder().success(sc, data, Lang.CLEARED_CHANNELS[data])
+						serverData.secretChannels.clear()
+						EmbedBuilder().success(sc, serverData, Lang.CLEARED_CHANNELS[serverData])
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
 							try {
 								val channelId = arguments[0].toLong()
-								data.secretChannels.removeIf { it.id == channelId }
-								EmbedBuilder().success(sc, data, "${Lang.REMOVED_CHANNEL[data]}: <@$channelId>")
+								serverData.secretChannels.removeIf { it.id == channelId }
+								EmbedBuilder().success(
+									sc, serverData, "${Lang.REMOVED_CHANNEL[serverData]}: <@$channelId>"
+								)
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 							}
 						} else {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 						}
 					}
 				}
+				dataService.saveServerData(server, serverData)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun clearMessages(event: InteractionCreateEvent, data: ServerData) {
+	override fun clearMessages(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("clear_messages")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val serverData = dataService.loadServerData(sc.server.get())
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
-					val filePath = "${data.serverId}/messages.bin"
+					val filePath = "${serverData.serverId}/messages.bin"
 					fileDao.removeFile(filePath)
 					fileDao.createFile(filePath)
-					EmbedBuilder().success(sc, data, Lang.CLEARED_MESSAGES[data])
+					EmbedBuilder().success(sc, serverData, Lang.CLEARED_MESSAGES[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun clearData(event: InteractionCreateEvent, data: ServerData) {
+	override fun clearData(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("clear_data")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val serverData = dataService.loadServerData(sc.server.get())
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
-					val filePath = "${data.serverId}/data.json"
+					val filePath = "${serverData.serverId}/data.json"
 					fileDao.removeFile(filePath)
 					fileDao.createFile(filePath)
-					EmbedBuilder().success(sc, data, Lang.CLEARED_DATA[data])
+					EmbedBuilder().success(sc, serverData, Lang.CLEARED_DATA[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun setLanguage(event: InteractionCreateEvent, data: ServerData) {
+	override fun setLanguage(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("set_language")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -263,27 +296,30 @@ class AdminServiceImpl : AdminService {
 							if (lang != "ru" && lang != "en") {
 								throw Exception()
 							}
-							data.lang = lang
-							EmbedBuilder().success(sc, data, "${Lang.SET_LANGUAGE[data]}: $lang")
+							serverData.lang = lang
+							EmbedBuilder().success(sc, serverData, "${Lang.SET_LANGUAGE[serverData]}: $lang")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
 
-	override fun setChance(event: InteractionCreateEvent, data: ServerData) {
+	override fun setChance(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("set_chance")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -292,27 +328,29 @@ class AdminServiceImpl : AdminService {
 							if (chance < 1) {
 								throw Exception()
 							}
-							data.chance = chance
-							EmbedBuilder().success(sc, data, "${Lang.SET_CHANCE[data]}: $chance.")
+							serverData.chance = chance
+							EmbedBuilder().success(sc, serverData, "${Lang.SET_CHANCE[serverData]}: $chance.")
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
 
-	override fun nuke(event: InteractionCreateEvent, data: ServerData) {
+	override fun nuke(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("nuke")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromAdminAtLeast(data)) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val serverData = dataService.loadServerData(sc.server.get())
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -323,25 +361,16 @@ class AdminServiceImpl : AdminService {
 							}
 							val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
 							sc.channel.get().bulkDelete(*messageIds).get()
-							EmbedBuilder().success(sc, data, Lang.NUKE[data])
+							EmbedBuilder().success(sc, serverData, Lang.NUKE[serverData])
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
 					} else {
-						EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
-		}
-	}
-
-	private fun InteractionCreateEvent.fromAdminAtLeast(data: ServerData): Boolean {
-		val sc = interaction.asSlashCommandInteraction().get()
-		val server = sc.server.get()
-		val user = sc.user
-		return user.isBotOwnerOrTeamMember || server.isAdmin(user) || user.getRoles(server).any { role ->
-			data.managers.any { it.id == role.id }
 		}
 	}
 }
