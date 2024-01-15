@@ -11,8 +11,8 @@ class DiscordControllerImpl(val token: String, val ownerId: Long, val context: A
 		val loginService = ServiceFactory.loginService
 		loginService.loginBot(this)
 		loginService.configureFactory(this)
-		loginService.deleteCommands(this)
-		loginService.registerCommands(this)
+		//loginService.deleteCommands(this)
+		//loginService.registerCommands(this)
 	}
 
 	override fun onStartCommand() {
