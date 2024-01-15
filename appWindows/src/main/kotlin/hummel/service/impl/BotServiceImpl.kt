@@ -1,8 +1,6 @@
 package hummel.service.impl
 
 import hummel.bean.ServerData
-import hummel.dao.FileDao
-import hummel.factory.DaoFactory
 import hummel.factory.ServiceFactory
 import hummel.service.BotService
 import hummel.service.DataService
@@ -13,11 +11,12 @@ import java.time.LocalDate
 
 class BotServiceImpl : BotService {
 	private val dataService: DataService = ServiceFactory.dataService
-	private val fileDao: FileDao = DaoFactory.fileDao
 
 	override fun addRandomEmoji(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
-			val serverData = dataService.loadServerData(event.server.get())
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
+
 			if (random.nextInt(serverData.chance) == 0) {
 				val emoji = event.server.get().customEmojis.random()
 				event.addReactionToMessage(emoji)
@@ -27,26 +26,25 @@ class BotServiceImpl : BotService {
 
 	override fun saveAllowedMessage(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
-			val serverData = dataService.loadServerData(event.server.get())
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
+
 			val channelId = event.channel.id
 			if (!serverData.secretChannels.any { it.id == channelId }) {
 				val msg = event.messageContent
 				val crypt = encodeMessage(msg)
-
-				val filePath = "${serverData.serverId}/messages.bin"
-				fileDao.appendToFile(filePath, crypt.toByteArray())
-				fileDao.appendToFile(filePath, "\r\n".toByteArray())
+				dataService.saveServerMessage(server, crypt)
 			}
 		}
 	}
 
 	override fun sendRandomMessage(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
-			val serverData = dataService.loadServerData(event.server.get())
-			val path = "${serverData.serverId}/messages.bin"
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
 
 			if (random.nextInt(serverData.chance) == 0) {
-				val crypt = fileDao.getRandomLine(path)
+				val crypt = dataService.getServerRandomMessage(server)
 				crypt?.let {
 					val msg = decodeMessage(it)
 					event.channel.sendMessage(msg)
@@ -57,7 +55,9 @@ class BotServiceImpl : BotService {
 
 	override fun sendBirthdayMessage(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
-			val serverData = dataService.loadServerData(event.server.get())
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
+
 			val currentDate = LocalDate.now()
 			val currentDay = currentDate.dayOfMonth
 			val currentMonth = currentDate.monthValue

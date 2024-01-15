@@ -1,8 +1,6 @@
 package hummel.service.impl
 
 import hummel.bean.ServerData
-import hummel.dao.FileDao
-import hummel.factory.DaoFactory
 import hummel.factory.ServiceFactory
 import hummel.service.AccessService
 import hummel.service.AdminService
@@ -17,7 +15,6 @@ import org.javacord.api.event.interaction.InteractionCreateEvent
 class AdminServiceImpl : AdminService {
 	private val dataService: DataService = ServiceFactory.dataService
 	private val accessService: AccessService = ServiceFactory.accessService
-	private val fileDao: FileDao = DaoFactory.fileDao
 
 	private val ranges: Map<Int, IntRange> = mapOf(
 		1 to 1..31,
@@ -38,9 +35,10 @@ class AdminServiceImpl : AdminService {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("add_birthday")) {
-			val server = sc.server.get()
-			val serverData = dataService.loadServerData(server)
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -64,6 +62,7 @@ class AdminServiceImpl : AdminService {
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(server, serverData)
 			}.get()
 		}
@@ -76,6 +75,7 @@ class AdminServiceImpl : AdminService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -96,6 +96,7 @@ class AdminServiceImpl : AdminService {
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(server, serverData)
 			}.get()
 		}
@@ -108,6 +109,7 @@ class AdminServiceImpl : AdminService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -128,6 +130,7 @@ class AdminServiceImpl : AdminService {
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(server, serverData)
 			}.get()
 		}
@@ -140,6 +143,7 @@ class AdminServiceImpl : AdminService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -164,6 +168,7 @@ class AdminServiceImpl : AdminService {
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(server, serverData)
 			}.get()
 		}
@@ -176,6 +181,7 @@ class AdminServiceImpl : AdminService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -200,6 +206,7 @@ class AdminServiceImpl : AdminService {
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(server, serverData)
 			}.get()
 		}
@@ -212,6 +219,7 @@ class AdminServiceImpl : AdminService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -235,8 +243,9 @@ class AdminServiceImpl : AdminService {
 						}
 					}
 				}
-				dataService.saveServerData(server, serverData)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
 			}.get()
 		}
 	}
@@ -246,13 +255,13 @@ class AdminServiceImpl : AdminService {
 
 		if (sc.fullCommandName.contains("clear_messages")) {
 			sc.respondLater().thenAccept {
-				val serverData = dataService.loadServerData(sc.server.get())
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
-					val filePath = "${serverData.serverId}/messages.bin"
-					fileDao.removeFile(filePath)
-					fileDao.createFile(filePath)
+					dataService.wipeServerMessages(server)
 					EmbedBuilder().success(sc, serverData, Lang.CLEARED_MESSAGES[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -265,13 +274,13 @@ class AdminServiceImpl : AdminService {
 
 		if (sc.fullCommandName.contains("clear_data")) {
 			sc.respondLater().thenAccept {
-				val serverData = dataService.loadServerData(sc.server.get())
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
-					val filePath = "${serverData.serverId}/data.json"
-					fileDao.removeFile(filePath)
-					fileDao.createFile(filePath)
+					dataService.wipeServerData(server)
 					EmbedBuilder().success(sc, serverData, Lang.CLEARED_DATA[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -286,6 +295,7 @@ class AdminServiceImpl : AdminService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -306,6 +316,7 @@ class AdminServiceImpl : AdminService {
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(server, serverData)
 			}.get()
 		}
@@ -318,6 +329,7 @@ class AdminServiceImpl : AdminService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
@@ -338,6 +350,7 @@ class AdminServiceImpl : AdminService {
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(server, serverData)
 			}.get()
 		}
@@ -348,7 +361,9 @@ class AdminServiceImpl : AdminService {
 
 		if (sc.fullCommandName.contains("nuke")) {
 			sc.respondLater().thenAccept {
-				val serverData = dataService.loadServerData(sc.server.get())
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {

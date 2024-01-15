@@ -33,8 +33,10 @@ class UserServiceImpl : UserService {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("answer")) {
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val arguments = sc.arguments[0].stringValue.get()
-				val serverData = dataService.loadServerData(sc.server.get())
 				val embed = if (arguments.contains("?")) {
 					EmbedBuilder().success(sc, serverData, "— $arguments\r\n— ${answers.random()[serverData]}")
 				} else {
@@ -49,8 +51,10 @@ class UserServiceImpl : UserService {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("choice")) {
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
-				val serverData = dataService.loadServerData(sc.server.get())
 				val embed = if (arguments.isNotEmpty()) {
 					EmbedBuilder().success(sc, serverData, "$arguments\r\n${arguments.random()}")
 				} else {
@@ -65,8 +69,10 @@ class UserServiceImpl : UserService {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("complete")) {
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val arguments = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
-				val serverData = dataService.loadServerData(sc.server.get())
 				val embed = if (arguments.isNotEmpty()) {
 					HttpClients.createDefault().use { client ->
 						val request = HttpPost("https://api.porfirevich.com/generate/")
@@ -104,8 +110,10 @@ class UserServiceImpl : UserService {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("random")) {
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
-				val serverData = dataService.loadServerData(sc.server.get())
 				val embed = if (arguments.size == 1) {
 					try {
 						val int = arguments[0].toInt()
@@ -128,6 +136,7 @@ class UserServiceImpl : UserService {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
+
 				serverData.birthdays.removeIf { !server.getMemberById(it.id).isPresent }
 				val text = buildString {
 					append(serverData.chance, "\r\n")
@@ -147,6 +156,7 @@ class UserServiceImpl : UserService {
 				}
 				val embed = EmbedBuilder().success(sc, serverData, text)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
 				dataService.saveServerData(sc.server.get(), serverData)
 			}.get()
 		}

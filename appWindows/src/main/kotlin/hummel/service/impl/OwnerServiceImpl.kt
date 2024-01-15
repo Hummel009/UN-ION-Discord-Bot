@@ -1,8 +1,5 @@
 package hummel.service.impl
 
-import hummel.dao.FileDao
-import hummel.dao.ZipDao
-import hummel.factory.DaoFactory
 import hummel.factory.ServiceFactory
 import hummel.service.AccessService
 import hummel.service.DataService
@@ -17,23 +14,20 @@ import kotlin.system.exitProcess
 class OwnerServiceImpl : OwnerService {
 	private val dataService: DataService = ServiceFactory.dataService
 	private val accessService: AccessService = ServiceFactory.accessService
-	private val fileDao: FileDao = DaoFactory.fileDao
-	private val zipDao: ZipDao = DaoFactory.zipDao
 
 	override fun import(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("import")) {
 			sc.respondLater().thenAccept {
-				val serverData = dataService.loadServerData(sc.server.get())
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val byteArray = sc.arguments[0].attachmentValue.get().asByteArray().join()
-					fileDao.createFile("bot.zip")
-					fileDao.writeToFile("bot.zip", byteArray)
-					zipDao.unzipFile("bot.zip", "")
-					fileDao.removeFile("bot.zip")
+					dataService.importBotData(byteArray)
 					EmbedBuilder().success(sc, serverData, Lang.IMPORT[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -46,15 +40,14 @@ class OwnerServiceImpl : OwnerService {
 
 		if (sc.fullCommandName.contains("export")) {
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				if (!accessService.fromOwnerAtLeast(sc)) {
-					val serverData = dataService.loadServerData(sc.server.get())
 					val embed = EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				} else {
-					zipDao.zipFolder("", "bot.zip")
-					val file = fileDao.getFile("bot.zip")
-					sc.createFollowupMessageBuilder().addAttachment(file).send().get()
-					fileDao.removeFile("bot.zip")
+					dataService.exportBotData(sc)
 				}
 			}.get()
 		}
@@ -64,9 +57,11 @@ class OwnerServiceImpl : OwnerService {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("exit")) {
 			var exit = false
-			val serverData = dataService.loadServerData(sc.server.get())
 
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
 					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
