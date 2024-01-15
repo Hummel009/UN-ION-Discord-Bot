@@ -29,23 +29,27 @@ class DataServiceImpl : DataService {
 	}
 
 	override fun exportBotData(sc: SlashCommandInteraction) {
-		val folderPath = "servers"
-		val filePath = "archive/bot.zip"
+		val targetFolderPath = "servers"
+		val archiveFolderPath = "archive"
+		val archiveFilePath = "archive/bot.zip"
 
-		zipDao.zipFolder(folderPath, filePath)
-		val file = fileDao.getFile(filePath)
+		fileDao.createFolder(archiveFolderPath)
+		zipDao.zipFolder(targetFolderPath, archiveFilePath)
+		val file = fileDao.getFile(archiveFilePath)
 		sc.createFollowupMessageBuilder().addAttachment(file).send().get()
-		fileDao.removeFile(filePath)
+		fileDao.removeFile(archiveFilePath)
 	}
 
 	override fun importBotData(byteArray: ByteArray) {
-		val folderPath = "servers"
-		val filePath = "archive/bot.zip"
+		val targetFolderPath = "servers"
+		val archiveFolderPath = "archive"
+		val archiveFilePath = "archive/bot.zip"
 
-		fileDao.createFile(filePath)
-		fileDao.writeToFile(filePath, byteArray)
-		zipDao.unzipFile(filePath, folderPath)
-		fileDao.removeFile(filePath)
+		fileDao.createFolder(archiveFolderPath)
+		fileDao.createFile(archiveFilePath)
+		fileDao.writeToFile(archiveFilePath, byteArray)
+		zipDao.unzipFile(archiveFilePath, targetFolderPath)
+		fileDao.removeFile(archiveFilePath)
 	}
 
 	override fun saveServerMessage(server: Server, msg: String) {
