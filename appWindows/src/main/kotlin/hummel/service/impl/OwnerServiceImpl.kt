@@ -11,7 +11,6 @@ import hummel.utils.access
 import hummel.utils.success
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
-import kotlin.system.exitProcess
 
 class OwnerServiceImpl : OwnerService {
 	private val dataService: DataService = ServiceFactory.dataService
