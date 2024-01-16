@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import hummel.bean.BotData
+import kotlin.system.exitProcess
 
 class Main : FragmentActivity() {
 	private val context: Context = this
@@ -44,10 +45,7 @@ class Main : FragmentActivity() {
 
 			Button(
 				onClick = {
-					BotData.token = token
-					BotData.ownerId = ownerId
-					BotData.root = context.filesDir.path
-					launchService()
+					launchService(token, ownerId, context.filesDir.path, context)
 				}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 					contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 				)
@@ -57,7 +55,7 @@ class Main : FragmentActivity() {
 
 			Button(
 				onClick = {
-					stopService()
+					stopService(context)
 				}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 					contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
 				)
@@ -66,15 +64,22 @@ class Main : FragmentActivity() {
 			}
 		}
 	}
+}
 
-	private fun launchService() {
-		val serviceIntent = Intent(context, DiscordAdapter::class.java)
-		startService(serviceIntent)
-	}
+@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
+fun launchService(token: String, ownerId: String, root: String, context: Any?) {
+	context as Context
+	BotData.token = token
+	BotData.ownerId = ownerId
+	BotData.root = root
+	val serviceIntent = Intent(context, DiscordAdapter::class.java)
+	context.startForegroundService(serviceIntent)
+}
 
-	private fun stopService() {
-		val serviceIntent = Intent(context, DiscordAdapter::class.java)
-		stopService(serviceIntent)
-		finish()
-	}
+@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
+fun stopService(context: Any) {
+	context as Context
+	val serviceIntent = Intent(context, DiscordAdapter::class.java)
+	context.stopService(serviceIntent)
+	exitProcess(0)
 }

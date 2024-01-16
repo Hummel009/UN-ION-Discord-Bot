@@ -47,10 +47,7 @@ private fun composableOnCreate() {
 
 		Button(
 			onClick = {
-				BotData.token = token
-				BotData.ownerId = ownerId
-				BotData.root = "files"
-				launchService()
+				launchService(token, ownerId, "files", null)
 			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 				contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 			)
@@ -60,7 +57,7 @@ private fun composableOnCreate() {
 
 		Button(
 			onClick = {
-				stopService()
+				stopService(null)
 			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 				contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
 			)
@@ -70,11 +67,16 @@ private fun composableOnCreate() {
 	}
 }
 
-private fun launchService() {
+@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
+fun launchService(token: String, ownerId: String, root: String, context: Any?) {
+	BotData.token = token
+	BotData.ownerId = ownerId
+	BotData.root = root
 	val adapter = DiscordAdapter()
 	adapter.launch()
 }
 
-private fun stopService() {
+@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
+fun stopService(context: Any?) {
 	exitProcess(0)
 }
