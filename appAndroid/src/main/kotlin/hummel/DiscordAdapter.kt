@@ -1,6 +1,8 @@
 package hummel
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -12,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import hummel.controller.DiscordController
 import hummel.controller.impl.DiscordControllerImpl
+import hummel.union.R
 
 class DiscordAdapter : Service() {
 	private lateinit var wakeLock: WakeLock
@@ -27,18 +30,19 @@ class DiscordAdapter : Service() {
 	@SuppressLint("WakelockTimeout")
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 		wakeLock.acquire()
-		ServiceCompat.startForeground(
-			this,
-			1,
-			NotificationCompat.Builder(this, "HundomId1").build(),
-			ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-		)
+		val channelId = "Hummel009id1"
+		val channelName = "Hummel009channel1"
+		val notification = NotificationCompat.Builder(this, channelId).build()
+		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+		val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+		notificationManager.createNotificationChannel(channel)
+		startForeground(1, notification)
 		controller.onStartCommand()
 		return START_STICKY
 	}
 
 	override fun onDestroy() {
-		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+		stopForeground(STOP_FOREGROUND_REMOVE)
 		wakeLock.release()
 	}
 
