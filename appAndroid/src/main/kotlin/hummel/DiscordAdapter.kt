@@ -16,7 +16,7 @@ import hummel.union.R
 
 class DiscordAdapter : Service() {
 	private lateinit var wakeLock: WakeLock
-	private val controller: DiscordController = DiscordControllerImpl(AW.token, AW.ownerId.toLong(), AW.context)
+	private val controller: DiscordController = DiscordControllerImpl(Storage.token, Storage.ownerId.toLong(), Storage.context)
 
 	override fun onCreate() {
 		wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {

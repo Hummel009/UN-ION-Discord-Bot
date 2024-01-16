@@ -44,9 +44,9 @@ class Main : FragmentActivity() {
 			Button(
 				onClick = {
 					launchService()
-					AW.token = token
-					AW.ownerId = ownerId
-					AW.context = context
+					Storage.token = token
+					Storage.ownerId = ownerId
+					Storage.context = context
 				}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 					contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 				)

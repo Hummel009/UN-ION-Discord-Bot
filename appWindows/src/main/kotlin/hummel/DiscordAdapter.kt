@@ -3,8 +3,8 @@ package hummel
 import hummel.controller.DiscordController
 import hummel.controller.impl.DiscordControllerImpl
 
-class DiscordAdapter(token: String, ownerId: String) {
-	private val controller: DiscordController = DiscordControllerImpl(token, ownerId.toLong(), "files")
+class DiscordAdapter {
+	private val controller: DiscordController = DiscordControllerImpl(Storage.token, Storage.ownerId.toLong(), Storage.context)
 
 	fun launch() {
 		controller.onCreate()

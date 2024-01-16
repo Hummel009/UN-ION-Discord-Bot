@@ -1,9 +1,7 @@
 package hummel
 
-import android.content.Context
-
-object AW {
+object Storage {
 	lateinit var token: String
 	lateinit var ownerId: String
-	lateinit var context: Context
+	lateinit var context: Any
 }

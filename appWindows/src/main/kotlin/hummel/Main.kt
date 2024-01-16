@@ -46,7 +46,10 @@ private fun composableOnCreate() {
 
 		Button(
 			onClick = {
-				launchService(token, ownerId)
+				launchService()
+				Storage.token = token
+				Storage.ownerId = ownerId
+				Storage.context = "files"
 			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 				contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 			)
@@ -66,8 +69,8 @@ private fun composableOnCreate() {
 	}
 }
 
-private fun launchService(token: String, ownerId: String) {
-	val adapter = DiscordAdapter(token, ownerId)
+private fun launchService() {
+	val adapter = DiscordAdapter()
 	adapter.launch()
 }
 
