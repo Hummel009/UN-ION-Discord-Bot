@@ -14,8 +14,7 @@ class ZipDaoImpl : ZipDao {
 			val file = fileDao.getFile(filePath)
 			val folder = fileDao.getFolder(folderPath)
 			ZipFile(file.path).extractAll(folder.path)
-		} catch (e: Exception) {
-			e.printStackTrace()
+		} catch (ignored: Exception) {
 		}
 	}
 
@@ -24,8 +23,7 @@ class ZipDaoImpl : ZipDao {
 			val folder = fileDao.getFolder(folderPath)
 			val file = fileDao.getFile(filePath)
 			ZipFile(file.path).compressAll(folder)
-		} catch (e: Exception) {
-			e.printStackTrace()
+		} catch (ignored: Exception) {
 		}
 	}
 

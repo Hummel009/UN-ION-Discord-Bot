@@ -14,8 +14,7 @@ class JsonDaoImpl : JsonDao {
 			val gson = Gson()
 			val json = fileDao.readFromFile(filePath)
 			gson.fromJson(String(json), clazz)
-		} catch (e: Exception) {
-			e.printStackTrace()
+		} catch (ignored: Exception) {
 			null
 		}
 	}
