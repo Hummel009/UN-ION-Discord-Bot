@@ -139,7 +139,8 @@ class UserServiceImpl : UserService {
 
 				serverData.birthdays.removeIf { !server.getMemberById(it.id).isPresent }
 				val text = buildString {
-					append(serverData.chance, "\r\n")
+					append(Lang.CURRENT_CHANCE[serverData], ": ", serverData.chance, "\r\n")
+					append(Lang.CURRENT_LANG[serverData], ": ", serverData.lang, "\r\n")
 					if (serverData.birthdays.isEmpty()) {
 						append(Lang.NO_BIRTHDAYS[serverData], "\r\n")
 					} else {

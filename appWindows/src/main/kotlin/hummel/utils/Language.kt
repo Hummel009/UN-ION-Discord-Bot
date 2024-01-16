@@ -15,6 +15,8 @@ enum class Lang(private val ru: String, private val en: String) {
 	INVALID_ARG("Недопустимые аргументы.", "Invalid arguments provided."),
 	INVALID_FORMAT("Недопустимый формат аргумента.", "Invalid argument format."),
 	SET_LANGUAGE("Установлен язык", "Set language"),
+	CURRENT_CHANCE("Текущий шанс сообщения", "Current chance"),
+	CURRENT_LANG("Текущий язык интерфейса", "Current language"),
 	SET_CHANCE("Установлен шанс сообщения", "Set chance"),
 	ADDED_MANAGER("Добавлена управляющая роль", "Added manager role"),
 	ADDED_CHANNEL("Добавлен секретный канал", "Added secret channel"),
