@@ -27,14 +27,14 @@ fun main() {
 			resizable = false
 		) {
 			MaterialTheme {
-				composableOnCreate()
+				ComposableOnCreate()
 			}
 		}
 	}
 }
 
 @Composable
-private fun composableOnCreate() {
+private fun ComposableOnCreate() {
 	var token: String by remember { mutableStateOf("TOKEN") }
 	var ownerId: String by remember { mutableStateOf("1186780521624244278") }
 
