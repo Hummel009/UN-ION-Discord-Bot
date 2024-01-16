@@ -14,6 +14,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import hummel.bean.BotData
 import kotlin.system.exitProcess
 
 fun main() {
@@ -47,9 +48,9 @@ private fun composableOnCreate() {
 		Button(
 			onClick = {
 				launchService()
-				Storage.token = token
-				Storage.ownerId = ownerId
-				Storage.context = "files"
+				BotData.token = token
+				BotData.ownerId = ownerId
+				BotData.context = "files"
 			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 				contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 			)

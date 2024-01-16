@@ -12,8 +12,6 @@ import org.javacord.api.interaction.SlashCommandOption
 import org.javacord.api.interaction.SlashCommandOptionType
 
 class LoginServiceImpl : LoginService {
-	private lateinit var botData: BotData
-
 	override fun loginBot(impl: DiscordControllerImpl) {
 		impl.api = DiscordApiBuilder().setToken(BotData.token).setAllIntents().login().join()
 	}
@@ -24,7 +22,7 @@ class LoginServiceImpl : LoginService {
 			HttpClients.createDefault().use { client ->
 				val request = HttpDelete(url)
 
-				request.setHeader("Authorization", "Bot ${botData.token}")
+				request.setHeader("Authorization", "Bot ${BotData.token}")
 
 				client.execute(request) { response ->
 					println("${response.code}: ${response.reasonPhrase}")

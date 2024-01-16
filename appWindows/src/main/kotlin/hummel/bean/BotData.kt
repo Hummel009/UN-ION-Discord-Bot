@@ -1,5 +1,7 @@
 package hummel.bean
 
-data class BotData(
-	var token: String, var ownerId: Long, var context: Any
-)
+object BotData {
+	lateinit var token: String
+	lateinit var ownerId: String
+	lateinit var context: String
+}
