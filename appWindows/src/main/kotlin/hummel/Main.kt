@@ -68,7 +68,7 @@ private fun composableOnCreate() {
 	}
 }
 
-@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
+@Suppress("UNUSED_PARAMETER", "RedundantSuppression")
 fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	BotData.token = token
 	BotData.ownerId = ownerId
@@ -77,7 +77,7 @@ fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	adapter.launch()
 }
 
-@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
+@Suppress("UNUSED_PARAMETER", "RedundantSuppression")
 fun stopService(context: Any?) {
 	exitProcess(0)
 }

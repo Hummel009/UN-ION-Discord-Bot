@@ -6,15 +6,12 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ServiceInfo
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat
 import hummel.controller.DiscordController
 import hummel.controller.impl.DiscordControllerImpl
-import hummel.union.R
 
 class DiscordAdapter : Service() {
 	private lateinit var wakeLock: WakeLock
