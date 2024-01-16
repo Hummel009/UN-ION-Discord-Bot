@@ -2,7 +2,8 @@ package hummel.service.impl
 
 import com.google.gson.Gson
 import hummel.bean.ApiResponse
-import hummel.bean.ServerData
+import hummel.factory.ServiceFactory
+import hummel.service.DataService
 import hummel.service.UserService
 import hummel.utils.*
 import org.apache.hc.client5.http.classic.methods.HttpPost
@@ -15,6 +16,8 @@ import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
 
 class UserServiceImpl : UserService {
+	private val dataService: DataService = ServiceFactory.dataService
+
 	private val answers: Set<Lang> = setOf(
 		Lang.GAME_YES_1,
 		Lang.GAME_YES_2,
@@ -26,46 +29,55 @@ class UserServiceImpl : UserService {
 		Lang.GAME_NO_4
 	)
 
-	override fun answer(event: InteractionCreateEvent, data: ServerData) {
+	override fun answer(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("answer")) {
 			sc.respondLater().thenAccept {
-				val text = sc.arguments[0].stringValue.get()
-				val embed = if (text.contains("?")) {
-					EmbedBuilder().success(sc, data, "— $text\r\n— ${answers.random()[data]}")
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val arguments = sc.arguments[0].stringValue.get()
+				val embed = if (arguments.contains("?")) {
+					EmbedBuilder().success(sc, serverData, "— $arguments\r\n— ${answers.random()[serverData]}")
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun choice(event: InteractionCreateEvent, data: ServerData) {
+	override fun choice(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("choice")) {
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				val embed = if (arguments.isNotEmpty()) {
-					EmbedBuilder().success(sc, data, "$arguments\r\n${arguments.random()}")
+					EmbedBuilder().success(sc, serverData, "$arguments\r\n${arguments.random()}")
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun complete(event: InteractionCreateEvent, data: ServerData) {
+	override fun complete(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("complete")) {
 			sc.respondLater().thenAccept {
-				val text = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
-				val embed = if (text.isNotEmpty()) {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val arguments = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
+				val embed = if (arguments.isNotEmpty()) {
 					HttpClients.createDefault().use { client ->
 						val request = HttpPost("https://api.porfirevich.com/generate/")
 
-						val payload = """{ "prompt": "$text", "model": "xlarge", "length": 30 }"""
+						val payload = """{ "prompt": "$arguments", "model": "xlarge", "length": 30 }"""
 						request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
 
 						request.addHeader("Accept", "*/*")
@@ -80,60 +92,73 @@ class UserServiceImpl : UserService {
 								val gson = Gson()
 								val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
 
-								EmbedBuilder().success(sc, data, "$text${apiResponse.replies.random()}")
+								EmbedBuilder().success(sc, serverData, "$arguments${apiResponse.replies.random()}")
 							} else {
-								EmbedBuilder().error(sc, data, Lang.NO_CONNECTION[data])
+								EmbedBuilder().error(sc, serverData, Lang.NO_CONNECTION[serverData])
 							}
 						}
 					}
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun random(event: InteractionCreateEvent, data: ServerData) {
+	override fun random(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("random")) {
 			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				val embed = if (arguments.size == 1) {
 					try {
 						val int = arguments[0].toInt()
-						EmbedBuilder().success(sc, data, "${Lang.RANDOM[data]}: ${random.nextInt(int)}")
+						EmbedBuilder().success(sc, serverData, "${Lang.RANDOM[serverData]}: ${random.nextInt(int)}")
 					} catch (e: Exception) {
-						EmbedBuilder().error(sc, data, Lang.INVALID_FORMAT[data])
+						EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 					}
 				} else {
-					EmbedBuilder().error(sc, data, Lang.INVALID_ARG[data])
+					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun info(event: InteractionCreateEvent, data: ServerData) {
+	override fun info(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("info")) {
 			sc.respondLater().thenAccept {
-				data.birthdays.removeIf { !sc.server.get().getMemberById(it.id).isPresent }
-				val text = if (data.birthdays.isEmpty()) Lang.NO_BIRTHDAYS[data] else buildString {
-					data.birthdays.sortedWith(
-						compareBy({ it.date.month }, { it.date.day })
-					).joinTo(this, "\r\n") {
-						val server = sc.server.get()
-						val userId = server.getMemberById(it.id).get().id
-						val month = Month.of(it.date.month)
-						val day = it.date.day
-						val format = getFormattedTranslatedDate(month, data, day)
-						"<@$userId>: $format"
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				serverData.birthdays.removeIf { !server.getMemberById(it.id).isPresent }
+				val text = buildString {
+					append(Lang.CURRENT_CHANCE[serverData], ": ", serverData.chance, "\r\n")
+					append(Lang.CURRENT_LANG[serverData], ": ", serverData.lang, "\r\n")
+					if (serverData.birthdays.isEmpty()) {
+						append(Lang.NO_BIRTHDAYS[serverData], "\r\n")
+					} else {
+						serverData.birthdays.sortedWith(
+							compareBy({ it.date.month }, { it.date.day })
+						).joinTo(this, "\r\n") {
+							val userId = server.getMemberById(it.id).get().id
+							val month = Month.of(it.date.month)
+							val day = it.date.day
+							val format = getFormattedTranslatedDate(month, serverData, day)
+							"<@$userId>: $format"
+						}
 					}
 				}
-				val embed = EmbedBuilder().success(sc, data, text)
+				val embed = EmbedBuilder().success(sc, serverData, text)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(sc.server.get(), serverData)
 			}.get()
 		}
 	}

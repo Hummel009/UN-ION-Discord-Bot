@@ -12,16 +12,13 @@ import android.os.PowerManager.WakeLock
 import androidx.core.app.NotificationCompat
 import hummel.controller.DiscordController
 import hummel.controller.impl.DiscordControllerImpl
-import hummel.factory.DaoFactory
 import hummel.union.R
 
 class DiscordAdapter : Service() {
 	private lateinit var wakeLock: WakeLock
-	private val controller: DiscordController = DiscordControllerImpl
-	private val context: Context = this
+	private val controller: DiscordController = DiscordControllerImpl(token, ownerId.toLong(), this)
 
 	override fun onCreate() {
-		DaoFactory.context = context
 		wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
 			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Hundom::MyWakeLock")
 		}

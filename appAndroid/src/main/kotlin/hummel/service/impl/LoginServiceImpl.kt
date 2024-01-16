@@ -1,20 +1,48 @@
 package hummel.service.impl
 
+import hummel.bean.BotData
 import hummel.bean.Settings
-import hummel.dao.FileDao
+import hummel.controller.impl.DiscordControllerImpl
 import hummel.factory.DaoFactory
+import hummel.factory.ServiceFactory
 import hummel.service.LoginService
 import org.apache.hc.client5.http.classic.methods.HttpDelete
 import org.apache.hc.client5.http.impl.classic.HttpClients
-import org.javacord.api.DiscordApi
+import org.javacord.api.DiscordApiBuilder
 import org.javacord.api.interaction.SlashCommand
 import org.javacord.api.interaction.SlashCommandOption
 import org.javacord.api.interaction.SlashCommandOptionType
 
 class LoginServiceImpl : LoginService {
-	private val fileDao: FileDao = DaoFactory.fileDao
+	private lateinit var botData: BotData
 
-	override fun registerCommands(api: DiscordApi) {
+	override fun loginBot(impl: DiscordControllerImpl) {
+		botData = BotData(impl.token, impl.ownerId, impl.context)
+		impl.api = DiscordApiBuilder().setToken(botData.token).setAllIntents().login().join()
+	}
+
+	override fun configureFactory(impl: DiscordControllerImpl) {
+		DaoFactory.botData = botData
+		ServiceFactory.botData = botData
+	}
+
+	override fun deleteCommands(impl: DiscordControllerImpl) {
+		impl.api.globalApplicationCommands.get().forEach { c ->
+			val url = "https://discord.com/api/v10/applications/1147449520565801001/commands/${c.id}"
+			HttpClients.createDefault().use { client ->
+				val request = HttpDelete(url)
+
+				request.setHeader("Authorization", "Bot ${botData.token}")
+
+				client.execute(request) { response ->
+					println("${response.code}: ${response.reasonPhrase}")
+				}
+			}
+		}
+	}
+
+	override fun registerCommands(impl: DiscordControllerImpl) {
+		val api = impl.api
 		"answer" with Settings("/answer [your question]", argsList(), api)
 		"choice" with Settings("/choice [one] [two] [three]", argsList(), api)
 		"complete" with Settings("/complete [text]", argsList(), api)
@@ -33,27 +61,9 @@ class LoginServiceImpl : LoginService {
 		"set_language" with Settings("/set_language [ru/en]", argsList(), api)
 		"nuke" with Settings("/nuke [number]", argsList(), api)
 
-		"commands" with Settings("/commands", emptyList(), api)
 		"import" with Settings("/import", file(), api)
 		"export" with Settings("/export", emptyList(), api)
 		"exit" with Settings("/exit", emptyList(), api)
-		"shutdown" with Settings("/shutdown", emptyList(), api)
-	}
-
-	override fun deleteCommands(api: DiscordApi) {
-		val token = fileDao.readFromFile("token.txt")
-		api.globalApplicationCommands.get().forEach { c ->
-			val url = "https://discord.com/api/v10/applications/1147449520565801001/commands/${c.id}"
-			HttpClients.createDefault().use { client ->
-				val request = HttpDelete(url)
-
-				request.setHeader("Authorization", "Bot $token")
-
-				client.execute(request) { response ->
-					println("${response.code}: ${response.reasonPhrase}")
-				}
-			}
-		}
 	}
 
 	private infix fun String.with(settings: Settings) {

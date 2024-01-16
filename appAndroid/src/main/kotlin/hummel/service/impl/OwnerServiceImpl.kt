@@ -1,89 +1,72 @@
 package hummel.service.impl
 
-import hummel.bean.ServerData
-import hummel.dao.FileDao
-import hummel.dao.ZipDao
-import hummel.factory.DaoFactory
+import hummel.factory.ServiceFactory
+import hummel.service.AccessService
+import hummel.service.DataService
 import hummel.service.OwnerService
 import hummel.utils.Lang
 import hummel.utils.access
 import hummel.utils.success
-import org.javacord.api.DiscordApi
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import kotlin.system.exitProcess
 
 class OwnerServiceImpl : OwnerService {
-	private val fileDao: FileDao = DaoFactory.fileDao
-	private val zipDao: ZipDao = DaoFactory.zipDao
+	private val dataService: DataService = ServiceFactory.dataService
+	private val accessService: AccessService = ServiceFactory.accessService
 
-	override fun commands(event: InteractionCreateEvent, data: ServerData, api: DiscordApi) {
-		val sc = event.slashCommandInteraction.get()
-
-		if (sc.fullCommandName.contains("commands")) {
-			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
-				} else {
-					val text = buildString {
-						api.globalApplicationCommands.get().joinTo(this, "\r\n") { "${it.name}: ${it.id}" }
-					}
-					EmbedBuilder().success(sc, data, text)
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
-	override fun import(event: InteractionCreateEvent, data: ServerData) {
+	override fun import(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("import")) {
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					val byteArray = sc.arguments[0].attachmentValue.get().asByteArray().join()
-					fileDao.writeToFile("bot.zip", byteArray)
-					zipDao.unzip("bot.zip")
-					fileDao.removeFile("bot.zip")
-					EmbedBuilder().success(sc, data, Lang.IMPORT[data])
+					dataService.importBotData(byteArray)
+					EmbedBuilder().success(sc, serverData, Lang.IMPORT[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}
 
-	override fun export(event: InteractionCreateEvent, data: ServerData) {
+	override fun export(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
 		if (sc.fullCommandName.contains("export")) {
 			sc.respondLater().thenAccept {
-				if (!event.fromOwnerAtLeast()) {
-					val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				if (!accessService.fromOwnerAtLeast(sc)) {
+					val embed = EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				} else {
-					zipDao.zip("bot.zip")
-					val file = fileDao.getFile("bot.zip")
-					sc.createFollowupMessageBuilder().addAttachment(file).send().get()
-					fileDao.removeFile("bot.zip")
+					dataService.exportBotData(sc)
 				}
 			}.get()
 		}
 	}
 
-	@Deprecated("Use mobile app instead")
-	override fun exit(event: InteractionCreateEvent, data: ServerData) {
+	override fun exit(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 		if (sc.fullCommandName.contains("exit")) {
 			var exit = false
 
 			sc.respondLater().thenAccept {
-				val embed = if (!event.fromOwnerAtLeast()) {
-					EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
+					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
 				} else {
 					exit = true
-					EmbedBuilder().success(sc, data, Lang.EXIT[data])
+					EmbedBuilder().success(sc, serverData, Lang.EXIT[serverData])
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -92,22 +75,5 @@ class OwnerServiceImpl : OwnerService {
 				exitProcess(0)
 			}
 		}
-	}
-
-	@Deprecated("Use mobile app instead")
-	override fun shutdown(event: InteractionCreateEvent, data: ServerData) {
-		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("shutdown")) {
-			sc.respondLater().thenAccept {
-				val embed = EmbedBuilder().access(sc, data, Lang.NO_ACCESS[data])
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
-	private fun InteractionCreateEvent.fromOwnerAtLeast(): Boolean {
-		val sc = interaction.asSlashCommandInteraction().get()
-		val user = sc.user
-		return user.isBotOwnerOrTeamMember
 	}
 }

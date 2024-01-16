@@ -1,6 +1,6 @@
 package hummel.factory
 
-import android.content.Context
+import hummel.bean.BotData
 import hummel.dao.FileDao
 import hummel.dao.JsonDao
 import hummel.dao.ZipDao
@@ -10,8 +10,8 @@ import hummel.dao.impl.ZipDaoImpl
 
 @Suppress("unused", "RedundantSuppression")
 object DaoFactory {
-	var context: Context? = null
-	val fileDao: FileDao by lazy { FileDaoImpl(context!!) }
-	val jsonDao: JsonDao by lazy { JsonDaoImpl() }
+	lateinit var botData: BotData
 	val zipDao: ZipDao by lazy { ZipDaoImpl() }
+	val jsonDao: JsonDao by lazy { JsonDaoImpl() }
+	val fileDao: FileDao by lazy { FileDaoImpl(botData) }
 }

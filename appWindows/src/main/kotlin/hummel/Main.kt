@@ -21,7 +21,7 @@ import kotlin.system.exitProcess
 
 fun main(): Unit = application {
 	var token: String by remember { mutableStateOf("TOKEN") }
-	var ownerId: String by remember { mutableStateOf("0") }
+	var ownerId: String by remember { mutableStateOf("1186780521624244278") }
 
 	Window(
 		onCloseRequest = ::exitApplication,

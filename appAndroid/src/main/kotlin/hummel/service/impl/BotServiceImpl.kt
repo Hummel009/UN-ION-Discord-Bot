@@ -1,46 +1,50 @@
 package hummel.service.impl
 
 import hummel.bean.ServerData
-import hummel.dao.FileDao
-import hummel.factory.DaoFactory
+import hummel.factory.ServiceFactory
 import hummel.service.BotService
+import hummel.service.DataService
 import hummel.utils.Lang
 import hummel.utils.random
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 
 class BotServiceImpl : BotService {
-	private val fileDao: FileDao = DaoFactory.fileDao
+	private val dataService: DataService = ServiceFactory.dataService
 
-	override fun addRandomEmoji(event: MessageCreateEvent, data: ServerData) {
+	override fun addRandomEmoji(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
-			if (random.nextInt(data.chance) == 0) {
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
+
+			if (random.nextInt(serverData.chance) == 0) {
 				val emoji = event.server.get().customEmojis.random()
 				event.addReactionToMessage(emoji)
 			}
 		}
 	}
 
-	override fun saveAllowedMessage(event: MessageCreateEvent, data: ServerData) {
+	override fun saveAllowedMessage(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
+
 			val channelId = event.channel.id
-			if (!data.secretChannels.any { it.id == channelId }) {
+			if (!serverData.secretChannels.any { it.id == channelId }) {
 				val msg = event.messageContent
 				val crypt = encodeMessage(msg)
-
-				val filePath = "${data.serverId}/messages.bin"
-				fileDao.appendToFile(filePath, crypt.toByteArray())
-				fileDao.appendToFile(filePath, "\r\n".toByteArray())
+				dataService.saveServerMessage(server, crypt)
 			}
 		}
 	}
 
-	override fun sendRandomMessage(event: MessageCreateEvent, data: ServerData) {
+	override fun sendRandomMessage(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
-			val path = "${data.serverId}/messages.bin"
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
 
-			if (random.nextInt(data.chance) == 0) {
-				val crypt = fileDao.getRandomLine(path)
+			if (random.nextInt(serverData.chance) == 0) {
+				val crypt = dataService.getServerRandomMessage(server)
 				crypt?.let {
 					val msg = decodeMessage(it)
 					event.channel.sendMessage(msg)
@@ -49,18 +53,21 @@ class BotServiceImpl : BotService {
 		}
 	}
 
-	override fun sendBirthdayMessage(event: MessageCreateEvent, data: ServerData) {
+	override fun sendBirthdayMessage(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
+			val server = event.server.get()
+			val serverData = dataService.loadServerData(server)
+
 			val currentDate = LocalDate.now()
 			val currentDay = currentDate.dayOfMonth
 			val currentMonth = currentDate.monthValue
 
-			val (isBirthday, userIds) = isBirthdayToday(data)
+			val (isBirthday, userIds) = isBirthdayToday(serverData)
 
-			if (isBirthday && (currentDay != data.lastWish.day || currentMonth != data.lastWish.month)) {
-				userIds.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY[data]}!") }
-				data.lastWish.day = currentDay
-				data.lastWish.month = currentMonth
+			if (isBirthday && (currentDay != serverData.lastWish.day || currentMonth != serverData.lastWish.month)) {
+				userIds.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY[serverData]}!") }
+				serverData.lastWish.day = currentDay
+				serverData.lastWish.month = currentMonth
 			}
 		}
 	}
@@ -73,14 +80,14 @@ class BotServiceImpl : BotService {
 		return String(unicodeChars)
 	}
 
-	private fun isBirthdayToday(data: ServerData): Pair<Boolean, Set<Long>> {
+	private fun isBirthdayToday(serverData: ServerData): Pair<Boolean, Set<Long>> {
 		val currentDate = LocalDate.now()
 		val currentDay = currentDate.dayOfMonth
 		val currentMonth = currentDate.monthValue
 		val userIds = HashSet<Long>()
 		var isBirthday = false
 
-		for ((userId, date) in data.birthdays) {
+		for ((userId, date) in serverData.birthdays) {
 			if (date.day == currentDay && date.month == currentMonth) {
 				isBirthday = true
 				userIds.add(userId)
