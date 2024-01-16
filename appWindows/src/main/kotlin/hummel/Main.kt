@@ -50,7 +50,7 @@ private fun composableOnCreate() {
 				launchService()
 				BotData.token = token
 				BotData.ownerId = ownerId
-				BotData.context = "files"
+				BotData.root = "files"
 			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 				contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 			)

@@ -36,9 +36,9 @@ class FileDaoImpl : FileDao {
 		}
 	}
 
-	override fun getFile(filePath: String): File = File(BotData.context, filePath)
+	override fun getFile(filePath: String): File = File(BotData.root, filePath)
 
-	override fun getFolder(folderPath: String): File = File(BotData.context, folderPath)
+	override fun getFolder(folderPath: String): File = File(BotData.root, folderPath)
 
 	override fun readFromFile(filePath: String): ByteArray {
 		var byteArray: ByteArray

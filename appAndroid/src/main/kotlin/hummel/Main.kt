@@ -47,7 +47,7 @@ class Main : FragmentActivity() {
 					launchService()
 					BotData.token = token
 					BotData.ownerId = ownerId
-					BotData.context = context
+					BotData.root = context.filesDir.path
 				}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 					contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 				)
