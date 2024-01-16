@@ -1,5 +1,6 @@
 package hummel
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,7 +39,7 @@ private fun composableOnCreate() {
 	var ownerId: String by remember { mutableStateOf("1186780521624244278") }
 
 	Column(
-		modifier = Modifier.fillMaxSize(),
+		modifier = Modifier.background(Color.White).fillMaxSize(),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {

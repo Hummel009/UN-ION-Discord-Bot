@@ -22,7 +22,7 @@ class DiscordAdapter : Service() {
 
 	override fun onCreate() {
 		wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
-			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Hundom::MyWakeLock")
+			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Hundroid::MyWakeLock")
 		}
 		controller.onCreate()
 	}
@@ -30,8 +30,8 @@ class DiscordAdapter : Service() {
 	@SuppressLint("WakelockTimeout")
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 		wakeLock.acquire()
-		val channelId = "Hummel009id1"
-		val channelName = "Hummel009channel1"
+		val channelId = "HundroidId1"
+		val channelName = "HundroidChannel1"
 		val notification = NotificationCompat.Builder(this, channelId).build()
 		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
 		val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
