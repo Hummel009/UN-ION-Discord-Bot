@@ -2,6 +2,8 @@ package hummel.bean
 
 import android.content.Context
 
-data class BotData(
-	var token: String, var ownerId: Long, var context: Context
-)
+object BotData {
+	lateinit var token: String
+	lateinit var ownerId: String
+	lateinit var context: Context
+}

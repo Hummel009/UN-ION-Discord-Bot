@@ -7,7 +7,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class FileDaoImpl(private val botData: BotData) : FileDao {
+class FileDaoImpl : FileDao {
 	override fun createFile(filePath: String) {
 		val file = getFile(filePath)
 		if (!file.exists()) {
@@ -36,9 +36,9 @@ class FileDaoImpl(private val botData: BotData) : FileDao {
 		}
 	}
 
-	override fun getFile(filePath: String): File = File(botData.context.filesDir, filePath)
+	override fun getFile(filePath: String): File = File(BotData.context.filesDir, filePath)
 
-	override fun getFolder(folderPath: String): File = File(botData.context.filesDir, folderPath)
+	override fun getFolder(folderPath: String): File = File(BotData.context.filesDir, folderPath)
 
 	override fun readFromFile(filePath: String): ByteArray {
 		var byteArray: ByteArray

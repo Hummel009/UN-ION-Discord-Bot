@@ -3,8 +3,6 @@ package hummel.service.impl
 import hummel.bean.BotData
 import hummel.bean.Settings
 import hummel.controller.impl.DiscordControllerImpl
-import hummel.factory.DaoFactory
-import hummel.factory.ServiceFactory
 import hummel.service.LoginService
 import org.apache.hc.client5.http.classic.methods.HttpDelete
 import org.apache.hc.client5.http.impl.classic.HttpClients
@@ -17,13 +15,7 @@ class LoginServiceImpl : LoginService {
 	private lateinit var botData: BotData
 
 	override fun loginBot(impl: DiscordControllerImpl) {
-		botData = BotData(impl.token, impl.ownerId, impl.context)
-		impl.api = DiscordApiBuilder().setToken(botData.token).setAllIntents().login().join()
-	}
-
-	override fun configureFactory(impl: DiscordControllerImpl) {
-		DaoFactory.botData = botData
-		ServiceFactory.botData = botData
+		impl.api = DiscordApiBuilder().setToken(BotData.token).setAllIntents().login().join()
 	}
 
 	override fun deleteCommands(impl: DiscordControllerImpl) {

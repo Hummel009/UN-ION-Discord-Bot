@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import hummel.bean.BotData
 
 class Main : FragmentActivity() {
 	private val context: Context = this
@@ -44,9 +45,9 @@ class Main : FragmentActivity() {
 			Button(
 				onClick = {
 					launchService()
-					Storage.token = token
-					Storage.ownerId = ownerId
-					Storage.context = context
+					BotData.token = token
+					BotData.ownerId = ownerId
+					BotData.context = context
 				}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 					contentColor = Color.White, backgroundColor = Color(0xFF57965C)
 				)

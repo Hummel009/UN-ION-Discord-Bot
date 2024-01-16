@@ -1,17 +1,15 @@
 package hummel.controller.impl
 
-import android.content.Context
 import hummel.controller.DiscordController
 import hummel.factory.ServiceFactory
 import org.javacord.api.DiscordApi
 
-class DiscordControllerImpl(val token: String, val ownerId: Long, val context: Context) : DiscordController {
+class DiscordControllerImpl : DiscordController {
 	lateinit var api: DiscordApi
 
 	override fun onCreate() {
 		val loginService = ServiceFactory.loginService
 		loginService.loginBot(this)
-		loginService.configureFactory(this)
 		//loginService.deleteCommands(this)
 		//loginService.registerCommands(this)
 	}
