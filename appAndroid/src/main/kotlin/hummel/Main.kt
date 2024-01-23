@@ -33,7 +33,7 @@ class Main : FragmentActivity() {
 
 	@Composable
 	private fun ComposableOnCreate() {
-		var token: String by remember { mutableStateOf("MTE0NzQ0OTUyMDU2NTgwMTAwMQ.G5nB9t.2aHp5hqUASugAN93sui4eGlYwyRC6zyIk9yrWI") }
+		var token: String by remember { mutableStateOf("TOKEN") }
 		var ownerId: String by remember { mutableStateOf("1186780521624244278") }
 
 		Column(
