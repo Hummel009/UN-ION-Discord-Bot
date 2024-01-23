@@ -1,4 +1,15 @@
-Бот для моего сервера в Discord. 
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=code_smells)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=security_rating)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=bugs)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=duplicated_lines_density)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=sqale_index)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=ncloc)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
+
+Мультиплатформенный бот для моего сервера в Discord. Может быть запущен с Windows либо Android. Поскольку телефон у меня включен и находится в зоне досягаемости интернета практически всегда, то это, фактически, бесплатный хост.
 
 ## Общая информация
 
