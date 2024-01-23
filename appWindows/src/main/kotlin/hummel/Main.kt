@@ -58,7 +58,7 @@ private fun ComposableOnCreate() {
 
 		Button(
 			onClick = {
-				stopService(null)
+				exitProcess(4)
 			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 				contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
 			)
@@ -75,9 +75,4 @@ fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	BotData.root = root
 	val adapter = DiscordAdapter()
 	adapter.launch()
-}
-
-@Suppress("UNUSED_PARAMETER", "RedundantSuppression")
-fun stopService(context: Any?) {
-	exitProcess(0)
 }

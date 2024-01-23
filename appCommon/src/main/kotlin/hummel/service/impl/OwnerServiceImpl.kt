@@ -1,16 +1,15 @@
 package hummel.service.impl
 
-import hummel.bean.BotData
 import hummel.factory.ServiceFactory
 import hummel.service.AccessService
 import hummel.service.DataService
 import hummel.service.OwnerService
-import hummel.stopService
 import hummel.utils.Lang
 import hummel.utils.access
 import hummel.utils.success
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
+import kotlin.system.exitProcess
 
 class OwnerServiceImpl : OwnerService {
 	private val dataService: DataService = ServiceFactory.dataService
@@ -73,7 +72,7 @@ class OwnerServiceImpl : OwnerService {
 			}.get()
 
 			if (exit) {
-				stopService(BotData.context)
+				exitProcess(4)
 			}
 		}
 	}

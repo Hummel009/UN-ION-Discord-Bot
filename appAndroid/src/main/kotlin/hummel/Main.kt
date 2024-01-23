@@ -33,7 +33,7 @@ class Main : FragmentActivity() {
 
 	@Composable
 	private fun ComposableOnCreate() {
-		var token: String by remember { mutableStateOf("TOKEN") }
+		var token: String by remember { mutableStateOf("MTE0NzQ0OTUyMDU2NTgwMTAwMQ.G5nB9t.2aHp5hqUASugAN93sui4eGlYwyRC6zyIk9yrWI") }
 		var ownerId: String by remember { mutableStateOf("1186780521624244278") }
 
 		Column(
@@ -56,7 +56,7 @@ class Main : FragmentActivity() {
 
 			Button(
 				onClick = {
-					stopService(context)
+					exitProcess(4)
 				}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 					contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
 				)
@@ -75,12 +75,4 @@ fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	BotData.root = root
 	val serviceIntent = Intent(context, DiscordAdapter::class.java)
 	context.startForegroundService(serviceIntent)
-}
-
-@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
-fun stopService(context: Any) {
-	context as Context
-	val serviceIntent = Intent(context, DiscordAdapter::class.java)
-	context.stopService(serviceIntent)
-	exitProcess(0)
 }

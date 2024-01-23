@@ -18,3 +18,4 @@ dependencyResolutionManagement {
 
 include(":appAndroid")
 include(":appWindows")
+include(":appCommon")
