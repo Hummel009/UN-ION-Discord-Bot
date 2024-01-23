@@ -5,7 +5,10 @@ import hummel.dao.FileDao
 import hummel.utils.random
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
+
+private const val NOT_EXIST = "File doesn't exist!"
 
 class FileDaoImpl : FileDao {
 	override fun createFile(filePath: String) {
@@ -25,7 +28,9 @@ class FileDaoImpl : FileDao {
 	override fun removeFile(filePath: String) {
 		val file = getFile(filePath)
 		if (file.exists()) {
-			file.delete()
+			if (!file.delete()) {
+				throw FileNotFoundException()
+			}
 		}
 	}
 
@@ -49,7 +54,7 @@ class FileDaoImpl : FileDao {
 				it.read(byteArray)
 			}
 		} else {
-			throw Exception("File doesn't exist!")
+			throw Exception(NOT_EXIST)
 		}
 		return byteArray
 	}
@@ -61,7 +66,7 @@ class FileDaoImpl : FileDao {
 				it.write(byteArray)
 			}
 		} else {
-			throw Exception("File doesn't exist!")
+			throw Exception(NOT_EXIST)
 		}
 	}
 
@@ -72,7 +77,7 @@ class FileDaoImpl : FileDao {
 				it.write(byteArray)
 			}
 		} else {
-			throw Exception("File doesn't exist!")
+			throw Exception(NOT_EXIST)
 		}
 	}
 
@@ -88,6 +93,6 @@ class FileDaoImpl : FileDao {
 			}
 			return null
 		}
-		throw Exception("File doesn't exist!")
+		throw Exception(NOT_EXIST)
 	}
 }
