@@ -9,7 +9,8 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=sqale_index)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Hummel009_UN-ION-Discord-Bot&metric=ncloc)](https://sonarcloud.io/summary/overall?id=Hummel009_UN-ION-Discord-Bot)
 
-Мультиплатформенный бот для моего сервера в Discord. Может быть запущен с Windows либо Android. Поскольку телефон у меня включен и находится в зоне досягаемости интернета практически всегда, то это, фактически, бесплатный хост.
+Мультиплатформенный бот для моего сервера в Discord. Может быть запущен с Windows либо Android. Поскольку телефон у меня
+включен и находится в зоне досягаемости интернета практически всегда, то это, фактически, бесплатный хост.
 
 ## Общая информация
 
