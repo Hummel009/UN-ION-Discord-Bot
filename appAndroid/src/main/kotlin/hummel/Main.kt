@@ -74,5 +74,5 @@ fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	BotData.ownerId = ownerId
 	BotData.root = root
 	val serviceIntent = Intent(context, DiscordAdapter::class.java)
-	context.startForegroundService(serviceIntent)
+	context.startService(serviceIntent)
 }
