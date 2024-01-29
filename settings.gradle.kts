@@ -1,23 +1,20 @@
 pluginManagement {
 	repositories {
 		google()
+		mavenLocal()
 		mavenCentral()
 		gradlePluginPortal()
-		maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 	}
 }
 
 dependencyResolutionManagement {
-	repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 	repositories {
 		google()
+		mavenLocal()
 		mavenCentral()
 		gradlePluginPortal()
 	}
-}
-
-dependencyResolutionManagement {
-	repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
 }
 
 plugins {
