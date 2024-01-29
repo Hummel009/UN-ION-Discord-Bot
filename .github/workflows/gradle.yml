@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        version: [ 'Common', 'Windows', 'Android' ]
+        version: [ 'Windows', 'Android' ]
     steps:
       - uses: actions/checkout@main
       - name: Set up JDK 21
