@@ -5,8 +5,8 @@ import hummel.dao.FileDao
 import hummel.utils.random
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.IOException
 
 private const val NOT_EXIST = "File doesn't exist!"
 
@@ -29,7 +29,7 @@ class FileDaoImpl : FileDao {
 		val file = getFile(filePath)
 		if (file.exists()) {
 			if (!file.delete()) {
-				throw FileNotFoundException()
+				throw IOException()
 			}
 		}
 	}
@@ -37,7 +37,9 @@ class FileDaoImpl : FileDao {
 	override fun removeFolder(folderPath: String) {
 		val folder = getFolder(folderPath)
 		if (folder.exists()) {
-			folder.deleteRecursively()
+			if (!folder.deleteRecursively()) {
+				throw IOException()
+			}
 		}
 	}
 

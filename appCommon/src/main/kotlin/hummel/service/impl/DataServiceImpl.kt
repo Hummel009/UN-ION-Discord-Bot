@@ -34,10 +34,13 @@ class DataServiceImpl : DataService {
 		val archiveFilePath = "archive/bot.zip"
 
 		fileDao.createFolder(archiveFolderPath)
+
 		zipDao.zipFolder(targetFolderPath, archiveFilePath)
 		val file = fileDao.getFile(archiveFilePath)
 		sc.createFollowupMessageBuilder().addAttachment(file).send().get()
 		fileDao.removeFile(archiveFilePath)
+
+		fileDao.removeFolder(archiveFolderPath)
 	}
 
 	override fun importBotData(byteArray: ByteArray) {
@@ -46,10 +49,15 @@ class DataServiceImpl : DataService {
 		val archiveFilePath = "archive/bot.zip"
 
 		fileDao.createFolder(archiveFolderPath)
+
 		fileDao.createFile(archiveFilePath)
 		fileDao.writeToFile(archiveFilePath, byteArray)
+		fileDao.removeFolder(targetFolderPath)
+		fileDao.createFolder(targetFolderPath)
 		zipDao.unzipFile(archiveFilePath, targetFolderPath)
 		fileDao.removeFile(archiveFilePath)
+
+		fileDao.removeFolder(archiveFolderPath)
 	}
 
 	override fun saveServerMessage(server: Server, msg: String) {
