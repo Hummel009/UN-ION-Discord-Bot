@@ -24,7 +24,7 @@ java {
 compose {
 	desktop {
 		application {
-			mainClass = "hummel.MainKt"
+			mainClass = "com.github.hummel.union.MainKt"
 
 			nativeDistributions {
 				targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
@@ -40,7 +40,7 @@ tasks {
 		manifest {
 			attributes(
 				mapOf(
-					"Main-Class" to "hummel.MainKt"
+					"Main-Class" to "com.github.hummel.union.MainKt"
 				)
 			)
 		}
