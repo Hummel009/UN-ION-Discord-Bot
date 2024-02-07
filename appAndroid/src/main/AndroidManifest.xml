@@ -22,12 +22,12 @@
 			android:supportsRtl="true"
 			android:theme="@style/Theme.Hundroid">
 		<service
-				android:name="hummel.DiscordAdapter"
+				android:name="com.github.hummel.union.DiscordAdapter"
 				android:foregroundServiceType="dataSync"
 				android:exported="false">
 		</service>
 		<activity
-				android:name="hummel.Main"
+				android:name="com.github.hummel.union.Main"
 				android:exported="true"
 				android:theme="@style/Theme.Hundroid">
 			<intent-filter>
