@@ -1,4 +1,4 @@
-package com.github.hummel.union
+package com.github.hummel.union.android
 
 import android.content.Context
 import android.content.Intent

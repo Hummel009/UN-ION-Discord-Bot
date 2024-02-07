@@ -1,4 +1,4 @@
-package com.github.hummel.union
+package com.github.hummel.union.android
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel

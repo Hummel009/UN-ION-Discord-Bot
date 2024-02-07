@@ -1,4 +1,4 @@
-package com.github.hummel.union
+package com.github.hummel.union.windows
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

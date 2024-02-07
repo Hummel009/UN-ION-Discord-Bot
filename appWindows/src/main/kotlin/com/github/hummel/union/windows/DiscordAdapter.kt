@@ -1,4 +1,4 @@
-package com.github.hummel.union
+package com.github.hummel.union.windows
 
 import com.github.hummel.union.controller.DiscordController
 import com.github.hummel.union.controller.impl.DiscordControllerImpl
