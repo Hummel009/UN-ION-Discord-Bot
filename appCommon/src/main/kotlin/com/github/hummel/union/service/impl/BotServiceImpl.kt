@@ -68,6 +68,7 @@ class BotServiceImpl : BotService {
 				userIds.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY[serverData]}!") }
 				serverData.lastWish.day = currentDay
 				serverData.lastWish.month = currentMonth
+				dataService.saveServerData(server, serverData)
 			}
 		}
 	}
