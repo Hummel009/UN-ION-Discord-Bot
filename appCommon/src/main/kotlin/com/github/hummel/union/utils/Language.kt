@@ -49,23 +49,6 @@ fun getFormattedTranslatedDate(month: Month, serverData: ServerData, day: Int): 
 			}
 		}
 
-		"en" -> {
-			when (month) {
-				Month.JANUARY -> "January $day"
-				Month.FEBRUARY -> "February $day"
-				Month.MARCH -> "March $day"
-				Month.APRIL -> "April $day"
-				Month.MAY -> "May $day"
-				Month.JUNE -> "June $day"
-				Month.JULY -> "July $day"
-				Month.AUGUST -> "August $day"
-				Month.SEPTEMBER -> "September $day"
-				Month.OCTOBER -> "October $day"
-				Month.NOVEMBER -> "November $day"
-				Month.DECEMBER -> "December $day"
-			}
-		}
-
 		"be" -> {
 			when (month) {
 				Month.JANUARY -> "$day студзеня"
@@ -80,6 +63,23 @@ fun getFormattedTranslatedDate(month: Month, serverData: ServerData, day: Int): 
 				Month.OCTOBER -> "$day кастрычніка"
 				Month.NOVEMBER -> "$day лістапада"
 				Month.DECEMBER -> "$day снежня"
+			}
+		}
+
+		"en" -> {
+			when (month) {
+				Month.JANUARY -> "January $day"
+				Month.FEBRUARY -> "February $day"
+				Month.MARCH -> "March $day"
+				Month.APRIL -> "April $day"
+				Month.MAY -> "May $day"
+				Month.JUNE -> "June $day"
+				Month.JULY -> "July $day"
+				Month.AUGUST -> "August $day"
+				Month.SEPTEMBER -> "September $day"
+				Month.OCTOBER -> "October $day"
+				Month.NOVEMBER -> "November $day"
+				Month.DECEMBER -> "December $day"
 			}
 		}
 
