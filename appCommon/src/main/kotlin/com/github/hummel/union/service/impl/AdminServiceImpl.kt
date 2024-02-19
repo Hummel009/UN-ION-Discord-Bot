@@ -315,7 +315,8 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.lang = lang
-							EmbedBuilder().success(sc, serverData, I18n.of("set_language", serverData).format(lang))
+							val langName = I18n.of(lang, serverData)
+							EmbedBuilder().success(sc, serverData, I18n.of("set_language", serverData).format(langName))
 						} catch (e: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 						}

@@ -60,7 +60,10 @@ object LangBeBy : Lang {
 			"secret_channel": "<#%d>",
 			"manager": "<@&%d>",
 			"choice_set": "Мне прапанавалі выбраць адзін элемент з набору: %s",
-			"choice_select": "Я выбіраю... %s"
+			"choice_select": "Я выбіраю... %s",
+			"be": "беларуская",
+			"en": "англійская",
+			"ru": "руская"
 		}
 	""".trimIndent()
 }

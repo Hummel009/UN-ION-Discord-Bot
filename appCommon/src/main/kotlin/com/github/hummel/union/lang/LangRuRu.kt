@@ -60,7 +60,10 @@ object LangRuRu : Lang {
 			"secret_channel": "<#%d>",
 			"manager": "<@&%d>",
 			"choice_set": "Мне предложили выбрать один элемент из набора: %s",
-			"choice_select": "Я выбираю... %s"
+			"choice_select": "Я выбираю... %s",
+			"be": "белорусский",
+			"en": "английский",
+			"ru": "русский"
 		}
 	""".trimIndent()
 }

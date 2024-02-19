@@ -48,7 +48,7 @@ class LoginServiceImpl : LoginService {
 		"clear_messages" with Settings("/clear_messages", emptyList(), api)
 		"clear_data" with Settings("/clear_data", emptyList(), api)
 		"set_chance" with Settings("/set_chance [number]", argsList(), api)
-		"set_language" with Settings("/set_language [ru/en]", argsList(), api)
+		"set_language" with Settings("/set_language [ru/en/be]", argsList(), api)
 		"nuke" with Settings("/nuke [number]", argsList(), api)
 
 		"import" with Settings("/import", file(), api)
