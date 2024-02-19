@@ -153,7 +153,7 @@ class UserServiceImpl : UserService {
 					append(I18n.of("current_chance", serverData).format(serverData.chance), "\r\n")
 					append(I18n.of("current_language", serverData).format(langName), "\r\n")
 					if (serverData.birthdays.isEmpty()) {
-						append(I18n.of("no_birthdays", serverData), "\r\n")
+						append("\r\n", I18n.of("no_birthdays", serverData), "\r\n")
 					} else {
 						append("\r\n", I18n.of("has_birthdays", serverData), "\r\n")
 						serverData.birthdays.sortedWith(
@@ -169,7 +169,7 @@ class UserServiceImpl : UserService {
 						append("\r\n")
 					}
 					if (serverData.managers.isEmpty()) {
-						append(I18n.of("no_managers", serverData), "\r\n")
+						append("\r\n", I18n.of("no_managers", serverData), "\r\n")
 					} else {
 						append("\r\n", I18n.of("has_managers", serverData), "\r\n")
 						serverData.managers.sortedWith(
@@ -182,7 +182,7 @@ class UserServiceImpl : UserService {
 						append("\r\n")
 					}
 					if (serverData.secretChannels.isEmpty()) {
-						append(I18n.of("no_secret_channels", serverData), "\r\n")
+						append("\r\n", I18n.of("no_secret_channels", serverData), "\r\n")
 					} else {
 						append("\r\n", I18n.of("has_secret_channels", serverData), "\r\n")
 						serverData.secretChannels.sortedWith(
