@@ -24,7 +24,7 @@ java {
 compose {
 	desktop {
 		application {
-			mainClass = "com.github.hummel.union.MainKt"
+			mainClass = "com.github.hummel.union.windows.MainKt"
 
 			nativeDistributions {
 				targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

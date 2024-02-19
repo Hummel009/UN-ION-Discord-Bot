@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-	namespace = "hummel.union"
+	namespace = "com.github.hummel.union"
 	compileSdk = 34
 
 	packaging {
@@ -14,7 +14,7 @@ android {
 	}
 
 	defaultConfig {
-		applicationId = "hummel.union"
+		applicationId = "com.github.hummel.union"
 		minSdk = 29
 		targetSdk = 34
 		versionCode = 1
