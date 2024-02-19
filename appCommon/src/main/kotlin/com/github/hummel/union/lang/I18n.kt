@@ -19,7 +19,7 @@ object I18n {
 		translation[codename]?.let {
 			return@of it
 		} ?: run {
-			throw Exception()
+			return@of "Invalid translation key!"
 		}
 	}
 }

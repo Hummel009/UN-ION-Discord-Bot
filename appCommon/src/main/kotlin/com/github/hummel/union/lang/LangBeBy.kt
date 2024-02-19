@@ -7,7 +7,12 @@ object LangBeBy : Lang {
 			"exit": "Прыкладанне будзе выключана.",
 			"nuke": "Паведамленні выдалены.",
 			"random": "Выпадковы лік: %d.",
+			"no_managers": "Кіраўніцкіх роляў няма.",
+			"has_managers": "Кіраўніцкія ролі:",
 			"no_birthdays": "Днёў нараджэння няма.",
+			"has_birthdays": "Дні нараджэння:",
+			"no_secret_channels": "Сакрэтных каналаў няма.",
+			"has_secret_channels": "Сакрэтныя каналы:",
 			"happy_birthday": "<@%d>, з днём нараджэння!",
 			"no_access": "Вы не можаце выкарыстоўваць гэтую каманду.",
 			"import": "Даныя імпартаваны.",
@@ -51,7 +56,9 @@ object LangBeBy : Lang {
 			"october": "%d кастрычніка",
 			"november": "%d лістапада",
 			"december": "%d снежня",
-			"birthday": "<@%d>: %s"
+			"user_birthday": "<@%d>: %s",
+			"secret_channel": "<#%d>",
+			"manager": "<@%d>"
 		}
 	""".trimIndent()
 }

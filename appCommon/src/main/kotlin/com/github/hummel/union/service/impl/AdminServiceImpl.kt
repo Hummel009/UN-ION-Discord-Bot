@@ -55,7 +55,7 @@ class AdminServiceImpl : AdminService {
 							}
 							serverData.birthdays.add(ServerData.Birthday(userId, ServerData.Date(day, month)))
 
-							val date = I18n.of(Month.of(month).name.uppercase(), serverData).format(day)
+							val date = I18n.of(Month.of(month).name.lowercase(), serverData).format(day)
 
 							EmbedBuilder().success(
 								sc, serverData, I18n.of("added_birthday", serverData).format(userId, date)

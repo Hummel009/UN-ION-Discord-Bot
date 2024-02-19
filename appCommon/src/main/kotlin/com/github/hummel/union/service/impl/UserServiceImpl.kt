@@ -152,15 +152,40 @@ class UserServiceImpl : UserService {
 					if (serverData.birthdays.isEmpty()) {
 						append(I18n.of("no_birthdays", serverData), "\r\n")
 					} else {
+						append("\r\n", I18n.of("has_birthdays", serverData), "\r\n")
 						serverData.birthdays.sortedWith(
 							compareBy({ it.date.month }, { it.date.day })
 						).joinTo(this, "\r\n") {
-							val userId = server.getMemberById(it.id).get().id
+							val userId = it.id
 							val month = Month.of(it.date.month)
 							val day = it.date.day
-							val date = I18n.of(month.name.uppercase(), serverData).format(day)
+							val date = I18n.of(month.name.lowercase(), serverData).format(day)
 
-							I18n.of("birthday", serverData).format(userId, date)
+							I18n.of("user_birthday", serverData).format(userId, date)
+						}
+					}
+					if (serverData.managers.isEmpty()) {
+						append(I18n.of("no_managers", serverData), "\r\n")
+					} else {
+						append("\r\n", I18n.of("has_managers", serverData), "\r\n")
+						serverData.managers.sortedWith(
+							compareBy { it.id }
+						).joinTo(this, "\r\n") {
+							val userId = it.id
+
+							I18n.of("manager", serverData).format(userId)
+						}
+					}
+					if (serverData.secretChannels.isEmpty()) {
+						append(I18n.of("no_secret_channels", serverData), "\r\n")
+					} else {
+						append("\r\n", I18n.of("has_secret_channels", serverData), "\r\n")
+						serverData.secretChannels.sortedWith(
+							compareBy { it.id }
+						).joinTo(this, "\r\n") {
+							val channelId = it.id
+
+							I18n.of("secret_channel", serverData).format(channelId)
 						}
 					}
 				}

@@ -7,7 +7,12 @@ object LangEnUs : Lang {
 			"exit": "Application will be turned off.",
 			"nuke": "Messages have been deleted.",
 			"random": "Random number: %d.",
+			"no_managers": "There are no manager roles.",
+			"has_managers": "Manager roles:",
 			"no_birthdays": "There are no birthdays.",
+			"has_birthdays": "Birthdays:",
+			"no_secret_channels": "There are no secret channels.",
+			"has_secret_channels": "Secret channels:",
 			"happy_birthday": "<@%d>, happy birthday to you!",
 			"no_access": "You cannot use this command.",
 			"import": "Data has been imported.",
@@ -51,7 +56,9 @@ object LangEnUs : Lang {
 			"october": "October %d",
 			"november": "November %d",
 			"december": "December %d",
-			"birthday": "<@%d>: %s"
+			"user_birthday": "<@%d>: %s",
+			"secret_channel": "<#%d>",
+			"manager": "<@%d>"
 		}
 	""".trimIndent()
 }

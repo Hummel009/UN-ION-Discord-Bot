@@ -7,7 +7,12 @@ object LangRuRu : Lang {
 			"exit": "Приложение будет выключено.",
 			"nuke": "Сообщения удалены.",
 			"random": "Случайное число: %d.",
+			"no_managers": "Управляющих ролей нет.",
+			"has_managers": "Управляющие роли:",
 			"no_birthdays": "Дней рождения нет.",
+			"has_birthdays": "Дни рождения:",
+			"no_secret_channels": "Секретных каналов нет.",
+			"has_secret_channels": "Секретные каналы:",
 			"happy_birthday": "<@%d>, с днём рождения!",
 			"no_access": "Вы не можете использовать эту команду.",
 			"import": "Данные импортированы.",
@@ -51,7 +56,9 @@ object LangRuRu : Lang {
 			"october": "%d октября",
 			"november": "%d ноября",
 			"december": "%d декабря",
-			"birthday": "<@%d>: %s"
+			"user_birthday": "<@%d>: %s",
+			"secret_channel": "<#%d>",
+			"manager": "<@%d>"
 		}
 	""".trimIndent()
 }
