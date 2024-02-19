@@ -62,8 +62,8 @@ object LangEnUs : Lang {
 			"choice_set": "I was asked to select one element from the set: %s",
 			"choice_select": "I choose... %s",
 			"be": "belarusian",
-			"en": "russian",
-			"ru": "руская"
+			"en": "english",
+			"ru": "russian"
 		}
 	""".trimIndent()
 }
