@@ -58,7 +58,9 @@ object LangRuRu : Lang {
 			"december": "%d декабря",
 			"user_birthday": "<@%d>: %s",
 			"secret_channel": "<#%d>",
-			"manager": "<@&%d>"
+			"manager": "<@&%d>",
+			"choice_set": "Мне предложили выбрать один элемент из набора: %s",
+			"choice_select": "Я выбираю... %s"
 		}
 	""".trimIndent()
 }

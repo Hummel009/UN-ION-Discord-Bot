@@ -2,9 +2,9 @@ package com.github.hummel.union.service.impl
 
 import com.github.hummel.union.bean.ApiResponse
 import com.github.hummel.union.factory.ServiceFactory
+import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.UserService
-import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.utils.error
 import com.github.hummel.union.utils.random
 import com.github.hummel.union.utils.success
@@ -41,7 +41,7 @@ class UserServiceImpl : UserService {
 
 				val arguments = sc.arguments[0].stringValue.get()
 				val embed = if (arguments.contains("?")) {
-					val answer = I18n.of(answers.random(), serverData)
+					val answer = I18n.of(answers.random().lowercase(), serverData)
 					EmbedBuilder().success(sc, serverData, "— $arguments\r\n— $answer")
 				} else {
 					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
@@ -60,7 +60,9 @@ class UserServiceImpl : UserService {
 
 				val arguments = sc.arguments[0].stringValue.get().split(" ")
 				val embed = if (arguments.isNotEmpty()) {
-					EmbedBuilder().success(sc, serverData, "$arguments\r\n${arguments.random()}")
+					val choiceSet = I18n.of("choice_set", serverData).format(arguments)
+					val choiceSelect = I18n.of("choice_select", serverData).format(arguments.random())
+					EmbedBuilder().success(sc, serverData, "$choiceSet\r\n$choiceSelect")
 				} else {
 					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}

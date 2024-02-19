@@ -58,7 +58,9 @@ object LangBeBy : Lang {
 			"december": "%d снежня",
 			"user_birthday": "<@%d>: %s",
 			"secret_channel": "<#%d>",
-			"manager": "<@&%d>"
+			"manager": "<@&%d>",
+			"choice_set": "Мне прапанавалі выбраць адзін элемент з набору: %s",
+			"choice_select": "Я выбіраю... %s"
 		}
 	""".trimIndent()
 }
