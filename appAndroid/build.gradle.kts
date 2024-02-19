@@ -1,3 +1,6 @@
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 plugins {
 	id("com.android.application")
 	id("org.jetbrains.kotlin.android")
@@ -17,8 +20,8 @@ android {
 		applicationId = "com.github.hummel.union"
 		minSdk = 29
 		targetSdk = 34
-		versionCode = 1
-		versionName = "1.0"
+		versionCode = 3
+		versionName = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.MM.dd"))
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 	}
