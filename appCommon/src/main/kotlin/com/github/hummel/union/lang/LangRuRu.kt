@@ -8,7 +8,7 @@ object LangRuRu : Lang {
 			"NUKE": "Сообщения удалены.",
 			"RANDOM": "Случайное число: %d.",
 			"NO_BIRTHDAYS": "Дней рождения нет.",
-			"HAPPY_BIRTHDAY": "%s, с днём рождения!",
+			"HAPPY_BIRTHDAY": "<@%d>, с днём рождения!",
 			"NO_ACCESS": "Вы не можете использовать эту команду.",
 			"IMPORT": "Данные импортированы.",
 			"INVALID_ARG": "Недопустимые аргументы.",
@@ -50,7 +50,8 @@ object LangRuRu : Lang {
 			"SEPTEMBER": "%d сентября",
 			"OCTOBER": "%d октября",
 			"NOVEMBER": "%d ноября",
-			"DECEMBER": "%d декабря"
+			"DECEMBER": "%d декабря",
+			"birthday": "<@%d>: %s"
 		}
 	""".trimIndent()
 }

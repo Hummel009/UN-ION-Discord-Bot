@@ -160,7 +160,7 @@ class UserServiceImpl : UserService {
 							val day = it.date.day
 							val date = I18n.of(month.name.uppercase(), serverData).format(day)
 
-							"<@$userId>: $date"
+							I18n.of("birthday", serverData).format(userId, date)
 						}
 					}
 				}

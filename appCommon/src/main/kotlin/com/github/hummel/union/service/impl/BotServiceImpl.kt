@@ -65,7 +65,7 @@ class BotServiceImpl : BotService {
 			val (isBirthday, userIds) = isBirthdayToday(serverData)
 
 			if (isBirthday && (currentDay != serverData.lastWish.day || currentMonth != serverData.lastWish.month)) {
-				userIds.forEach { event.channel.sendMessage("<@$it>, ${I18n.of("HAPPY_BIRTHDAY", serverData)}!") }
+				userIds.forEach { event.channel.sendMessage(I18n.of("HAPPY_BIRTHDAY", serverData).format(it)) }
 				serverData.lastWish.day = currentDay
 				serverData.lastWish.month = currentMonth
 				dataService.saveServerData(server, serverData)

@@ -8,7 +8,7 @@ object LangBeBy : Lang {
 			"NUKE": "Паведамленні выдалены.",
 			"RANDOM": "Выпадковы лік: %d.",
 			"NO_BIRTHDAYS": "Днёў нараджэння няма.",
-			"HAPPY_BIRTHDAY": "%s, з днём нараджэння!",
+			"HAPPY_BIRTHDAY": "<@%d>, з днём нараджэння!",
 			"NO_ACCESS": "Вы не можаце выкарыстоўваць гэтую каманду.",
 			"IMPORT": "Даныя імпартаваны.",
 			"INVALID_ARG": "Недапушчальныя аргументы.",
@@ -50,7 +50,8 @@ object LangBeBy : Lang {
 			"SEPTEMBER": "%d верасня",
 			"OCTOBER": "%d кастрычніка",
 			"NOVEMBER": "%d лістапада",
-			"DECEMBER": "%d снежня"
+			"DECEMBER": "%d снежня",
+			"birthday": "<@%d>: %s"
 		}
 	""".trimIndent()
 }

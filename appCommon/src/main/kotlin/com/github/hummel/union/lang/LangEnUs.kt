@@ -8,7 +8,7 @@ object LangEnUs : Lang {
 			"NUKE": "Messages have been deleted.",
 			"RANDOM": "Random number: %d.",
 			"NO_BIRTHDAYS": "There are no birthdays.",
-			"HAPPY_BIRTHDAY": "%s, happy birthday to you!",
+			"HAPPY_BIRTHDAY": "<@%d>, happy birthday to you!",
 			"NO_ACCESS": "You cannot use this command.",
 			"IMPORT": "Data has been imported.",
 			"INVALID_ARG": "Invalid arguments.",
@@ -50,7 +50,8 @@ object LangEnUs : Lang {
 			"SEPTEMBER": "September %d",
 			"OCTOBER": "October %d",
 			"NOVEMBER": "November %d",
-			"DECEMBER": "December %d"
+			"DECEMBER": "December %d",
+			"birthday": "<@%d>: %s"
 		}
 	""".trimIndent()
 }
