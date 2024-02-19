@@ -24,11 +24,11 @@ class OwnerServiceImpl : OwnerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val byteArray = sc.arguments[0].attachmentValue.get().asByteArray().join()
 					dataService.importBotData(byteArray)
-					EmbedBuilder().success(sc, serverData, I18n.of("IMPORT", serverData))
+					EmbedBuilder().success(sc, serverData, I18n.of("import", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -44,7 +44,7 @@ class OwnerServiceImpl : OwnerService {
 				val serverData = dataService.loadServerData(server)
 
 				if (!accessService.fromOwnerAtLeast(sc)) {
-					val embed = EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
+					val embed = EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				} else {
 					dataService.exportBotData(sc)
@@ -63,10 +63,10 @@ class OwnerServiceImpl : OwnerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					exit = true
-					EmbedBuilder().success(sc, serverData, I18n.of("EXIT", serverData))
+					EmbedBuilder().success(sc, serverData, I18n.of("exit", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()

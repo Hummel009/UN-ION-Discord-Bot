@@ -44,7 +44,7 @@ class UserServiceImpl : UserService {
 					val answer = I18n.of(answers.random(), serverData)
 					EmbedBuilder().success(sc, serverData, "— $arguments\r\n— $answer")
 				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
+					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -62,7 +62,7 @@ class UserServiceImpl : UserService {
 				val embed = if (arguments.isNotEmpty()) {
 					EmbedBuilder().success(sc, serverData, "$arguments\r\n${arguments.random()}")
 				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
+					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -98,12 +98,12 @@ class UserServiceImpl : UserService {
 
 								EmbedBuilder().success(sc, serverData, "$arguments${apiResponse.replies.random()}")
 							} else {
-								EmbedBuilder().error(sc, serverData, I18n.of("NO_CONNECTION", serverData))
+								EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
 							}
 						}
 					}
 				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
+					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -124,13 +124,13 @@ class UserServiceImpl : UserService {
 						EmbedBuilder().success(
 							sc,
 							serverData,
-							I18n.of("RANDOM", serverData).format(random.nextInt(int))
+							I18n.of("random", serverData).format(random.nextInt(int))
 						)
 					} catch (e: Exception) {
-						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 					}
 				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
+					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -147,10 +147,10 @@ class UserServiceImpl : UserService {
 
 				serverData.birthdays.removeIf { !server.getMemberById(it.id).isPresent }
 				val text = buildString {
-					append(I18n.of("CURRENT_CHANCE", serverData).format(serverData.chance), "\r\n")
-					append(I18n.of("CURRENT_LANGUAGE", serverData).format(serverData.lang), "\r\n")
+					append(I18n.of("current_chance", serverData).format(serverData.chance), "\r\n")
+					append(I18n.of("current_language", serverData).format(serverData.lang), "\r\n")
 					if (serverData.birthdays.isEmpty()) {
-						append(I18n.of("NO_BIRTHDAYS", serverData), "\r\n")
+						append(I18n.of("no_birthdays", serverData), "\r\n")
 					} else {
 						serverData.birthdays.sortedWith(
 							compareBy({ it.date.month }, { it.date.day })

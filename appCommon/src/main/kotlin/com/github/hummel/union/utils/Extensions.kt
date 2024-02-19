@@ -6,10 +6,10 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.interaction.SlashCommandInteraction
 
 fun EmbedBuilder.error(sc: SlashCommandInteraction, serverData: ServerData, desc: String): EmbedBuilder =
-	setAuthor(sc.user).setTitle(I18n.of("MSG_ERROR", serverData)).setDescription(desc)
+	setAuthor(sc.user).setTitle(I18n.of("msg_error", serverData)).setDescription(desc)
 
 fun EmbedBuilder.access(sc: SlashCommandInteraction, serverData: ServerData, desc: String): EmbedBuilder =
-	setAuthor(sc.user).setTitle(I18n.of("MSG_ACCESS", serverData)).setDescription(desc)
+	setAuthor(sc.user).setTitle(I18n.of("msg_access", serverData)).setDescription(desc)
 
 fun EmbedBuilder.success(sc: SlashCommandInteraction, serverData: ServerData, desc: String): EmbedBuilder =
-	setAuthor(sc.user).setTitle(I18n.of("MSG_SUCCESS", serverData)).setDescription(desc)
+	setAuthor(sc.user).setTitle(I18n.of("msg_success", serverData)).setDescription(desc)
