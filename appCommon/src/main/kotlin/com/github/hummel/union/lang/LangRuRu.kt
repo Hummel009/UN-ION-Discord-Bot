@@ -1,7 +1,7 @@
 package com.github.hummel.union.lang
 
-object LangRuRu {
-	val JSON: String = """
+object LangRuRu : Lang {
+	override fun getJson(): String = """
 		{
 			"NO_CONNECTION": "Сайт с нейросетью временно недоступен.",
 			"EXIT": "Приложение будет выключено.",
@@ -17,11 +17,11 @@ object LangRuRu {
 			"SET_CHANCE": "Установлен шанс сообщения: %d.",
 			"CURRENT_LANGUAGE": "Текущий язык интерфейса: %s.",
 			"CURRENT_CHANCE": "Текущий шанс сообщения: %d.",
-			"ADDED_MANAGER": "Добавлена управляющая роль: <@%d>.",
-			"ADDED_CHANNEL": "Добавлен секретный канал: <@%d>.",
-			"ADDED_BIRTHDAY": "Добавлен день рождения: <@%d>, %d.%d.",
-			"REMOVED_MANAGER": "Удалена управляющая роль: <@%d>.",
-			"REMOVED_CHANNEL": "Удалён секретный канал: <@%d>.",
+			"ADDED_MANAGER": "Добавлена управляющая роль: <@&%d>.",
+			"ADDED_CHANNEL": "Добавлен секретный канал: <#%d>.",
+			"ADDED_BIRTHDAY": "Добавлен день рождения: <@%d>, %s.",
+			"REMOVED_MANAGER": "Удалена управляющая роль: <@&%d>.",
+			"REMOVED_CHANNEL": "Удалён секретный канал: <#%d>.",
 			"REMOVED_BIRTHDAY": "Удалён день рождения: <@%d>.",
 			"CLEARED_MANAGERS": "Управляющие роли сервера очищены.",
 			"CLEARED_CHANNELS": "Секретные каналы сервера очищены.",
@@ -38,7 +38,19 @@ object LangRuRu {
 			"GAME_NO_4": "Нет, я уверен в этом на все сто процентов.",
 			"MSG_ACCESS": "Доступ",
 			"MSG_ERROR": "Ошибка",
-			"MSG_SUCCESS": "Успех"
+			"MSG_SUCCESS": "Успех",
+			"JANUARY": "%d января",
+			"FEBRUARY": "%d февраля",
+			"MARCH": "%d марта",
+			"APRIL": "%d апреля",
+			"MAY": "%d мая",
+			"JUNE": "%d июня",
+			"JULY": "%d июля",
+			"AUGUST": "%d августа",
+			"SEPTEMBER": "%d сентября",
+			"OCTOBER": "%d октября",
+			"NOVEMBER": "%d ноября",
+			"DECEMBER": "%d декабря"
 		}
 	""".trimIndent()
 }

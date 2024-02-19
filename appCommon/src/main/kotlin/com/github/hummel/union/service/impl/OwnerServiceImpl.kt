@@ -4,7 +4,7 @@ import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.service.AccessService
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.OwnerService
-import com.github.hummel.union.utils.Lang
+import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.utils.access
 import com.github.hummel.union.utils.success
 import org.javacord.api.entity.message.embed.EmbedBuilder
@@ -24,11 +24,11 @@ class OwnerServiceImpl : OwnerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					val byteArray = sc.arguments[0].attachmentValue.get().asByteArray().join()
 					dataService.importBotData(byteArray)
-					EmbedBuilder().success(sc, serverData, Lang.IMPORT[serverData])
+					EmbedBuilder().success(sc, serverData, I18n.of("IMPORT", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -44,7 +44,7 @@ class OwnerServiceImpl : OwnerService {
 				val serverData = dataService.loadServerData(server)
 
 				if (!accessService.fromOwnerAtLeast(sc)) {
-					val embed = EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					val embed = EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 					sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 				} else {
 					dataService.exportBotData(sc)
@@ -63,10 +63,10 @@ class OwnerServiceImpl : OwnerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromOwnerAtLeast(sc)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					exit = true
-					EmbedBuilder().success(sc, serverData, Lang.EXIT[serverData])
+					EmbedBuilder().success(sc, serverData, I18n.of("EXIT", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()

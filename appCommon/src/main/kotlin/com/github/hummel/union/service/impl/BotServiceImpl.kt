@@ -4,7 +4,7 @@ import com.github.hummel.union.bean.ServerData
 import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.service.BotService
 import com.github.hummel.union.service.DataService
-import com.github.hummel.union.utils.Lang
+import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.utils.random
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
@@ -65,7 +65,7 @@ class BotServiceImpl : BotService {
 			val (isBirthday, userIds) = isBirthdayToday(serverData)
 
 			if (isBirthday && (currentDay != serverData.lastWish.day || currentMonth != serverData.lastWish.month)) {
-				userIds.forEach { event.channel.sendMessage("<@$it>, ${Lang.HAPPY_BIRTHDAY[serverData]}!") }
+				userIds.forEach { event.channel.sendMessage("<@$it>, ${I18n.of("HAPPY_BIRTHDAY", serverData)}!") }
 				serverData.lastWish.day = currentDay
 				serverData.lastWish.month = currentMonth
 				dataService.saveServerData(server, serverData)

@@ -1,11 +1,14 @@
 package com.github.hummel.union.service.impl
 
-import com.google.gson.Gson
 import com.github.hummel.union.bean.ApiResponse
 import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.UserService
-import com.github.hummel.union.utils.*
+import com.github.hummel.union.lang.I18n
+import com.github.hummel.union.utils.error
+import com.github.hummel.union.utils.random
+import com.github.hummel.union.utils.success
+import com.google.gson.Gson
 import org.apache.hc.client5.http.classic.methods.HttpPost
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.core5.http.ContentType
@@ -18,15 +21,15 @@ import java.time.Month
 class UserServiceImpl : UserService {
 	private val dataService: DataService = ServiceFactory.dataService
 
-	private val answers: Set<Lang> = setOf(
-		Lang.GAME_YES_1,
-		Lang.GAME_YES_2,
-		Lang.GAME_YES_3,
-		Lang.GAME_YES_4,
-		Lang.GAME_NO_1,
-		Lang.GAME_NO_2,
-		Lang.GAME_NO_3,
-		Lang.GAME_NO_4
+	private val answers: Set<String> = setOf(
+		"GAME_YES_1",
+		"GAME_YES_2",
+		"GAME_YES_3",
+		"GAME_YES_4",
+		"GAME_NO_1",
+		"GAME_NO_2",
+		"GAME_NO_3",
+		"GAME_NO_4"
 	)
 
 	override fun answer(event: InteractionCreateEvent) {
@@ -38,9 +41,10 @@ class UserServiceImpl : UserService {
 
 				val arguments = sc.arguments[0].stringValue.get()
 				val embed = if (arguments.contains("?")) {
-					EmbedBuilder().success(sc, serverData, "— $arguments\r\n— ${answers.random()[serverData]}")
+					val answer = I18n.of(answers.random(), serverData)
+					EmbedBuilder().success(sc, serverData, "— $arguments\r\n— $answer")
 				} else {
-					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -58,7 +62,7 @@ class UserServiceImpl : UserService {
 				val embed = if (arguments.isNotEmpty()) {
 					EmbedBuilder().success(sc, serverData, "$arguments\r\n${arguments.random()}")
 				} else {
-					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -94,12 +98,12 @@ class UserServiceImpl : UserService {
 
 								EmbedBuilder().success(sc, serverData, "$arguments${apiResponse.replies.random()}")
 							} else {
-								EmbedBuilder().error(sc, serverData, Lang.NO_CONNECTION[serverData])
+								EmbedBuilder().error(sc, serverData, I18n.of("NO_CONNECTION", serverData))
 							}
 						}
 					}
 				} else {
-					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -117,12 +121,16 @@ class UserServiceImpl : UserService {
 				val embed = if (arguments.size == 1) {
 					try {
 						val int = arguments[0].toInt()
-						EmbedBuilder().success(sc, serverData, Lang.RANDOM[serverData].format(random.nextInt(int)))
+						EmbedBuilder().success(
+							sc,
+							serverData,
+							I18n.of("RANDOM", serverData).format(random.nextInt(int))
+						)
 					} catch (e: Exception) {
-						EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 					}
 				} else {
-					EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+					EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -139,10 +147,10 @@ class UserServiceImpl : UserService {
 
 				serverData.birthdays.removeIf { !server.getMemberById(it.id).isPresent }
 				val text = buildString {
-					append(Lang.CURRENT_CHANCE[serverData].format(serverData.chance), "\r\n")
-					append(Lang.CURRENT_LANGUAGE[serverData].format(serverData.lang), "\r\n")
+					append(I18n.of("CURRENT_CHANCE", serverData).format(serverData.chance), "\r\n")
+					append(I18n.of("CURRENT_LANGUAGE", serverData).format(serverData.lang), "\r\n")
 					if (serverData.birthdays.isEmpty()) {
-						append(Lang.NO_BIRTHDAYS[serverData], "\r\n")
+						append(I18n.of("NO_BIRTHDAYS", serverData), "\r\n")
 					} else {
 						serverData.birthdays.sortedWith(
 							compareBy({ it.date.month }, { it.date.day })
@@ -150,8 +158,9 @@ class UserServiceImpl : UserService {
 							val userId = server.getMemberById(it.id).get().id
 							val month = Month.of(it.date.month)
 							val day = it.date.day
-							val format = getFormattedTranslatedDate(month, serverData, day)
-							"<@$userId>: $format"
+							val date = I18n.of(month.name.uppercase(), serverData).format(day)
+
+							"<@$userId>: $date"
 						}
 					}
 				}

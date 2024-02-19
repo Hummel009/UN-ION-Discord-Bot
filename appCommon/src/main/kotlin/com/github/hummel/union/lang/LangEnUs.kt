@@ -1,7 +1,7 @@
 package com.github.hummel.union.lang
 
-object LangEnUs {
-	val JSON: String = """
+object LangEnUs : Lang {
+	override fun getJson(): String = """
 		{
 			"NO_CONNECTION": "The site with the neural network is temporarily unavailable.",
 			"EXIT": "Application will be turned off.",
@@ -17,11 +17,11 @@ object LangEnUs {
 			"SET_CHANCE": "Message chance has been set: %s.",
 			"CURRENT_LANGUAGE": "Current language: %s.",
 			"CURRENT_CHANCE": "Current chance: %d.",
-			"ADDED_MANAGER": "Manager role has been added: <@%d>.",
-			"ADDED_CHANNEL": "Secret channel has been added: <@%d>.",
-			"ADDED_BIRTHDAY": "Birthday has been added: <@%d>, %d.%d.",
-			"REMOVED_MANAGER": "Manager role has been removed: <@%d>.",
-			"REMOVED_CHANNEL": "Secret channel has been removed: <@%d>.",
+			"ADDED_MANAGER": "Manager role has been added: <@&%d>.",
+			"ADDED_CHANNEL": "Secret channel has been added: <#%d>.",
+			"ADDED_BIRTHDAY": "Birthday has been added: <@%d>, %s.",
+			"REMOVED_MANAGER": "Manager role has been removed: <@&%d>.",
+			"REMOVED_CHANNEL": "Secret channel has been removed: <#%d>.",
 			"REMOVED_BIRTHDAY": "Birthday has been removed: <@%d>.",
 			"CLEARED_MANAGERS": "Server manager roles have been cleared.",
 			"CLEARED_CHANNELS": "Server secret channels have been cleared.",
@@ -38,7 +38,19 @@ object LangEnUs {
 			"GAME_NO_4": "Definitely not, I'm 100% sure.",
 			"MSG_ACCESS": "Access",
 			"MSG_ERROR": "Error",
-			"MSG_SUCCESS": "Success"
+			"MSG_SUCCESS": "Success",
+			"JANUARY": "January %d",
+			"FEBRUARY": "February %d",
+			"MARCH": "March %d",
+			"APRIL": "April %d",
+			"MAY": "May %d",
+			"JUNE": "June %d",
+			"JULY": "July %d",
+			"AUGUST": "August %d",
+			"SEPTEMBER": "September %d",
+			"OCTOBER": "October %d",
+			"NOVEMBER": "November %d",
+			"DECEMBER": "December %d"
 		}
 	""".trimIndent()
 }

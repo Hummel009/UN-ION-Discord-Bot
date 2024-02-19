@@ -5,12 +5,13 @@ import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.service.AccessService
 import com.github.hummel.union.service.AdminService
 import com.github.hummel.union.service.DataService
-import com.github.hummel.union.utils.Lang
+import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.utils.access
 import com.github.hummel.union.utils.error
 import com.github.hummel.union.utils.success
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
+import java.time.Month
 
 class AdminServiceImpl : AdminService {
 	private val dataService: DataService = ServiceFactory.dataService
@@ -40,7 +41,7 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 3) {
@@ -53,14 +54,17 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.birthdays.add(ServerData.Birthday(userId, ServerData.Date(day, month)))
+
+							val date = I18n.of(Month.of(month).name.uppercase(), serverData).format(day)
+
 							EmbedBuilder().success(
-								sc, serverData, Lang.ADDED_BIRTHDAY[serverData].format(userId, day, month)
+								sc, serverData, I18n.of("ADDED_BIRTHDAY", serverData).format(userId, date)
 							)
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -79,7 +83,7 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -89,12 +93,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.managers.add(ServerData.Role(roleId))
-							EmbedBuilder().success(sc, serverData, Lang.ADDED_MANAGER[serverData].format(roleId))
+							EmbedBuilder().success(sc, serverData, I18n.of("ADDED_MANAGER", serverData).format(roleId))
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -113,7 +117,7 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -124,13 +128,13 @@ class AdminServiceImpl : AdminService {
 							}
 							serverData.secretChannels.add(ServerData.Channel(channelId))
 							EmbedBuilder().success(
-								sc, serverData, Lang.ADDED_CHANNEL[serverData].format(channelId)
+								sc, serverData, I18n.of("ADDED_CHANNEL", serverData).format(channelId)
 							)
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -149,11 +153,11 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.birthdays.clear()
-						EmbedBuilder().success(sc, serverData, Lang.CLEARED_BIRTHDAYS[serverData])
+						EmbedBuilder().success(sc, serverData, I18n.of("CLEARED_BIRTHDAYS", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -161,13 +165,13 @@ class AdminServiceImpl : AdminService {
 								val userId = arguments[0].toLong()
 								serverData.birthdays.removeIf { it.id == userId }
 								EmbedBuilder().success(
-									sc, serverData, Lang.REMOVED_BIRTHDAY[serverData].format(userId)
+									sc, serverData, I18n.of("REMOVED_BIRTHDAY", serverData).format(userId)
 								)
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+								EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 							}
 						} else {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 						}
 					}
 				}
@@ -187,11 +191,11 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.managers.clear()
-						EmbedBuilder().success(sc, serverData, Lang.CLEARED_MANAGERS[serverData])
+						EmbedBuilder().success(sc, serverData, I18n.of("CLEARED_MANAGERS", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -199,13 +203,13 @@ class AdminServiceImpl : AdminService {
 								val roleId = arguments[0].toLong()
 								serverData.managers.removeIf { it.id == roleId }
 								EmbedBuilder().success(
-									sc, serverData, Lang.REMOVED_MANAGER[serverData].format(roleId)
+									sc, serverData, I18n.of("REMOVED_MANAGER", serverData).format(roleId)
 								)
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+								EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 							}
 						} else {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 						}
 					}
 				}
@@ -225,11 +229,11 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.secretChannels.clear()
-						EmbedBuilder().success(sc, serverData, Lang.CLEARED_CHANNELS[serverData])
+						EmbedBuilder().success(sc, serverData, I18n.of("CLEARED_CHANNELS", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -237,13 +241,13 @@ class AdminServiceImpl : AdminService {
 								val channelId = arguments[0].toLong()
 								serverData.secretChannels.removeIf { it.id == channelId }
 								EmbedBuilder().success(
-									sc, serverData, Lang.REMOVED_CHANNEL[serverData].format(channelId)
+									sc, serverData, I18n.of("REMOVED_CHANNEL", serverData).format(channelId)
 								)
 							} catch (e: Exception) {
-								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+								EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 							}
 						} else {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 						}
 					}
 				}
@@ -263,10 +267,10 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					dataService.wipeServerMessages(server)
-					EmbedBuilder().success(sc, serverData, Lang.CLEARED_MESSAGES[serverData])
+					EmbedBuilder().success(sc, serverData, I18n.of("CLEARED_MESSAGES", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -282,10 +286,10 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					dataService.wipeServerData(server)
-					EmbedBuilder().success(sc, serverData, Lang.CLEARED_DATA[serverData])
+					EmbedBuilder().success(sc, serverData, I18n.of("CLEARED_DATA", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -301,7 +305,7 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -311,12 +315,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.lang = lang
-							EmbedBuilder().success(sc, serverData, Lang.SET_LANGUAGE[serverData].format(lang))
+							EmbedBuilder().success(sc, serverData, I18n.of("SET_LANGUAGE", serverData).format(lang))
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -335,7 +339,7 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -345,12 +349,12 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.chance = chance
-							EmbedBuilder().success(sc, serverData, Lang.SET_CHANCE[serverData].format(chance))
+							EmbedBuilder().success(sc, serverData, I18n.of("SET_CHANCE", serverData).format(chance))
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -369,7 +373,7 @@ class AdminServiceImpl : AdminService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, Lang.NO_ACCESS[serverData])
+					EmbedBuilder().access(sc, serverData, I18n.of("NO_ACCESS", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -380,12 +384,12 @@ class AdminServiceImpl : AdminService {
 							}
 							val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
 							sc.channel.get().bulkDelete(*messageIds).get()
-							EmbedBuilder().success(sc, serverData, Lang.NUKE[serverData])
+							EmbedBuilder().success(sc, serverData, I18n.of("NUKE", serverData))
 						} catch (e: Exception) {
-							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
+							EmbedBuilder().error(sc, serverData, I18n.of("INVALID_FORMAT", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
+						EmbedBuilder().error(sc, serverData, I18n.of("INVALID_ARG", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
