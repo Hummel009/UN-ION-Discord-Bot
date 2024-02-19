@@ -31,18 +31,59 @@ enum class Lang {
 }
 
 fun getFormattedTranslatedDate(month: Month, serverData: ServerData, day: Int): String {
-	return when (month) {
-		Month.JANUARY -> if (serverData.lang == "ru") "$day января" else "January $day"
-		Month.FEBRUARY -> if (serverData.lang == "ru") "$day февраля" else "February $day"
-		Month.MARCH -> if (serverData.lang == "ru") "$day марта" else "March $day"
-		Month.APRIL -> if (serverData.lang == "ru") "$day апреля" else "April $day"
-		Month.MAY -> if (serverData.lang == "ru") "$day мая" else "May $day"
-		Month.JUNE -> if (serverData.lang == "ru") "$day июня" else "June $day"
-		Month.JULY -> if (serverData.lang == "ru") "$day июля" else "July $day"
-		Month.AUGUST -> if (serverData.lang == "ru") "$day августа" else "August $day"
-		Month.SEPTEMBER -> if (serverData.lang == "ru") "$day сентября" else "September $day"
-		Month.OCTOBER -> if (serverData.lang == "ru") "$day октября" else "October $day"
-		Month.NOVEMBER -> if (serverData.lang == "ru") "$day ноября" else "November $day"
-		Month.DECEMBER -> if (serverData.lang == "ru") "$day декабря" else "December $day"
+	return when (serverData.lang) {
+		"ru" -> {
+			when (month) {
+				Month.JANUARY -> "$day января"
+				Month.FEBRUARY -> "$day февраля"
+				Month.MARCH -> "$day марта"
+				Month.APRIL -> "$day апреля"
+				Month.MAY -> "$day мая"
+				Month.JUNE -> "$day июня"
+				Month.JULY -> "$day июля"
+				Month.AUGUST -> "$day августа"
+				Month.SEPTEMBER -> "$day сентября"
+				Month.OCTOBER -> "$day октября"
+				Month.NOVEMBER -> "$day ноября"
+				Month.DECEMBER -> "$day декабря"
+			}
+		}
+
+		"en" -> {
+			when (month) {
+				Month.JANUARY -> "January $day"
+				Month.FEBRUARY -> "February $day"
+				Month.MARCH -> "March $day"
+				Month.APRIL -> "April $day"
+				Month.MAY -> "May $day"
+				Month.JUNE -> "June $day"
+				Month.JULY -> "July $day"
+				Month.AUGUST -> "August $day"
+				Month.SEPTEMBER -> "September $day"
+				Month.OCTOBER -> "October $day"
+				Month.NOVEMBER -> "November $day"
+				Month.DECEMBER -> "December $day"
+			}
+		}
+
+		"be" -> {
+			when (month) {
+				Month.JANUARY -> "$day студзеня"
+				Month.FEBRUARY -> "$day лютага"
+				Month.MARCH -> "$day сакавіка"
+				Month.APRIL -> "$day красавіка"
+				Month.MAY -> "$day траўня"
+				Month.JUNE -> "$day чэрвеня"
+				Month.JULY -> "$day ліпеня"
+				Month.AUGUST -> "$day жніўня"
+				Month.SEPTEMBER -> "$day верасня"
+				Month.OCTOBER -> "$day кастрычніка"
+				Month.NOVEMBER -> "$day лістапада"
+				Month.DECEMBER -> "$day снежня"
+			}
+		}
+
+		else -> throw Exception()
 	}
+
 }
