@@ -117,7 +117,7 @@ class UserServiceImpl : UserService {
 				val embed = if (arguments.size == 1) {
 					try {
 						val int = arguments[0].toInt()
-						EmbedBuilder().success(sc, serverData, "${Lang.RANDOM[serverData]}: ${random.nextInt(int)}")
+						EmbedBuilder().success(sc, serverData, Lang.RANDOM[serverData].format(random.nextInt(int)))
 					} catch (e: Exception) {
 						EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 					}
@@ -139,8 +139,8 @@ class UserServiceImpl : UserService {
 
 				serverData.birthdays.removeIf { !server.getMemberById(it.id).isPresent }
 				val text = buildString {
-					append(Lang.CURRENT_CHANCE[serverData], ": ", serverData.chance, "\r\n")
-					append(Lang.CURRENT_LANGUAGE[serverData], ": ", serverData.lang, "\r\n")
+					append(Lang.CURRENT_CHANCE[serverData].format(serverData.chance), "\r\n")
+					append(Lang.CURRENT_LANGUAGE[serverData].format(serverData.lang), "\r\n")
 					if (serverData.birthdays.isEmpty()) {
 						append(Lang.NO_BIRTHDAYS[serverData], "\r\n")
 					} else {

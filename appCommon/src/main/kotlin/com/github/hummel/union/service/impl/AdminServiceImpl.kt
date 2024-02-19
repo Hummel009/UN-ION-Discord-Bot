@@ -53,7 +53,9 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.birthdays.add(ServerData.Birthday(userId, ServerData.Date(day, month)))
-							EmbedBuilder().success(sc, serverData, "${Lang.ADDED_BIRTHDAY[serverData]}: <@$userId>.")
+							EmbedBuilder().success(
+								sc, serverData, Lang.ADDED_BIRTHDAY[serverData].format(userId, day, month)
+							)
 						} catch (e: Exception) {
 							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
@@ -87,7 +89,7 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.managers.add(ServerData.Role(roleId))
-							EmbedBuilder().success(sc, serverData, "${Lang.ADDED_MANAGER[serverData]}: <@$roleId>.")
+							EmbedBuilder().success(sc, serverData, Lang.ADDED_MANAGER[serverData].format(roleId))
 						} catch (e: Exception) {
 							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
@@ -121,7 +123,9 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.secretChannels.add(ServerData.Channel(channelId))
-							EmbedBuilder().success(sc, serverData, "${Lang.ADDED_CHANNEL[serverData]}: <@$channelId>.")
+							EmbedBuilder().success(
+								sc, serverData, Lang.ADDED_CHANNEL[serverData].format(channelId)
+							)
 						} catch (e: Exception) {
 							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
@@ -157,7 +161,7 @@ class AdminServiceImpl : AdminService {
 								val userId = arguments[0].toLong()
 								serverData.birthdays.removeIf { it.id == userId }
 								EmbedBuilder().success(
-									sc, serverData, "${Lang.REMOVED_BIRTHDAY[serverData]}: <@$userId>"
+									sc, serverData, Lang.REMOVED_BIRTHDAY[serverData].format(userId)
 								)
 							} catch (e: Exception) {
 								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
@@ -195,7 +199,7 @@ class AdminServiceImpl : AdminService {
 								val roleId = arguments[0].toLong()
 								serverData.managers.removeIf { it.id == roleId }
 								EmbedBuilder().success(
-									sc, serverData, "${Lang.REMOVED_MANAGER[serverData]}: <@$roleId>"
+									sc, serverData, Lang.REMOVED_MANAGER[serverData].format(roleId)
 								)
 							} catch (e: Exception) {
 								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
@@ -233,7 +237,7 @@ class AdminServiceImpl : AdminService {
 								val channelId = arguments[0].toLong()
 								serverData.secretChannels.removeIf { it.id == channelId }
 								EmbedBuilder().success(
-									sc, serverData, "${Lang.REMOVED_CHANNEL[serverData]}: <@$channelId>"
+									sc, serverData, Lang.REMOVED_CHANNEL[serverData].format(channelId)
 								)
 							} catch (e: Exception) {
 								EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
@@ -303,11 +307,11 @@ class AdminServiceImpl : AdminService {
 					if (arguments.size == 1) {
 						try {
 							val lang = arguments[0]
-							if (lang != "ru" && lang != "en") {
+							if (lang != "ru" && lang != "en" && lang != "be") {
 								throw Exception()
 							}
 							serverData.lang = lang
-							EmbedBuilder().success(sc, serverData, "${Lang.SET_LANGUAGE[serverData]}: $lang")
+							EmbedBuilder().success(sc, serverData, Lang.SET_LANGUAGE[serverData].format(lang))
 						} catch (e: Exception) {
 							EmbedBuilder().error(sc, serverData, Lang.INVALID_ARG[serverData])
 						}
@@ -341,7 +345,7 @@ class AdminServiceImpl : AdminService {
 								throw Exception()
 							}
 							serverData.chance = chance
-							EmbedBuilder().success(sc, serverData, "${Lang.SET_CHANCE[serverData]}: $chance.")
+							EmbedBuilder().success(sc, serverData, Lang.SET_CHANCE[serverData].format(chance))
 						} catch (e: Exception) {
 							EmbedBuilder().error(sc, serverData, Lang.INVALID_FORMAT[serverData])
 						}
