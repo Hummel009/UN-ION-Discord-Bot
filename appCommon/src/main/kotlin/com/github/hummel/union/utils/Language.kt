@@ -1,47 +1,33 @@
 package com.github.hummel.union.utils
 
 import com.github.hummel.union.bean.ServerData
+import com.github.hummel.union.lang.LangBeBy
+import com.github.hummel.union.lang.LangEnUs
+import com.github.hummel.union.lang.LangRuRu
+import com.google.gson.Gson
 import java.time.Month
 
-enum class Lang(private val ru: String, private val en: String) {
-	NO_CONNECTION("Сайт с нейросетью временно недоступен.", "The neural network site is temporarily unavailable."),
-	EXIT("Бот будет выключен.", "The bot will be turned off."),
-	NUKE("Сообщения были удалены.", "Messages were removed."),
-	RANDOM("Случайное значение", "Random value"),
-	NO_BIRTHDAYS("Дней рождения нет.", "No birthdays."),
-	HAPPY_BIRTHDAY("с днём рождения", "happy birthday"),
-	NO_ACCESS("У вас нет доступа к этой команде.", "You have no access to this command."),
-	IMPORT("Данные импортированы.", "Data was imported."),
-	INVALID_ARG("Недопустимые аргументы.", "Invalid arguments provided."),
-	INVALID_FORMAT("Недопустимый формат аргумента.", "Invalid argument format."),
-	SET_LANGUAGE("Установлен язык", "Set language"),
-	CURRENT_CHANCE("Текущий шанс сообщения", "Current chance"),
-	CURRENT_LANG("Текущий язык интерфейса", "Current language"),
-	SET_CHANCE("Установлен шанс сообщения", "Set chance"),
-	ADDED_MANAGER("Добавлена управляющая роль", "Added manager role"),
-	ADDED_CHANNEL("Добавлен секретный канал", "Added secret channel"),
-	ADDED_BIRTHDAY("Добавлен день рождения", "Added birthday"),
-	REMOVED_BIRTHDAY("Удалён день рождения", "Removed birthday"),
-	REMOVED_MANAGER("Удалена управляющая роль", "Removed manager role"),
-	REMOVED_CHANNEL("Удалён секретный канал", "Removed secret channel"),
-	CLEARED_CHANNELS("Секретные каналы сервера очищены.", "Server secret channels cleared."),
-	CLEARED_MANAGERS("Управляющие роли сервера очищены.", "Server manager roles cleared."),
-	CLEARED_DATA("Данные сервера очищены.", "Server serverData cleared."),
-	CLEARED_MESSAGES("Сообщения сервера очищены.", "Server messages cleared."),
-	CLEARED_BIRTHDAYS("Дни рождения сервера очищены.", "Server birthdays cleared."),
-	GAME_YES_1("Да.", "Yes."),
-	GAME_YES_2("Можешь не сомневаться в этом).", "You can rest assured of that)."),
-	GAME_YES_3("Определённо да!", "Definitely yes!"),
-	GAME_YES_4("Я уверен в этом на все 100%", "I'm 100% sure of it."),
-	GAME_NO_1("Нет.", "No."),
-	GAME_NO_2("Я считаю, что нет)", "I think not."),
-	GAME_NO_3("Определённо нет!", "Definitely no!"),
-	GAME_NO_4("Точно нет, я уверен на 100%", "Definitely not, I'm 100% sure."),
-	MSG_ACCESS("Доступ", "Access"),
-	MSG_ERROR("Ошибка", "Error"),
-	MSG_SUCCESS("Успех", "Success");
+enum class Lang {
+	NO_CONNECTION, EXIT, NUKE, RANDOM, NO_BIRTHDAYS, HAPPY_BIRTHDAY, NO_ACCESS, IMPORT, INVALID_ARG, INVALID_FORMAT, SET_LANGUAGE, CURRENT_CHANCE, CURRENT_LANG, SET_CHANCE, ADDED_MANAGER, ADDED_CHANNEL, ADDED_BIRTHDAY, REMOVED_BIRTHDAY, REMOVED_MANAGER, REMOVED_CHANNEL, CLEARED_CHANNELS, CLEARED_MANAGERS, CLEARED_DATA, CLEARED_MESSAGES, CLEARED_BIRTHDAYS, GAME_YES_1, GAME_YES_2, GAME_YES_3, GAME_YES_4, GAME_NO_1, GAME_NO_2, GAME_NO_3, GAME_NO_4, MSG_ACCESS, MSG_ERROR, MSG_SUCCESS;
 
-	operator fun get(serverData: ServerData): String = if (serverData.lang == "ru") ru else en
+	@Suppress("UNCHECKED_CAST")
+	operator fun get(serverData: ServerData): String {
+		val json = when (serverData.lang) {
+			"ru" -> LangRuRu.JSON
+			"be" -> LangBeBy.JSON
+			"en" -> LangEnUs.JSON
+			else -> throw Exception()
+		}
+
+		val gson = Gson()
+		val langMap = gson.fromJson(json, Map::class.java) as Map<String, String>
+		val key = name
+		langMap[key]?.let {
+			return@get it
+		} ?: run {
+			throw Exception()
+		}
+	}
 }
 
 fun getFormattedTranslatedDate(month: Month, serverData: ServerData, day: Int): String {
