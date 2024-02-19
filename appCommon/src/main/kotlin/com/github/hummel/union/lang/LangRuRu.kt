@@ -58,7 +58,7 @@ object LangRuRu : Lang {
 			"december": "%d декабря",
 			"user_birthday": "<@%d>: %s",
 			"secret_channel": "<#%d>",
-			"manager": "<@%d>"
+			"manager": "<@&%d>"
 		}
 	""".trimIndent()
 }

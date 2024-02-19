@@ -58,7 +58,7 @@ object LangEnUs : Lang {
 			"december": "December %d",
 			"user_birthday": "<@%d>: %s",
 			"secret_channel": "<#%d>",
-			"manager": "<@%d>"
+			"manager": "<@&%d>"
 		}
 	""".trimIndent()
 }
