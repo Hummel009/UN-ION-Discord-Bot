@@ -163,6 +163,7 @@ class UserServiceImpl : UserService {
 
 							I18n.of("user_birthday", serverData).format(userId, date)
 						}
+						append("\r\n")
 					}
 					if (serverData.managers.isEmpty()) {
 						append(I18n.of("no_managers", serverData), "\r\n")
@@ -175,6 +176,7 @@ class UserServiceImpl : UserService {
 
 							I18n.of("manager", serverData).format(userId)
 						}
+						append("\r\n")
 					}
 					if (serverData.secretChannels.isEmpty()) {
 						append(I18n.of("no_secret_channels", serverData), "\r\n")
@@ -187,6 +189,7 @@ class UserServiceImpl : UserService {
 
 							I18n.of("secret_channel", serverData).format(channelId)
 						}
+						append("\r\n")
 					}
 				}
 				val embed = EmbedBuilder().success(sc, serverData, text)
