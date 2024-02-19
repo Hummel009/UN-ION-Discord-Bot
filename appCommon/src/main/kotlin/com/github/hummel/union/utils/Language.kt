@@ -10,7 +10,6 @@ import java.time.Month
 enum class Lang {
 	NO_CONNECTION, EXIT, NUKE, RANDOM, NO_BIRTHDAYS, HAPPY_BIRTHDAY, NO_ACCESS, IMPORT, INVALID_ARG, INVALID_FORMAT, SET_LANGUAGE, CURRENT_CHANCE, CURRENT_LANG, SET_CHANCE, ADDED_MANAGER, ADDED_CHANNEL, ADDED_BIRTHDAY, REMOVED_BIRTHDAY, REMOVED_MANAGER, REMOVED_CHANNEL, CLEARED_CHANNELS, CLEARED_MANAGERS, CLEARED_DATA, CLEARED_MESSAGES, CLEARED_BIRTHDAYS, GAME_YES_1, GAME_YES_2, GAME_YES_3, GAME_YES_4, GAME_NO_1, GAME_NO_2, GAME_NO_3, GAME_NO_4, MSG_ACCESS, MSG_ERROR, MSG_SUCCESS;
 
-	@Suppress("UNCHECKED_CAST")
 	operator fun get(serverData: ServerData): String {
 		val json = when (serverData.lang) {
 			"ru" -> LangRuRu.JSON
@@ -20,9 +19,13 @@ enum class Lang {
 		}
 
 		val gson = Gson()
-		val langMap = gson.fromJson(json, Map::class.java) as Map<String, String>
-		val key = name
-		langMap[key]?.let {
+		val unsafeMap = gson.fromJson(json, Map::class.java) as Map<*, *>
+		val safeMap = mutableMapOf<String, String>()
+
+		unsafeMap.keys.mapTo(safeMap.keys) { it.toString() }
+		unsafeMap.values.mapTo(safeMap.values) { it.toString() }
+
+		safeMap[name]?.let {
 			return@get it
 		} ?: run {
 			throw Exception()
