@@ -40,7 +40,7 @@ tasks {
 		manifest {
 			attributes(
 				mapOf(
-					"Main-Class" to "com.github.hummel.union.MainKt"
+					"Main-Class" to "com.github.hummel.union.windows.MainKt"
 				)
 			)
 		}
