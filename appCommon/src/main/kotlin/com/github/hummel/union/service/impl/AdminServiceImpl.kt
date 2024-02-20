@@ -311,7 +311,7 @@ class AdminServiceImpl : AdminService {
 					if (arguments.size == 1) {
 						try {
 							val lang = arguments[0]
-							if (lang != "ru" && lang != "en" && lang != "be" && lang != "uk") {
+							if (lang != "ru" && lang != "be" && lang != "uk" && lang != "en") {
 								throw Exception()
 							}
 							serverData.lang = lang

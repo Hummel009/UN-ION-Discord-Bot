@@ -9,8 +9,8 @@ object I18n {
 		val instance = when (serverData.lang) {
 			"ru" -> LangRuRu
 			"be" -> LangBeBy
-			"en" -> LangEnUs
 			"uk" -> LangUkUa
+			"en" -> LangEnUs
 			else -> throw Exception()
 		}
 
