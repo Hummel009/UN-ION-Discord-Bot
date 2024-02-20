@@ -63,7 +63,8 @@ object LangBeBy : Lang {
 			"choice_select": "Я выбіраю... %s",
 			"be": "беларуская",
 			"en": "англійская",
-			"ru": "руская"
+			"ru": "руская",
+			"uk": "украінская"
 		}
 	""".trimIndent()
 }

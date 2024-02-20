@@ -63,7 +63,8 @@ object LangEnUs : Lang {
 			"choice_select": "I choose... %s",
 			"be": "belarusian",
 			"en": "english",
-			"ru": "russian"
+			"ru": "russian",
+			"uk": "ukrainian"
 		}
 	""".trimIndent()
 }
