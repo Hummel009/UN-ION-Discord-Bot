@@ -23,7 +23,7 @@ fun main() {
 		Window(
 			onCloseRequest = ::exitApplication,
 			state = WindowState(width = 900.dp, height = 400.dp, position = WindowPosition(Alignment.Center)),
-			title = "Hundom",
+			title = "Hundroid",
 			resizable = false
 		) {
 			MaterialTheme {
