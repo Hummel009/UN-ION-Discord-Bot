@@ -24,3 +24,4 @@ plugins {
 include(":appAndroid")
 include(":appWindows")
 include(":appCommon")
+include(":appSpecial")
