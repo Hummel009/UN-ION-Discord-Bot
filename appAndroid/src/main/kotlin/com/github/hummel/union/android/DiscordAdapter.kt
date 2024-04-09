@@ -29,13 +29,12 @@ class DiscordAdapter : Service() {
 		wakeLock.acquire()
 		val channelId = "HundroidId1"
 		val channelName = "HundroidChannel1"
-		val notificationBuilder = NotificationCompat.Builder(this, channelId).run {
+		val notification = NotificationCompat.Builder(this, channelId).run {
 			setPriority(NotificationCompat.PRIORITY_MAX)
-		}
+		}.build()
 		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
 		val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 		notificationManager.createNotificationChannel(channel)
-		val notification = notificationBuilder.build()
 		startForeground(1, notification)
 		controller.onStartCommand()
 		return START_STICKY
