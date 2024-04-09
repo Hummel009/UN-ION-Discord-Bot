@@ -10,7 +10,6 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.os.PowerManager.WakeLock
 import androidx.core.app.NotificationCompat
-import com.github.hummel.union.R
 import com.github.hummel.union.controller.DiscordController
 import com.github.hummel.union.controller.impl.DiscordControllerImpl
 
@@ -28,12 +27,9 @@ class DiscordAdapter : Service() {
 	@SuppressLint("WakelockTimeout")
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 		wakeLock.acquire()
-		val channelId = "Hummel009id1"
-		val channelName = "Hummel009channel1"
+		val channelId = "HundroidId1"
+		val channelName = "HundroidChannel1"
 		val notificationBuilder = NotificationCompat.Builder(this, channelId).run {
-			setContentTitle("Foreground Service")
-			setContentText("Your service is running")
-			setSmallIcon(R.drawable.ic_launcher_background)
 			setPriority(NotificationCompat.PRIORITY_MAX)
 		}
 		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
