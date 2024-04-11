@@ -32,7 +32,7 @@ class DiscordAdapter : Service() {
 		val notification = NotificationCompat.Builder(this, channelId).run {
 			setPriority(NotificationCompat.PRIORITY_MAX)
 		}.build()
-		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_MAX)
+		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
 		val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 		notificationManager.createNotificationChannel(channel)
 		startForeground(1, notification)
