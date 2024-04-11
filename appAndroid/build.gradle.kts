@@ -18,7 +18,7 @@ android {
 
 	defaultConfig {
 		applicationId = "com.github.hummel.union"
-		minSdk = 29
+		minSdk = 34
 		targetSdk = 34
 		versionCode = 3
 		versionName = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.MM.dd"))
