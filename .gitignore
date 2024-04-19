@@ -41,3 +41,5 @@ bin/
 ### SECURITY ###
 token.txt
 **/*.bin
+
+local.properties
