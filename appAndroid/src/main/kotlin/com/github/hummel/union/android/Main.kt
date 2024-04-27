@@ -67,7 +67,7 @@ class Main : FragmentActivity() {
 	}
 }
 
-@Suppress("UNUSED_PARAMETER", "KotlinRedundantDiagnosticSuppress")
+@Suppress("UNUSED_PARAMETER", "RedundantSuppression", "unused")
 fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	context as Context
 	BotData.token = token

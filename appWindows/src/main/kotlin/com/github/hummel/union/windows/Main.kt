@@ -34,6 +34,7 @@ fun main() {
 }
 
 @Composable
+@Suppress("FunctionName")
 private fun ComposableOnCreate() {
 	var token: String by remember { mutableStateOf("TOKEN") }
 	var ownerId: String by remember { mutableStateOf("1186780521624244278") }
@@ -68,7 +69,7 @@ private fun ComposableOnCreate() {
 	}
 }
 
-@Suppress("UNUSED_PARAMETER", "RedundantSuppression")
+@Suppress("UNUSED_PARAMETER", "RedundantSuppression", "unused")
 fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	BotData.token = token
 	BotData.ownerId = ownerId
