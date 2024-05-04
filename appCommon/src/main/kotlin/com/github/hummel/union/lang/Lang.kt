@@ -1,5 +1,5 @@
 package com.github.hummel.union.lang
 
-interface Lang {
+fun interface Lang {
 	fun getJson(): String
 }
