@@ -40,7 +40,7 @@ android {
 		compose = true
 	}
 	composeOptions {
-		kotlinCompilerExtensionVersion = "1.5.14-dev-k1.9.24-50022def4af"
+		kotlinCompilerExtensionVersion = "1.5.11"
 	}
 	kotlinOptions {
 		jvmTarget = "1.8"

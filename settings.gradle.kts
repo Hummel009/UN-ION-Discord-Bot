@@ -3,7 +3,6 @@ pluginManagement {
 		google()
 		mavenLocal()
 		mavenCentral()
-		maven("https://androidx.dev/storage/compose-compiler/repository")
 		gradlePluginPortal()
 	}
 }
@@ -14,7 +13,6 @@ dependencyResolutionManagement {
 		google()
 		mavenLocal()
 		mavenCentral()
-		maven("https://androidx.dev/storage/compose-compiler/repository")
 		gradlePluginPortal()
 	}
 }
