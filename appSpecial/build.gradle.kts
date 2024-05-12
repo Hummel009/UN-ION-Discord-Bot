@@ -13,7 +13,7 @@ val embed: Configuration by configurations.creating
 
 dependencies {
 	implementation(project(":appCommon"))
-	embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
+	embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
 }
 
 java {
