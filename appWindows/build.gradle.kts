@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter
 
 plugins {
 	id("org.jetbrains.kotlin.jvm")
+	id("org.jetbrains.kotlin.plugin.compose")
 	id("org.jetbrains.compose")
 }
 
@@ -25,12 +26,6 @@ compose {
 	desktop {
 		application {
 			mainClass = "com.github.hummel.union.windows.MainKt"
-
-			nativeDistributions {
-				targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-				packageName = "appWindows"
-				packageVersion = "1.0.0"
-			}
 		}
 	}
 }

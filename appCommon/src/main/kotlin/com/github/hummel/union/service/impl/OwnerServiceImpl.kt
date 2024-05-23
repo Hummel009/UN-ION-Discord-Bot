@@ -72,7 +72,7 @@ class OwnerServiceImpl : OwnerService {
 			}.get()
 
 			if (exit) {
-				exitProcess(4)
+				exitProcess(0)
 			}
 		}
 	}

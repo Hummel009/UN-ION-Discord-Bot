@@ -57,7 +57,7 @@ class Main : FragmentActivity() {
 
 			Button(
 				onClick = {
-					exitProcess(4)
+					exitProcess(0)
 				}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
 					contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
 				)
