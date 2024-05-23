@@ -68,7 +68,7 @@ class Main : FragmentActivity() {
 	}
 }
 
-@Suppress("UNUSED_PARAMETER", "RedundantSuppression", "unused")
+@Suppress("RedundantSuppression", "unused")
 fun launchService(token: String, ownerId: String, root: String, context: Any?) {
 	context as Context
 	BotData.token = token
