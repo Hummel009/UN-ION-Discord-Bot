@@ -31,14 +31,8 @@ dependencies {
 
 	implementation("com.google.android.material:material:latest.release")
 
-	implementation("androidx.activity:activity-compose:latest.release")
-	implementation(platform("androidx.compose:compose-bom:latest.release"))
-
-	implementation("androidx.compose.ui:ui")
-	implementation("androidx.compose.material:material")
-	implementation("androidx.compose.runtime:runtime")
-	implementation("androidx.compose.ui:ui-graphics")
-	implementation("androidx.compose.ui:ui-tooling-preview")
+	implementation("androidx.compose.material:material:latest.release")
+	implementation("androidx.activity:activity-compose:1.9.0")
 }
 
 java {

@@ -1,10 +1,7 @@
 package com.github.hummel.union.windows
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +23,7 @@ fun main() {
 			title = "Hundroid",
 			resizable = false
 		) {
-			MaterialTheme {
+			MaterialTheme(colors = darkColors()) {
 				ComposableOnCreate()
 			}
 		}
@@ -40,31 +37,60 @@ private fun ComposableOnCreate() {
 	var ownerId: String by remember { mutableStateOf("1186780521624244278") }
 
 	Column(
-		modifier = Modifier.background(Color.White).fillMaxSize(),
+		modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text("Token") })
-		OutlinedTextField(value = ownerId, onValueChange = { ownerId = it }, label = { Text("Owner ID") })
-
-		Button(
-			onClick = {
-				launchService(token, ownerId, "files", null)
-			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
-				contentColor = Color.White, backgroundColor = Color(0xFF57965C)
+		TextField(
+			value = token,
+			onValueChange = { token = it },
+			modifier = Modifier.fillMaxWidth().padding(16.dp),
+			label = {
+				Text("Token")
+			},
+			colors = TextFieldDefaults.textFieldColors(
+				textColor = MaterialTheme.colors.onBackground
 			)
-		) {
-			Text("Включить бота")
-		}
+		)
 
-		Button(
-			onClick = {
-				exitProcess(0)
-			}, modifier = Modifier.padding(16.dp), colors = ButtonDefaults.buttonColors(
-				contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
+		Spacer(modifier = Modifier.height(16.dp))
+
+		TextField(
+			value = ownerId,
+			onValueChange = { ownerId = it },
+			modifier = Modifier.fillMaxWidth().padding(16.dp),
+			label = {
+				Text("Owner ID")
+			},
+			colors = TextFieldDefaults.textFieldColors(
+				textColor = MaterialTheme.colors.onBackground
 			)
+		)
+
+		Spacer(modifier = Modifier.height(16.dp))
+
+		Row(
+			modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly
 		) {
-			Text("Выключить бота")
+			Button(
+				onClick = {
+					launchService(token, ownerId, "files", null)
+				}, colors = ButtonDefaults.buttonColors(
+					contentColor = Color.White, backgroundColor = Color(0xFF57965C)
+				)
+			) {
+				Text("Включить")
+			}
+
+			Button(
+				onClick = {
+					exitProcess(0)
+				}, colors = ButtonDefaults.buttonColors(
+					contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
+				)
+			) {
+				Text("Выключить")
+			}
 		}
 	}
 }

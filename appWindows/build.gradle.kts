@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -13,12 +12,13 @@ version = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.MM.dd"))
 
 dependencies {
 	implementation(project(":appCommon"))
+
 	implementation(compose.desktop.currentOs)
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(8)
+		languageVersion = JavaLanguageVersion.of(11)
 	}
 }
 
