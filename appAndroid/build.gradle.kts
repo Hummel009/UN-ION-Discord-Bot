@@ -29,10 +29,10 @@ android {
 dependencies {
 	implementation(project(":appCommon"))
 
-	implementation("com.google.android.material:material:1.12.0")
+	implementation("com.google.android.material:material:latest.release")
 
-	implementation("androidx.activity:activity-compose:1.9.0")
-	implementation(platform("androidx.compose:compose-bom:2024.05.00"))
+	implementation("androidx.activity:activity-compose:latest.release")
+	implementation(platform("androidx.compose:compose-bom:latest.release"))
 
 	implementation("androidx.compose.ui:ui")
 	implementation("androidx.compose.material:material")
