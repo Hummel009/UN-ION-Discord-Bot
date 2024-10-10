@@ -31,7 +31,7 @@ dependencies {
 
 	implementation("com.google.android.material:material:latest.release")
 
-	implementation("androidx.compose.material:material:latest.release")
+	implementation("androidx.compose.material:material:1.7.3")
 	implementation("androidx.activity:activity-compose:1.9.2")
 }
 
