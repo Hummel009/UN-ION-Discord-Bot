@@ -3,34 +3,30 @@ import java.time.format.DateTimeFormatter
 
 plugins {
 	id("org.jetbrains.kotlin.jvm")
-	id("org.jetbrains.kotlin.plugin.compose")
-	id("org.jetbrains.compose")
+	id("application")
 }
 
 group = "com.github.hummel"
 version = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.MM.dd"))
 
+val embed: Configuration by configurations.creating
+
 dependencies {
 	implementation(project(":appCommon"))
 
-	implementation(compose.desktop.currentOs)
+	embed("org.jetbrains.kotlin:kotlin-stdlib:latest.release")
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(11)
-	}
-}
-
-compose {
-	desktop {
-		application {
-			mainClass = "com.github.hummel.union.windows.MainKt"
-		}
+		languageVersion = JavaLanguageVersion.of(8)
 	}
 }
 
 tasks {
+	named<JavaExec>("run") {
+		standardInput = System.`in`
+	}
 	jar {
 		manifest {
 			attributes(
@@ -39,7 +35,7 @@ tasks {
 				)
 			)
 		}
-		from(configurations.runtimeClasspath.get().map {
+		from(embed.map {
 			if (it.isDirectory) it else zipTree(it)
 		})
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
