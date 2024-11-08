@@ -26,6 +26,7 @@ class DiscordAdapter : Service() {
 	@SuppressLint("WakelockTimeout")
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 		wakeLock.acquire()
+
 		val channelId = "HundroidId1"
 		val channelName = "HundroidChannel1"
 		val notification = NotificationCompat.Builder(this, channelId).run {
@@ -34,13 +35,17 @@ class DiscordAdapter : Service() {
 		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
 		val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 		notificationManager.createNotificationChannel(channel)
+
 		startForeground(1, notification)
+
 		controller.onStartCommand()
-		return START_STICKY
+
+		return START_NOT_STICKY
 	}
 
 	override fun onDestroy() {
 		stopForeground(STOP_FOREGROUND_REMOVE)
+
 		wakeLock.release()
 	}
 
