@@ -47,7 +47,8 @@ class LoginServiceImpl : LoginService {
 		"clear_secret_channels" with Settings("/clear_secret_channels {channel_id}", argsList(false), api)
 		"clear_messages" with Settings("/clear_messages", emptyList(), api)
 		"clear_data" with Settings("/clear_data", emptyList(), api)
-		"set_chance" with Settings("/set_chance [number]", argsList(), api)
+		"set_chance_message" with Settings("/set_chance_message [number]", argsList(), api)
+		"set_chance_emoji" with Settings("/set_chance_emoji [number]", argsList(), api)
 		"set_language" with Settings("/set_language [ru/be/uk/en]", argsList(), api)
 		"nuke" with Settings("/nuke [number]", argsList(), api)
 

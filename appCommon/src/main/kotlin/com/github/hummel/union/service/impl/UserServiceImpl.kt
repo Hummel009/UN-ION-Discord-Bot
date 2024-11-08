@@ -6,7 +6,6 @@ import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.UserService
 import com.github.hummel.union.utils.error
-import com.github.hummel.union.utils.random
 import com.github.hummel.union.utils.success
 import com.google.gson.Gson
 import org.apache.hc.client5.http.classic.methods.HttpPost
@@ -17,19 +16,13 @@ import org.apache.hc.core5.http.io.entity.StringEntity
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
+import kotlin.random.Random
 
 class UserServiceImpl : UserService {
 	private val dataService: DataService = ServiceFactory.dataService
 
 	private val answers: Set<String> = setOf(
-		"GAME_YES_1",
-		"GAME_YES_2",
-		"GAME_YES_3",
-		"GAME_YES_4",
-		"GAME_NO_1",
-		"GAME_NO_2",
-		"GAME_NO_3",
-		"GAME_NO_4"
+		"GAME_YES_1", "GAME_YES_2", "GAME_YES_3", "GAME_YES_4", "GAME_NO_1", "GAME_NO_2", "GAME_NO_3", "GAME_NO_4"
 	)
 
 	override fun answer(event: InteractionCreateEvent) {
@@ -78,12 +71,19 @@ class UserServiceImpl : UserService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val arguments = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
-				val embed = if (arguments.isNotEmpty()) {
+				val prompt = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
+				val embed = if (prompt.isNotEmpty()) {
 					HttpClients.createDefault().use { client ->
 						val request = HttpPost("https://api.porfirevich.com/generate/")
 
-						val payload = """{ "prompt": "$arguments", "model": "xlarge", "length": 30 }"""
+						val payload = """
+						{
+							"prompt": "$prompt",
+							"model": "xlarge",
+							"length": 100
+						}
+						""".trimIndent()
+
 						request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
 
 						request.addHeader("Accept", "*/*")
@@ -98,7 +98,7 @@ class UserServiceImpl : UserService {
 								val gson = Gson()
 								val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
 
-								EmbedBuilder().success(sc, serverData, "$arguments${apiResponse.replies.random()}")
+								EmbedBuilder().success(sc, serverData, "$prompt${apiResponse.replies.random()}")
 							} else {
 								EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
 							}
@@ -124,11 +124,9 @@ class UserServiceImpl : UserService {
 					try {
 						val int = arguments[0].toInt()
 						EmbedBuilder().success(
-							sc,
-							serverData,
-							I18n.of("random", serverData).format(random.nextInt(int))
+							sc, serverData, I18n.of("random", serverData).format(Random.nextInt(int))
 						)
-					} catch (e: Exception) {
+					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 					}
 				} else {
@@ -150,7 +148,7 @@ class UserServiceImpl : UserService {
 				serverData.birthdays.removeIf { !server.getMemberById(it.id).isPresent }
 				val text = buildString {
 					val langName = I18n.of(serverData.lang, serverData)
-					append(I18n.of("current_chance", serverData).format(serverData.chance), "\r\n")
+					append(I18n.of("current_chance", serverData).format(serverData.chanceMessage), "\r\n")
 					append(I18n.of("current_language", serverData).format(langName), "\r\n")
 					if (serverData.birthdays.isEmpty()) {
 						append("\r\n", I18n.of("no_birthdays", serverData), "\r\n")
@@ -172,9 +170,7 @@ class UserServiceImpl : UserService {
 						append("\r\n", I18n.of("no_managers", serverData), "\r\n")
 					} else {
 						append("\r\n", I18n.of("has_managers", serverData), "\r\n")
-						serverData.managers.sortedWith(
-							compareBy { it.id }
-						).joinTo(this, "\r\n") {
+						serverData.managers.sortedWith(compareBy { it.id }).joinTo(this, "\r\n") {
 							val userId = it.id
 
 							I18n.of("manager", serverData).format(userId)
@@ -185,9 +181,7 @@ class UserServiceImpl : UserService {
 						append("\r\n", I18n.of("no_secret_channels", serverData), "\r\n")
 					} else {
 						append("\r\n", I18n.of("has_secret_channels", serverData), "\r\n")
-						serverData.secretChannels.sortedWith(
-							compareBy { it.id }
-						).joinTo(this, "\r\n") {
+						serverData.secretChannels.sortedWith(compareBy { it.id }).joinTo(this, "\r\n") {
 							val channelId = it.id
 
 							I18n.of("secret_channel", serverData).format(channelId)

@@ -2,10 +2,10 @@ package com.github.hummel.union.service.impl
 
 import com.github.hummel.union.bean.ServerData
 import com.github.hummel.union.factory.ServiceFactory
+import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.AccessService
 import com.github.hummel.union.service.AdminService
 import com.github.hummel.union.service.DataService
-import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.utils.access
 import com.github.hummel.union.utils.error
 import com.github.hummel.union.utils.success
@@ -60,7 +60,7 @@ class AdminServiceImpl : AdminService {
 							EmbedBuilder().success(
 								sc, serverData, I18n.of("added_birthday", serverData).format(userId, date)
 							)
-						} catch (e: Exception) {
+						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
@@ -94,7 +94,7 @@ class AdminServiceImpl : AdminService {
 							}
 							serverData.managers.add(ServerData.Role(roleId))
 							EmbedBuilder().success(sc, serverData, I18n.of("added_manager", serverData).format(roleId))
-						} catch (e: Exception) {
+						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
@@ -130,7 +130,7 @@ class AdminServiceImpl : AdminService {
 							EmbedBuilder().success(
 								sc, serverData, I18n.of("added_channel", serverData).format(channelId)
 							)
-						} catch (e: Exception) {
+						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
@@ -167,7 +167,7 @@ class AdminServiceImpl : AdminService {
 								EmbedBuilder().success(
 									sc, serverData, I18n.of("removed_birthday", serverData).format(userId)
 								)
-							} catch (e: Exception) {
+							} catch (_: Exception) {
 								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 							}
 						} else {
@@ -205,7 +205,7 @@ class AdminServiceImpl : AdminService {
 								EmbedBuilder().success(
 									sc, serverData, I18n.of("removed_manager", serverData).format(roleId)
 								)
-							} catch (e: Exception) {
+							} catch (_: Exception) {
 								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 							}
 						} else {
@@ -243,7 +243,7 @@ class AdminServiceImpl : AdminService {
 								EmbedBuilder().success(
 									sc, serverData, I18n.of("removed_channel", serverData).format(channelId)
 								)
-							} catch (e: Exception) {
+							} catch (_: Exception) {
 								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 							}
 						} else {
@@ -317,7 +317,7 @@ class AdminServiceImpl : AdminService {
 							serverData.lang = lang
 							val langName = I18n.of(lang, serverData)
 							EmbedBuilder().success(sc, serverData, I18n.of("set_language", serverData).format(langName))
-						} catch (e: Exception) {
+						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 						}
 					} else {
@@ -331,10 +331,10 @@ class AdminServiceImpl : AdminService {
 		}
 	}
 
-	override fun setChance(event: InteractionCreateEvent) {
+	override fun setChanceEmoji(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("set_chance")) {
+		if (sc.fullCommandName.contains("set_chance_emoji")) {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -349,9 +349,47 @@ class AdminServiceImpl : AdminService {
 							if (chance < 1) {
 								throw Exception()
 							}
-							serverData.chance = chance
-							EmbedBuilder().success(sc, serverData, I18n.of("set_chance", serverData).format(chance))
-						} catch (e: Exception) {
+							serverData.chanceEmoji = chance
+							EmbedBuilder().success(
+								sc, serverData, I18n.of("set_chance_emoji", serverData).format(chance)
+							)
+						} catch (_: Exception) {
+							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+						}
+					} else {
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
+	override fun setChanceMessage(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("set_chance_message")) {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					val arguments = sc.arguments[0].stringValue.get().split(" ")
+					if (arguments.size == 1) {
+						try {
+							val chance = arguments[0].toInt()
+							if (chance < 1) {
+								throw Exception()
+							}
+							serverData.chanceMessage = chance
+							EmbedBuilder().success(
+								sc, serverData, I18n.of("set_chance_message", serverData).format(chance)
+							)
+						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
@@ -386,7 +424,7 @@ class AdminServiceImpl : AdminService {
 							val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
 							sc.channel.get().bulkDelete(*messageIds).get()
 							EmbedBuilder().success(sc, serverData, I18n.of("nuke", serverData))
-						} catch (e: Exception) {
+						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {

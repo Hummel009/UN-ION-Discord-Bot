@@ -97,7 +97,8 @@ class DataServiceImpl : DataService {
 
 		val serverId = server.id.toString()
 		val serverName = server.name
-		val chance = 10
+		val chanceMessage = 15
+		val chanceEmoji = 75
 		val lang = "ru"
 		val yesterday = LocalDate.now().minusDays(1)
 		val lastWish = ServerData.Date(yesterday.dayOfMonth, yesterday.monthValue)
@@ -106,7 +107,8 @@ class DataServiceImpl : DataService {
 			dataVer = version,
 			serverId = serverId,
 			serverName = serverName,
-			chance = chance,
+			chanceMessage = chanceMessage,
+			chanceEmoji = chanceEmoji,
 			lang = lang,
 			lastWish = lastWish,
 			secretChannels = mutableSetOf(),

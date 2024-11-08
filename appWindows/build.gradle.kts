@@ -23,6 +23,10 @@ java {
 	}
 }
 
+application {
+	mainClass = "com.github.hummel.union.windows.MainKt"
+}
+
 tasks {
 	named<JavaExec>("run") {
 		standardInput = System.`in`

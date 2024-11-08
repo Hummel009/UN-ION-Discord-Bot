@@ -2,11 +2,11 @@ package com.github.hummel.union.dao.impl
 
 import com.github.hummel.union.bean.BotData
 import com.github.hummel.union.dao.FileDao
-import com.github.hummel.union.utils.random
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.random.Random
 
 private const val NOT_EXIST = "File doesn't exist!"
 
@@ -88,7 +88,7 @@ class FileDaoImpl : FileDao {
 		if (file.exists()) {
 			val lines = file.readLines()
 			if (lines.isNotEmpty()) {
-				val randomLine = lines[random.nextInt(lines.size)]
+				val randomLine = lines[Random.nextInt(lines.size)]
 				if (randomLine.isNotEmpty()) {
 					return randomLine
 				}

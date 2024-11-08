@@ -36,7 +36,8 @@ class DiscordControllerImpl : DiscordController {
 			adminService.clearMessages(it)
 			adminService.clearData(it)
 			adminService.setLanguage(it)
-			adminService.setChance(it)
+			adminService.setChanceEmoji(it)
+			adminService.setChanceMessage(it)
 			adminService.nuke(it)
 
 			ownerService.import(it)
