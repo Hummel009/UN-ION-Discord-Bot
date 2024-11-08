@@ -2,6 +2,7 @@ package com.github.hummel.union.android
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,9 +24,12 @@ import com.github.hummel.union.bean.BotData
 
 class Main : ComponentActivity() {
 	private val context: Context = this
+	private lateinit var sharedPreferences: SharedPreferences
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		sharedPreferences = getSharedPreferences("HundroidPrefs", MODE_PRIVATE)
+
 		setContent {
 			MaterialTheme(
 				colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
@@ -38,29 +42,29 @@ class Main : ComponentActivity() {
 	@Composable
 	@Suppress("FunctionName")
 	fun ComposableOnCreate() {
-		var token: String by remember { mutableStateOf("TOKEN") }
-		var ownerId: String by remember { mutableStateOf("1186780521624244278") }
+		var token: String by remember { mutableStateOf(getTokenFromPrefs()) }
+		var ownerId: String by remember { mutableStateOf(getOwnerIdFromPrefs()) }
 
 		Column(
 			modifier = Modifier.fillMaxSize(),
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			TextField(value = token,
-				onValueChange = { token = it },
-				modifier = Modifier.fillMaxWidth().padding(16.dp),
-				label = {
-					Text("Token")
-				})
+			TextField(value = token, onValueChange = {
+				token = it
+				saveTokenToPrefs(token)
+			}, modifier = Modifier.fillMaxWidth().padding(16.dp), label = {
+				Text("Token")
+			})
 
 			Spacer(modifier = Modifier.height(16.dp))
 
-			TextField(value = ownerId,
-				onValueChange = { ownerId = it },
-				modifier = Modifier.fillMaxWidth().padding(16.dp),
-				label = {
-					Text("Owner ID")
-				})
+			TextField(value = ownerId, onValueChange = {
+				ownerId = it
+				saveOwnerIdToPrefs(ownerId)
+			}, modifier = Modifier.fillMaxWidth().padding(16.dp), label = {
+				Text("Owner ID")
+			})
 
 			Spacer(modifier = Modifier.height(16.dp))
 
@@ -85,6 +89,30 @@ class Main : ComponentActivity() {
 					Text("Включить")
 				}
 			}
+		}
+	}
+
+	@Suppress("UseExpressionBody")
+	private fun getOwnerIdFromPrefs(): String {
+		return sharedPreferences.getString("OWNER_ID_KEY", "1186780521624244278") ?: "OWNER_ID"
+	}
+
+	private fun saveOwnerIdToPrefs(token: String) {
+		with(sharedPreferences.edit()) {
+			putString("OWNER_ID_KEY", token)
+			apply()
+		}
+	}
+
+	@Suppress("UseExpressionBody")
+	private fun getTokenFromPrefs(): String {
+		return sharedPreferences.getString("TOKEN_KEY", "TOKEN") ?: "TOKEN"
+	}
+
+	private fun saveTokenToPrefs(token: String) {
+		with(sharedPreferences.edit()) {
+			putString("TOKEN_KEY", token)
+			apply()
 		}
 	}
 }
