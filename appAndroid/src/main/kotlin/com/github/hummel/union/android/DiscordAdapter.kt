@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.os.PowerManager
@@ -18,7 +17,7 @@ class DiscordAdapter : Service() {
 	private val controller: DiscordController = DiscordControllerImpl()
 
 	override fun onCreate() {
-		wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+		wakeLock = (getSystemService(POWER_SERVICE) as PowerManager).run {
 			newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Hundroid::MyWakeLock")
 		}
 		controller.onCreate()
@@ -33,7 +32,7 @@ class DiscordAdapter : Service() {
 			setPriority(NotificationCompat.PRIORITY_MAX)
 		}.build()
 		val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
-		val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+		val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 		notificationManager.createNotificationChannel(channel)
 		startForeground(1, notification)
 		controller.onStartCommand()

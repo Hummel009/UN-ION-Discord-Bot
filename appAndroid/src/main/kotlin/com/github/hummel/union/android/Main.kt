@@ -7,14 +7,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.github.hummel.union.bean.BotData
-import kotlin.system.exitProcess
 
 class Main : ComponentActivity() {
 	private val context: Context = this
@@ -23,7 +28,7 @@ class Main : ComponentActivity() {
 		super.onCreate(savedInstanceState)
 		setContent {
 			MaterialTheme(
-				colors = if (isSystemInDarkTheme()) darkColors() else lightColors()
+				colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
 			) {
 				ComposableOnCreate()
 			}
@@ -41,31 +46,21 @@ class Main : ComponentActivity() {
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			TextField(
-				value = token,
+			TextField(value = token,
 				onValueChange = { token = it },
 				modifier = Modifier.fillMaxWidth().padding(16.dp),
 				label = {
 					Text("Token")
-				},
-				colors = TextFieldDefaults.textFieldColors(
-					textColor = MaterialTheme.colors.onBackground
-				)
-			)
+				})
 
 			Spacer(modifier = Modifier.height(16.dp))
 
-			TextField(
-				value = ownerId,
+			TextField(value = ownerId,
 				onValueChange = { ownerId = it },
 				modifier = Modifier.fillMaxWidth().padding(16.dp),
 				label = {
 					Text("Owner ID")
-				},
-				colors = TextFieldDefaults.textFieldColors(
-					textColor = MaterialTheme.colors.onBackground
-				)
-			)
+				})
 
 			Spacer(modifier = Modifier.height(16.dp))
 
@@ -73,23 +68,21 @@ class Main : ComponentActivity() {
 				modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly
 			) {
 				Button(
-					onClick = {
-						launchService(token, ownerId, context.filesDir.path, context)
-					}, colors = ButtonDefaults.buttonColors(
-						contentColor = Color.White, backgroundColor = Color(0xFF57965C)
+					onClick = { finish() }, colors = ButtonDefaults.buttonColors(
+						containerColor = Color(0xFFC94F4F), contentColor = Color(0xFFDFE1E5)
 					)
 				) {
-					Text("Включить")
+					Text("Выключить")
 				}
 
 				Button(
 					onClick = {
-						exitProcess(0)
+						launchService(token, ownerId, context.filesDir.path, context)
 					}, colors = ButtonDefaults.buttonColors(
-						contentColor = Color.White, backgroundColor = Color(0xFFC94F4F)
+						containerColor = Color(0xFF57965C), contentColor = Color(0xFFDFE1E5)
 					)
 				) {
-					Text("Выключить")
+					Text("Включить")
 				}
 			}
 		}
