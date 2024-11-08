@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.github.hummel.union.bean.BotData
+import kotlin.system.exitProcess
 
 class Main : ComponentActivity() {
 	private val context: Context = this
@@ -72,7 +73,9 @@ class Main : ComponentActivity() {
 				modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceEvenly
 			) {
 				Button(
-					onClick = { finish() }, colors = ButtonDefaults.buttonColors(
+					onClick = {
+						exitProcess(0)
+					}, colors = ButtonDefaults.buttonColors(
 						containerColor = Color(0xFFC94F4F), contentColor = Color(0xFFDFE1E5)
 					)
 				) {
