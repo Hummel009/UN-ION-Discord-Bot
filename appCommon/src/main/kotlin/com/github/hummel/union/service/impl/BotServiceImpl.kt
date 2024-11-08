@@ -10,14 +10,23 @@ import com.google.gson.Gson
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.core5.http.io.entity.EntityUtils
+import org.apache.hc.core5.net.URIBuilder
 import org.javacord.api.entity.message.MessageBuilder
 import org.javacord.api.entity.server.Server
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
+import kotlin.collections.getOrDefault
 import kotlin.random.Random
 
 class BotServiceImpl : BotService {
 	private val dataService: DataService = ServiceFactory.dataService
+	private val gson = Gson()
+
+	private val internalHistory = mutableMapOf(
+		0L to mutableListOf(
+			mapOf("" to "", "" to "")
+		)
+	)
 
 	override fun addRandomEmoji(event: MessageCreateEvent) {
 		if (event.containsAllowedMessage()) {
@@ -51,9 +60,30 @@ class BotServiceImpl : BotService {
 			val serverData = dataService.loadServerData(server)
 
 			if (Random.nextInt(serverData.chanceMessage) == 0) {
-				val prompt = wrapPrompt(event.messageContent)
+				val prompt = event.messageContent
 				val reply = HttpClients.createDefault().use { client ->
-					val request = HttpGet("https://duck.gpt-api.workers.dev/chat/?prompt=$prompt")
+					val history = internalHistory.getOrDefault(event.message.author.id, null)?.takeLast(30)
+
+					val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
+						addParameter("prompt", prompt)
+						history?.let { addParameter("history", gson.toJson(it)) }
+					}.build().toString()
+
+					if (prompt.contains(
+							"\u0438\u0434\u0438"
+						) && prompt.contains(
+							"\u043D\u0430\u0445\u0443\u0439"
+						) && prompt.contains(
+							"\u0431\u043E\u0433\u0434\u0430\u043D"
+						)
+					) {
+						internalHistory.put(event.message.author.id, mutableListOf())
+					} else {
+						internalHistory.putIfAbsent(event.message.author.id, mutableListOf())
+					}
+					internalHistory[event.message.author.id]!!.add(mapOf("role" to "user", "content" to prompt))
+
+					val request = HttpGet(url)
 
 					client.execute(request) { response ->
 						if (response.code in 200..299) {
@@ -102,9 +132,6 @@ class BotServiceImpl : BotService {
 			}
 		}
 	}
-
-	private fun wrapPrompt(prompt: String): String =
-		"Один человек написал мне: «$prompt». Что мне ему ответить? Напиши ответ так, как будто это ты отвечаешь ему."
 
 	private fun getAndSend(server: Server, event: MessageCreateEvent) {
 		val crypt = dataService.getServerRandomMessage(server)
