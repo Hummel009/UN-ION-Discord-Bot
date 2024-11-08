@@ -2,8 +2,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 plugins {
-	id("org.jetbrains.kotlin.jvm")
 	id("application")
+	id("org.jetbrains.kotlin.jvm") version "latest.release"
 }
 
 group = "com.github.hummel"
