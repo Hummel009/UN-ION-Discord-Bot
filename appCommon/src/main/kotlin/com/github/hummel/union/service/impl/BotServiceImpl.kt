@@ -59,14 +59,50 @@ class BotServiceImpl : BotService {
 			val serverData = dataService.loadServerData(server)
 
 			if (Random.nextInt(serverData.chanceMessage) == 0) {
-				val crypt = dataService.getServerRandomMessage(server)
-				crypt?.let {
-					val msg = decodeMessage(it)
-					event.channel.sendMessage(msg)
+				if (Random.nextInt(5) == 0) {
+					val wrappedPrompt = wrapPrompt(event.messageContent)
+					val reply = HttpClients.createDefault().use { client ->
+						val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
+							addParameter("prompt", wrappedPrompt)
+						}.build().toString()
+
+						val request = HttpGet(url)
+
+						client.execute(request) { response ->
+							if (response.code in 200..299) {
+								val entity = response.entity
+								val jsonResponse = EntityUtils.toString(entity)
+
+								val gson = Gson()
+								val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
+
+								apiResponse.response
+							} else {
+								null
+							}
+						}
+					}
+
+					if (reply != null) {
+						MessageBuilder().apply {
+							append(reply)
+							replyTo(event.message)
+							send(event.channel)
+						}
+					}
+				} else {
+					val crypt = dataService.getServerRandomMessage(server)
+					crypt?.let {
+						val msg = decodeMessage(it)
+						event.channel.sendMessage(msg)
+					}
 				}
 			}
 		}
 	}
+
+	private fun wrapPrompt(prompt: String): String =
+		"Один знакомый написал мне: «$prompt». Что мне ему ответить? Напиши ответ так, как будто это сразу ты отвечаешь ему. Ответ пиши без кавычек. Можешь фамильярничать и спорить, человек хорошо знаком."
 
 	override fun sendAIMessage(event: MessageCreateEvent) {
 		if (event.startsWithBotClearMention()) {
