@@ -12,7 +12,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.apache.hc.core5.net.URIBuilder
 import org.javacord.api.entity.message.MessageBuilder
-import org.javacord.api.entity.server.Server
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 import kotlin.collections.getOrDefault
@@ -60,54 +59,53 @@ class BotServiceImpl : BotService {
 			val serverData = dataService.loadServerData(server)
 
 			if (Random.nextInt(serverData.chanceMessage) == 0) {
-				val prompt = event.messageContent
-				val reply = HttpClients.createDefault().use { client ->
-					val history = internalHistory.getOrDefault(event.message.author.id, null)?.takeLast(30)
+				val crypt = dataService.getServerRandomMessage(server)
+				crypt?.let {
+					val msg = decodeMessage(it)
+					event.channel.sendMessage(msg)
+				}
+			}
+		}
+	}
 
-					val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
-						addParameter("prompt", prompt)
-						history?.let { addParameter("history", gson.toJson(it)) }
-					}.build().toString()
+	override fun sendAIMessage(event: MessageCreateEvent) {
+		if (event.startsWithBotClearMention()) {
+			internalHistory.put(event.message.author.id, mutableListOf())
+		} else if (event.startsWithBotMention()) {
+			val prompt = event.messageContent
+			val reply = HttpClients.createDefault().use { client ->
+				val history = internalHistory.getOrDefault(event.message.author.id, null)
 
-					if (prompt.contains(
-							"\u0438\u0434\u0438"
-						) && prompt.contains(
-							"\u043D\u0430\u0445\u0443\u0439"
-						) && prompt.contains(
-							"\u0431\u043E\u0433\u0434\u0430\u043D"
-						)
-					) {
-						internalHistory.put(event.message.author.id, mutableListOf())
+				val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
+					addParameter("prompt", prompt)
+					history?.let { addParameter("history", gson.toJson(it)) }
+				}.build().toString()
+
+				internalHistory.putIfAbsent(event.message.author.id, mutableListOf())
+				internalHistory[event.message.author.id]!!.add(mapOf("role" to "user", "content" to prompt))
+
+				val request = HttpGet(url)
+
+				client.execute(request) { response ->
+					if (response.code in 200..299) {
+						val entity = response.entity
+						val jsonResponse = EntityUtils.toString(entity)
+
+						val gson = Gson()
+						val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
+
+						apiResponse.response
 					} else {
-						internalHistory.putIfAbsent(event.message.author.id, mutableListOf())
-					}
-					internalHistory[event.message.author.id]!!.add(mapOf("role" to "user", "content" to prompt))
-
-					val request = HttpGet(url)
-
-					client.execute(request) { response ->
-						if (response.code in 200..299) {
-							val entity = response.entity
-							val jsonResponse = EntityUtils.toString(entity)
-
-							val gson = Gson()
-							val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
-
-							apiResponse.response
-						} else {
-							null
-						}
+						null
 					}
 				}
+			}
 
-				reply?.let {
-					MessageBuilder().apply {
-						append(reply)
-						replyTo(event.message)
-						send(event.channel)
-					}
-				} ?: run {
-					getAndSend(server, event)
+			if (reply != null) {
+				MessageBuilder().apply {
+					append(reply)
+					replyTo(event.message)
+					send(event.channel)
 				}
 			}
 		}
@@ -130,14 +128,6 @@ class BotServiceImpl : BotService {
 				serverData.lastWish.month = currentMonth
 				dataService.saveServerData(server, serverData)
 			}
-		}
-	}
-
-	private fun getAndSend(server: Server, event: MessageCreateEvent) {
-		val crypt = dataService.getServerRandomMessage(server)
-		crypt?.let {
-			val msg = decodeMessage(it)
-			event.channel.sendMessage(msg)
 		}
 	}
 
@@ -167,7 +157,7 @@ class BotServiceImpl : BotService {
 
 	private fun MessageCreateEvent.containsAllowedMessage(): Boolean {
 		val contain = setOf("@", "http", "\r", "\n")
-		val start = setOf("!", "?", "/")
+		val start = setOf("!", "?", "/", "Богдан, ", "богдан, ")
 
 		if (start.any { messageContent.startsWith(it) } || contain.any { messageContent.contains(it) }) {
 			return false
@@ -178,5 +168,25 @@ class BotServiceImpl : BotService {
 		}
 
 		return messageContent.length >= 2
+	}
+
+	private fun MessageCreateEvent.startsWithBotMention(): Boolean {
+		val start = setOf("Богдан, ", "богдан, ")
+
+		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
+			return false
+		}
+
+		return start.any { messageContent.startsWith(it) }
+	}
+
+	private fun MessageCreateEvent.startsWithBotClearMention(): Boolean {
+		val start = setOf("!Богдан", "!богдан")
+
+		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
+			return false
+		}
+
+		return start.any { messageContent.startsWith(it) }
 	}
 }

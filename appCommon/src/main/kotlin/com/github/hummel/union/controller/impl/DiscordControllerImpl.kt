@@ -49,6 +49,7 @@ class DiscordControllerImpl : DiscordController {
 			botService.addRandomEmoji(it)
 			botService.saveAllowedMessage(it)
 			botService.sendRandomMessage(it)
+			botService.sendAIMessage(it)
 			botService.sendBirthdayMessage(it)
 		}
 	}
