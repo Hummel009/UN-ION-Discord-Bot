@@ -346,7 +346,7 @@ class AdminServiceImpl : AdminService {
 					if (arguments.size == 1) {
 						try {
 							val chance = arguments[0].toInt()
-							if (chance < 1) {
+							if (chance !in 0..100) {
 								throw Exception()
 							}
 							serverData.chanceMessage = chance
@@ -382,7 +382,7 @@ class AdminServiceImpl : AdminService {
 					if (arguments.size == 1) {
 						try {
 							val chance = arguments[0].toInt()
-							if (chance < 1) {
+							if (chance !in 0..100) {
 								throw Exception()
 							}
 							serverData.chanceEmoji = chance
@@ -418,7 +418,7 @@ class AdminServiceImpl : AdminService {
 					if (arguments.size == 1) {
 						try {
 							val chance = arguments[0].toInt()
-							if (chance < 1) {
+							if (chance !in 0..100) {
 								throw Exception()
 							}
 							serverData.chanceAI = chance
