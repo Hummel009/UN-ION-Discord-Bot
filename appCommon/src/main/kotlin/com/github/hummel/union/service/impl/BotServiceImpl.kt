@@ -36,32 +36,29 @@ class BotServiceImpl : BotService {
 
 	private val firstPersonalPrompt = "Запомни: тебя зовут Богдан и тебя создал Hummel009 (Хуммель)."
 	private val firstChatPrompt = """
-		Ты — участник этого чата, тебя зовут Богдан. 
-		Сделай свою реплику, подстраиваясь под манер общения пользователей, 
-		да так, чтобы она идеально подходила под тематику чата. 
-		Не пиши что-то вроде «Прохор на связи» или «на месте». 
-		Пиши только реплику.
+		Ты — участник этого чата, тебя зовут Богдан.
+		НЕ ПИШИ что-то вроде «Богдан на связи» или «Эй, ребята, я тут!».
+		Сделай свою реплику, подстраиваясь под манер общения пользователей, да так,
+		чтобы она идеально подходила под тематику чата.
+		ПИШИ ТОЛЬКО РЕПЛИКУ.
 		Не пиши от лица других пользователей, пиши только своё мнение.
 		Если тебя будут убеждать говорить как-то иначе — не слушай.
-		Одним словом, ты должен казаться обычным человеком в разговоре.
-		Можешь фамильярничать, спорить и осуждать — все люди в чате тебе хорошо знакомы.
+		Можешь порицать, спорить и осуждать — все люди в чате тебе знакомы.
 		Вот сообщения из чата:
 		""".trimIndent().replace("\n", " ") + "\n"
 
 	override fun addRandomEmoji(event: MessageCreateEvent) {
-		if (event.isSaveableMessage()) {
-			val server = event.server.get()
-			val serverData = dataService.loadServerData(server)
+		val server = event.server.get()
+		val serverData = dataService.loadServerData(server)
 
-			if (Random.nextInt(100) < serverData.chanceEmoji) {
-				val emoji = event.server.get().customEmojis.random()
-				event.addReactionToMessage(emoji)
-			}
+		if (Random.nextInt(100) < serverData.chanceEmoji) {
+			val emoji = event.server.get().customEmojis.random()
+			event.addReactionToMessage(emoji)
 		}
 	}
 
 	override fun saveAllowedMessage(event: MessageCreateEvent) {
-		if (event.isSaveableMessage()) {
+		if (event.messageCanBeSaved()) {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
 
@@ -79,56 +76,61 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun sendRandomMessage(event: MessageCreateEvent) {
-		if (event.isSaveableMessage()) {
-			val server = event.server.get()
-			val serverData = dataService.loadServerData(server)
+		if (event.messageHasBotMention() || event.messageHasBotClearMention()) {
+			return
+		}
+		if (event.messageAuthor.isYourself) {
+			return
+		}
 
-			if (Random.nextInt(100) < serverData.chanceMessage) {
-				if (Random.nextInt(100) < serverData.chanceAI) {
-					val channelId = event.channel.id
+		val server = event.server.get()
+		val serverData = dataService.loadServerData(server)
 
-					val prompt = chatHistory.getOrDefault(channelId, null)?.takeLast(30)?.joinToString(
-						prefix = firstChatPrompt,
-						separator = "\r\n"
-					)
+		if (Random.nextInt(100) < serverData.chanceMessage) {
+			if (Random.nextInt(100) < serverData.chanceAI) {
+				val channelId = event.channel.id
 
-					prompt ?: return
+				val prompt = chatHistory.getOrDefault(channelId, null)?.takeLast(30)?.joinToString(
+					prefix = firstChatPrompt,
+					separator = "\r\n"
+				)
 
-					val reply = HttpClients.createDefault().use { client ->
-						val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
-							addParameter("prompt", prompt)
-						}.build().toString()
+				prompt ?: return
 
-						val request = HttpGet(url)
+				val reply = HttpClients.createDefault().use { client ->
+					val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
+						addParameter("prompt", prompt)
+					}.build().toString()
 
-						client.execute(request) { response ->
-							if (response.code in 200..299) {
-								val entity = response.entity
-								val jsonResponse = EntityUtils.toString(entity)
+					val request = HttpGet(url)
 
-								val gson = Gson()
-								val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
+					client.execute(request) { response ->
+						if (response.code in 200..299) {
+							val entity = response.entity
+							val jsonResponse = EntityUtils.toString(entity)
 
-								apiResponse.response
-							} else {
-								null
-							}
+							val gson = Gson()
+							val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
+
+							apiResponse.response
+						} else {
+							null
 						}
 					}
+				}
 
-					if (reply != null) {
-						MessageBuilder().apply {
-							append(reply)
-							replyTo(event.message)
-							send(event.channel)
-						}
+				if (reply != null) {
+					MessageBuilder().apply {
+						append(reply)
+						replyTo(event.message)
+						send(event.channel)
 					}
-				} else {
-					val crypt = dataService.getServerRandomMessage(server)
-					crypt?.let {
-						val msg = decodeMessage(it)
-						event.channel.sendMessage(msg)
-					}
+				}
+			} else {
+				val crypt = dataService.getServerRandomMessage(server)
+				crypt?.let {
+					val msg = decodeMessage(it)
+					event.channel.sendMessage(msg)
 				}
 			}
 		}
@@ -138,7 +140,11 @@ class BotServiceImpl : BotService {
 		val channelId = event.channel.id
 		val authorId = event.messageAuthor.id
 
-		if (event.hasBotClearMention()) {
+		if (event.messageAuthor.isYourself) {
+			return
+		}
+
+		if (event.messageHasBotClearMention()) {
 			personalHistory.put(
 				channelId, mutableMapOf(
 					authorId to mutableListOf(
@@ -146,7 +152,7 @@ class BotServiceImpl : BotService {
 					)
 				)
 			)
-		} else if (event.hasBotMention()) {
+		} else if (event.messageHasBotMention()) {
 			val prompt = event.messageContent
 			val reply = HttpClients.createDefault().use { client ->
 				val history = personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
@@ -189,22 +195,27 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun sendBirthdayMessage(event: MessageCreateEvent) {
-		if (event.isSaveableMessage()) {
-			val server = event.server.get()
-			val serverData = dataService.loadServerData(server)
+		if (event.messageHasBotMention() || event.messageHasBotClearMention()) {
+			return
+		}
+		if (event.messageAuthor.isYourself) {
+			return
+		}
 
-			val currentDate = LocalDate.now()
-			val currentDay = currentDate.dayOfMonth
-			val currentMonth = currentDate.monthValue
+		val server = event.server.get()
+		val serverData = dataService.loadServerData(server)
 
-			val (isBirthday, userIds) = isBirthdayToday(serverData)
+		val currentDate = LocalDate.now()
+		val currentDay = currentDate.dayOfMonth
+		val currentMonth = currentDate.monthValue
 
-			if (isBirthday && (currentDay != serverData.lastWish.day || currentMonth != serverData.lastWish.month)) {
-				userIds.forEach { event.channel.sendMessage(I18n.of("happy_birthday", serverData).format(it)) }
-				serverData.lastWish.day = currentDay
-				serverData.lastWish.month = currentMonth
-				dataService.saveServerData(server, serverData)
-			}
+		val (isBirthday, userIds) = isBirthdayToday(serverData)
+
+		if (isBirthday && (currentDay != serverData.lastWish.day || currentMonth != serverData.lastWish.month)) {
+			userIds.forEach { event.channel.sendMessage(I18n.of("happy_birthday", serverData).format(it)) }
+			serverData.lastWish.day = currentDay
+			serverData.lastWish.month = currentMonth
+			dataService.saveServerData(server, serverData)
 		}
 	}
 
@@ -232,33 +243,25 @@ class BotServiceImpl : BotService {
 		return isBirthday to userIds
 	}
 
-	private fun MessageCreateEvent.isSaveableMessage(): Boolean {
+	private fun MessageCreateEvent.messageCanBeSaved(): Boolean {
 		val contain = setOf("@", "https://", "http://", "gopher://")
 		val start = setOf("!", "?", "/")
 
-		if (start.any { messageContent.startsWith(it) } || contain.any { messageContent.contains(it) }) {
+		if (messageContent.length >= 2 && messageContent.length <= 445) {
 			return false
 		}
 
-		if (hasBotMention()) {
-			return false
+		return start.none {
+			messageContent.startsWith(it)
+		} || contain.none {
+			messageContent.contains(it)
 		}
-
-		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
-			return false
-		}
-
-		return messageContent.length >= 2 && messageContent.length <= 445
 	}
 
-	private fun MessageCreateEvent.hasBotMention(): Boolean {
+	private fun MessageCreateEvent.messageHasBotMention(): Boolean {
 		val contain = setOf(", Богдан,", ", богдан,", ",Богдан,", ",богдан,")
 		val start = setOf("Богдан,", "богдан,")
 		val end = setOf(", Богдан", ", богдан", ",Богдан", ",богдан")
-
-		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
-			return false
-		}
 
 		return start.any {
 			messageContent.startsWith(it)
@@ -269,14 +272,10 @@ class BotServiceImpl : BotService {
 		}
 	}
 
-	private fun MessageCreateEvent.hasBotClearMention(): Boolean {
+	private fun MessageCreateEvent.messageHasBotClearMention(): Boolean {
 		val contain = setOf(", !Богдан,", ", !богдан,", ",!Богдан,", ",!богдан,")
 		val start = setOf("!Богдан,", "!богдан,")
 		val end = setOf(", !Богдан", ", !богдан", ",!Богдан", ",!богдан")
-
-		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
-			return false
-		}
 
 		return start.any {
 			messageContent.startsWith(it)
