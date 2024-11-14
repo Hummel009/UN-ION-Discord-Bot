@@ -331,6 +331,42 @@ class AdminServiceImpl : AdminService {
 		}
 	}
 
+	override fun setChanceMessage(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("set_chance_message")) {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					val arguments = sc.arguments[0].stringValue.get().split(" ")
+					if (arguments.size == 1) {
+						try {
+							val chance = arguments[0].toInt()
+							if (chance < 1) {
+								throw Exception()
+							}
+							serverData.chanceMessage = chance
+							EmbedBuilder().success(
+								sc, serverData, I18n.of("set_chance_message", serverData).format(chance)
+							)
+						} catch (_: Exception) {
+							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+						}
+					} else {
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
 	override fun setChanceEmoji(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
@@ -367,10 +403,10 @@ class AdminServiceImpl : AdminService {
 		}
 	}
 
-	override fun setChanceMessage(event: InteractionCreateEvent) {
+	override fun setChanceAI(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("set_chance_message")) {
+		if (sc.fullCommandName.contains("set_chance_ai")) {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -385,9 +421,9 @@ class AdminServiceImpl : AdminService {
 							if (chance < 1) {
 								throw Exception()
 							}
-							serverData.chanceMessage = chance
+							serverData.chanceAI = chance
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("set_chance_message", serverData).format(chance)
+								sc, serverData, I18n.of("set_chance_ai", serverData).format(chance)
 							)
 						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))

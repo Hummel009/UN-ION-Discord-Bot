@@ -6,6 +6,7 @@ data class ServerData(
 	val serverName: String,
 	var chanceMessage: Int,
 	var chanceEmoji: Int,
+	var chanceAI: Int,
 	var lang: String,
 	val lastWish: Date,
 	val secretChannels: MutableSet<Channel>,

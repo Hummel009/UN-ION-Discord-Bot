@@ -12,7 +12,8 @@ interface AdminService {
 	fun clearMessages(event: InteractionCreateEvent)
 	fun clearData(event: InteractionCreateEvent)
 	fun setLanguage(event: InteractionCreateEvent)
-	fun setChanceEmoji(event: InteractionCreateEvent)
 	fun setChanceMessage(event: InteractionCreateEvent)
+	fun setChanceEmoji(event: InteractionCreateEvent)
+	fun setChanceAI(event: InteractionCreateEvent)
 	fun nuke(event: InteractionCreateEvent)
 }

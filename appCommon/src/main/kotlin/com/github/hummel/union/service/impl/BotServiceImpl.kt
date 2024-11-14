@@ -53,7 +53,7 @@ class BotServiceImpl : BotService {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
 
-			if (Random.nextInt(serverData.chanceEmoji) == 0) {
+			if (Random.nextInt(100) < serverData.chanceEmoji) {
 				val emoji = event.server.get().customEmojis.random()
 				event.addReactionToMessage(emoji)
 			}
@@ -83,8 +83,8 @@ class BotServiceImpl : BotService {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
 
-			if (Random.nextInt(serverData.chanceMessage) == 0) {
-				if (Random.nextInt(5) == 0) {
+			if (Random.nextInt(100) < serverData.chanceMessage) {
+				if (Random.nextInt(100) < serverData.chanceAI) {
 					val channelId = event.channel.id
 
 					val prompt = chatHistory.getOrDefault(channelId, null)?.takeLast(30)?.joinToString(
