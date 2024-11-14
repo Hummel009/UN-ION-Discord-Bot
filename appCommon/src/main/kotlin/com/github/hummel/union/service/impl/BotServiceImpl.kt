@@ -87,7 +87,7 @@ class BotServiceImpl : BotService {
 				if (Random.nextInt(5) == 0) {
 					val channelId = event.channel.id
 
-					val prompt = chatHistory.getOrDefault(channelId, null)?.take(30)?.joinToString(
+					val prompt = chatHistory.getOrDefault(channelId, null)?.takeLast(30)?.joinToString(
 						prefix = firstChatPrompt,
 						separator = "\r\n"
 					)
