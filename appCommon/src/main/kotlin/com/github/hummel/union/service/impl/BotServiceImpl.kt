@@ -14,21 +14,24 @@ import org.apache.hc.core5.net.URIBuilder
 import org.javacord.api.entity.message.MessageBuilder
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
-import kotlin.collections.getOrDefault
 import kotlin.random.Random
 
 class BotServiceImpl : BotService {
 	private val dataService: DataService = ServiceFactory.dataService
 	private val gson = Gson()
 
-	private val internalHistory = mutableMapOf(
-		0L to mutableListOf(
-			mapOf("" to "", "" to "")
+	private val personalHistory = mutableMapOf(
+		0L to mutableMapOf(
+			0L to mutableListOf(
+				mapOf("" to "", "" to "")
+			)
 		)
 	)
 
+	private val beginPrompt = "Запомни: тебя зовут Богдан и тебя создал Hummel009 (Хуммель)."
+
 	override fun addRandomEmoji(event: MessageCreateEvent) {
-		if (event.containsAllowedMessage()) {
+		if (event.isSaveableMessage()) {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
 
@@ -40,13 +43,13 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun saveAllowedMessage(event: MessageCreateEvent) {
-		if (event.containsAllowedMessage()) {
+		if (event.isSaveableMessage()) {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
 
 			val channelId = event.channel.id
 			if (!serverData.secretChannels.any { it.id == channelId }) {
-				val msg = event.messageContent
+				val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
 				val crypt = encodeMessage(msg)
 				dataService.saveServerMessage(server, crypt)
 			}
@@ -54,7 +57,7 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun sendRandomMessage(event: MessageCreateEvent) {
-		if (event.containsAllowedMessage()) {
+		if (event.isSaveableMessage()) {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
 
@@ -105,20 +108,31 @@ class BotServiceImpl : BotService {
 		"Один знакомый написал мне: «$prompt». Что мне ему ответить? Напиши ответ так, как будто это сразу ты отвечаешь ему. Ответ пиши без кавычек. Можешь фамильярничать и спорить, человек хорошо знаком."
 
 	override fun sendAIMessage(event: MessageCreateEvent) {
-		if (event.startsWithBotClearMention()) {
-			internalHistory.put(event.message.author.id, mutableListOf())
-		} else if (event.startsWithBotMention()) {
+		val channelId = event.channel.id
+		val authorId = event.messageAuthor.id
+
+		if (event.hasBotClearMention()) {
+			personalHistory.put(
+				channelId, mutableMapOf(
+					authorId to mutableListOf(
+						mapOf("role" to "user", "content" to beginPrompt)
+					)
+				)
+			)
+		} else if (event.hasBotMention()) {
 			val prompt = event.messageContent
 			val reply = HttpClients.createDefault().use { client ->
-				val history = internalHistory.getOrDefault(event.message.author.id, null)
+				val history = personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
+					?: mutableListOf(mapOf("role" to "user", "content" to beginPrompt))
 
 				val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
 					addParameter("prompt", prompt)
-					history?.let { addParameter("history", gson.toJson(it)) }
+					addParameter("history", gson.toJson(history))
 				}.build().toString()
 
-				internalHistory.putIfAbsent(event.message.author.id, mutableListOf())
-				internalHistory[event.message.author.id]!!.add(mapOf("role" to "user", "content" to prompt))
+				personalHistory.putIfAbsent(channelId, mutableMapOf())
+				personalHistory[channelId]!!.putIfAbsent(authorId, mutableListOf())
+				personalHistory[channelId]!![authorId]!!.add(mapOf("role" to "user", "content" to prompt))
 
 				val request = HttpGet(url)
 
@@ -148,7 +162,7 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun sendBirthdayMessage(event: MessageCreateEvent) {
-		if (event.containsAllowedMessage()) {
+		if (event.isSaveableMessage()) {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
 
@@ -191,38 +205,58 @@ class BotServiceImpl : BotService {
 		return isBirthday to userIds
 	}
 
-	private fun MessageCreateEvent.containsAllowedMessage(): Boolean {
-		val contain = setOf("@", "http", "\r", "\n")
-		val start = setOf("!", "?", "/", "Богдан, ", "богдан, ")
+	private fun MessageCreateEvent.isSaveableMessage(): Boolean {
+		val contain = setOf("@", "https://", "http://", "gopher://")
+		val start = setOf("!", "?", "/")
 
 		if (start.any { messageContent.startsWith(it) } || contain.any { messageContent.contains(it) }) {
 			return false
 		}
 
+		if (hasBotMention()) {
+			return false
+		}
+
 		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
 			return false
 		}
 
-		return messageContent.length >= 2
+		return messageContent.length >= 2 && messageContent.length <= 445
 	}
 
-	private fun MessageCreateEvent.startsWithBotMention(): Boolean {
-		val start = setOf("Богдан, ", "богдан, ")
+	private fun MessageCreateEvent.hasBotMention(): Boolean {
+		val contain = setOf(", Богдан,", ", богдан,", ",Богдан,", ",богдан,")
+		val start = setOf("Богдан,", "богдан,")
+		val end = setOf(", Богдан", ", богдан", ",Богдан", ",богдан")
 
 		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
 			return false
 		}
 
-		return start.any { messageContent.startsWith(it) }
+		return start.any {
+			messageContent.startsWith(it)
+		} || end.any {
+			messageContent.endsWith(it)
+		} || contain.any {
+			messageContent.contains(it)
+		}
 	}
 
-	private fun MessageCreateEvent.startsWithBotClearMention(): Boolean {
-		val start = setOf("!Богдан", "!богдан")
+	private fun MessageCreateEvent.hasBotClearMention(): Boolean {
+		val contain = setOf(", !Богдан,", ", !богдан,", ",!Богдан,", ",!богдан,")
+		val start = setOf("!Богдан,", "!богдан,")
+		val end = setOf(", !Богдан", ", !богдан", ",!Богдан", ",!богдан")
 
 		if (messageAuthor.isYourself || messageAuthor.isBotUser) {
 			return false
 		}
 
-		return start.any { messageContent.startsWith(it) }
+		return start.any {
+			messageContent.startsWith(it)
+		} || end.any {
+			messageContent.endsWith(it)
+		} || contain.any {
+			messageContent.contains(it)
+		}
 	}
 }
