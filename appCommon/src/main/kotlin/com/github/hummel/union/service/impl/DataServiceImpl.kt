@@ -114,6 +114,7 @@ class DataServiceImpl : DataService {
 			lang = lang,
 			lastWish = lastWish,
 			secretChannels = mutableSetOf(),
+			mutedChannels = mutableSetOf(),
 			managers = mutableSetOf(),
 			birthdays = mutableSetOf(),
 		)

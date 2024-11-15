@@ -4,8 +4,8 @@ import com.github.hummel.union.bean.ServerData
 import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.AccessService
-import com.github.hummel.union.service.ManagerService
 import com.github.hummel.union.service.DataService
+import com.github.hummel.union.service.ManagerService
 import com.github.hummel.union.utils.access
 import com.github.hummel.union.utils.error
 import com.github.hummel.union.utils.success
@@ -144,6 +144,42 @@ class ManagerServiceImpl : ManagerService {
 		}
 	}
 
+	override fun addMutedChannel(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("add_muted_channel")) {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					val arguments = sc.arguments[0].stringValue.get().split(" ")
+					if (arguments.size == 1) {
+						try {
+							val channelId = arguments[0].toLong()
+							if (!sc.server.get().getChannelById(channelId).isPresent) {
+								throw Exception()
+							}
+							serverData.mutedChannels.add(ServerData.Channel(channelId))
+							EmbedBuilder().success(
+								sc, serverData, I18n.of("added_muted_channel", serverData).format(channelId)
+							)
+						} catch (_: Exception) {
+							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+						}
+					} else {
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
 	override fun clearBirthdays(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
@@ -242,6 +278,44 @@ class ManagerServiceImpl : ManagerService {
 								serverData.secretChannels.removeIf { it.id == channelId }
 								EmbedBuilder().success(
 									sc, serverData, I18n.of("removed_secret_channel", serverData).format(channelId)
+								)
+							} catch (_: Exception) {
+								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							}
+						} else {
+							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						}
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
+	override fun clearMutedChannels(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("clear_muted_channels")) {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					if (sc.arguments.isEmpty()) {
+						serverData.mutedChannels.clear()
+						EmbedBuilder().success(sc, serverData, I18n.of("cleared_muted_channels", serverData))
+					} else {
+						val arguments = sc.arguments[0].stringValue.get().split(" ")
+						if (arguments.size == 1) {
+							try {
+								val channelId = arguments[0].toLong()
+								serverData.mutedChannels.removeIf { it.id == channelId }
+								EmbedBuilder().success(
+									sc, serverData, I18n.of("removed_muted_channel", serverData).format(channelId)
 								)
 							} catch (_: Exception) {
 								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))

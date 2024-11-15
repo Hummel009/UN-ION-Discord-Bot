@@ -10,6 +10,7 @@ data class ServerData(
 	var lang: String,
 	val lastWish: Date,
 	val secretChannels: MutableSet<Channel>,
+	val mutedChannels: MutableSet<Channel>,
 	val managers: MutableSet<Role>,
 	val birthdays: MutableSet<Birthday>
 ) {

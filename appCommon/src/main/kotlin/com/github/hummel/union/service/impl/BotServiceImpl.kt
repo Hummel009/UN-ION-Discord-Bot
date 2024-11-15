@@ -75,9 +75,13 @@ class BotServiceImpl : BotService {
 
 		val server = event.server.get()
 		val serverData = dataService.loadServerData(server)
+		val channelId = event.channel.id
+
+		if (serverData.mutedChannels.any { it.id == channelId }) {
+			return
+		}
 
 		if (Random.nextInt(100) < serverData.chanceMessage) {
-			val channelId = event.channel.id
 			val history = chatHistory.getOrDefault(channelId, null)
 
 			if (history != null && Random.nextInt(100) < serverData.chanceAI) {
