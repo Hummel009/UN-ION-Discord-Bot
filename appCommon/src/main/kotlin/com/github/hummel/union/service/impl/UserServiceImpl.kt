@@ -16,53 +16,9 @@ import org.apache.hc.core5.http.io.entity.StringEntity
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
-import kotlin.random.Random
 
 class UserServiceImpl : UserService {
 	private val dataService: DataService = ServiceFactory.dataService
-
-	private val answers: Set<String> = setOf(
-		"GAME_YES_1", "GAME_YES_2", "GAME_YES_3", "GAME_YES_4", "GAME_NO_1", "GAME_NO_2", "GAME_NO_3", "GAME_NO_4"
-	)
-
-	override fun answer(event: InteractionCreateEvent) {
-		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("answer")) {
-			sc.respondLater().thenAccept {
-				val server = sc.server.get()
-				val serverData = dataService.loadServerData(server)
-
-				val arguments = sc.arguments[0].stringValue.get()
-				val embed = if (arguments.contains("?")) {
-					val answer = I18n.of(answers.random().lowercase(), serverData)
-					EmbedBuilder().success(sc, serverData, "— $arguments\r\n— $answer")
-				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
-	override fun choice(event: InteractionCreateEvent) {
-		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("choice")) {
-			sc.respondLater().thenAccept {
-				val server = sc.server.get()
-				val serverData = dataService.loadServerData(server)
-
-				val arguments = sc.arguments[0].stringValue.get().split(" ")
-				val embed = if (arguments.isNotEmpty()) {
-					val choiceSet = I18n.of("choice_set", serverData).format(arguments)
-					val choiceSelect = I18n.of("choice_select", serverData).format(arguments.random())
-					EmbedBuilder().success(sc, serverData, "$choiceSet\r\n$choiceSelect")
-				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
 
 	override fun complete(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
@@ -103,31 +59,6 @@ class UserServiceImpl : UserService {
 								EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
 							}
 						}
-					}
-				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
-	override fun random(event: InteractionCreateEvent) {
-		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("random")) {
-			sc.respondLater().thenAccept {
-				val server = sc.server.get()
-				val serverData = dataService.loadServerData(server)
-
-				val arguments = sc.arguments[0].stringValue.get().split(" ")
-				val embed = if (arguments.size == 1) {
-					try {
-						val int = arguments[0].toInt()
-						EmbedBuilder().success(
-							sc, serverData, I18n.of("random", serverData).format(Random.nextInt(int))
-						)
-					} catch (_: Exception) {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 					}
 				} else {
 					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))

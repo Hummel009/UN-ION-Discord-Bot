@@ -128,7 +128,7 @@ class AdminServiceImpl : AdminService {
 							}
 							serverData.secretChannels.add(ServerData.Channel(channelId))
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("added_channel", serverData).format(channelId)
+								sc, serverData, I18n.of("added_secret_channel", serverData).format(channelId)
 							)
 						} catch (_: Exception) {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
@@ -233,7 +233,7 @@ class AdminServiceImpl : AdminService {
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.secretChannels.clear()
-						EmbedBuilder().success(sc, serverData, I18n.of("cleared_channels", serverData))
+						EmbedBuilder().success(sc, serverData, I18n.of("cleared_secret_channels", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -241,7 +241,7 @@ class AdminServiceImpl : AdminService {
 								val channelId = arguments[0].toLong()
 								serverData.secretChannels.removeIf { it.id == channelId }
 								EmbedBuilder().success(
-									sc, serverData, I18n.of("removed_channel", serverData).format(channelId)
+									sc, serverData, I18n.of("removed_secret_channel", serverData).format(channelId)
 								)
 							} catch (_: Exception) {
 								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
