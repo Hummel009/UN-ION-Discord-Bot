@@ -2,7 +2,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 plugins {
-	id("com.android.application") version "8.5.2"
+	id("com.android.application") version "8.6.1"
 	id("org.jetbrains.kotlin.android") version "latest.release"
 	id("org.jetbrains.kotlin.plugin.compose") version "latest.release"
 	id("org.jetbrains.compose") version "latest.release"

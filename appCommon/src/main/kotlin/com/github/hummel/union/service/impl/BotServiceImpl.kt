@@ -51,6 +51,10 @@ class BotServiceImpl : BotService {
 		val server = event.server.get()
 		val serverData = dataService.loadServerData(server)
 
+		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
+			return
+		}
+
 		if (Random.nextInt(100) < serverData.chanceEmoji) {
 			val emoji = event.server.get().customEmojis.random()
 			event.addReactionToMessage(emoji)
@@ -58,15 +62,15 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun saveAllowedMessage(event: MessageCreateEvent) {
+		val channelId = event.channel.id
+		val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
+
+		chatHistory.putIfAbsent(channelId, mutableListOf())
+		chatHistory[channelId]!!.add(msg)
+
 		if (event.messageCanBeSaved()) {
 			val server = event.server.get()
 			val serverData = dataService.loadServerData(server)
-
-			val channelId = event.channel.id
-			val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
-
-			chatHistory.putIfAbsent(channelId, mutableListOf())
-			chatHistory[channelId]!!.add(msg)
 
 			if (!serverData.secretChannels.any { it.id == channelId }) {
 				val crypt = encodeMessage(msg)
@@ -79,7 +83,8 @@ class BotServiceImpl : BotService {
 		if (event.messageHasBotMention() || event.messageHasBotClearMention()) {
 			return
 		}
-		if (event.messageAuthor.isYourself) {
+
+		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
 			return
 		}
 
@@ -119,12 +124,8 @@ class BotServiceImpl : BotService {
 					}
 				}
 
-				if (reply != null) {
-					MessageBuilder().apply {
-						append(reply)
-						replyTo(event.message)
-						send(event.channel)
-					}
+				reply?.let {
+					event.channel.sendMessage(it)
 				}
 			} else {
 				val crypt = dataService.getServerRandomMessage(server)
@@ -140,7 +141,7 @@ class BotServiceImpl : BotService {
 		val channelId = event.channel.id
 		val authorId = event.messageAuthor.id
 
-		if (event.messageAuthor.isYourself) {
+		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
 			return
 		}
 
