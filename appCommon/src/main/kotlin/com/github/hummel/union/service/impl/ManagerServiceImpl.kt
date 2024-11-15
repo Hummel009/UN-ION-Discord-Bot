@@ -4,7 +4,7 @@ import com.github.hummel.union.bean.ServerData
 import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.AccessService
-import com.github.hummel.union.service.AdminService
+import com.github.hummel.union.service.ManagerService
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.utils.access
 import com.github.hummel.union.utils.error
@@ -13,7 +13,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
 
-class AdminServiceImpl : AdminService {
+class ManagerServiceImpl : ManagerService {
 	private val dataService: DataService = ServiceFactory.dataService
 	private val accessService: AccessService = ServiceFactory.accessService
 
@@ -40,7 +40,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
@@ -82,7 +82,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
@@ -116,7 +116,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
@@ -152,7 +152,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
@@ -190,7 +190,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
@@ -228,7 +228,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
@@ -266,7 +266,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					dataService.wipeServerMessages(server)
@@ -285,7 +285,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					dataService.wipeServerData(server)
@@ -304,7 +304,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
@@ -339,7 +339,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
@@ -375,7 +375,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
@@ -411,7 +411,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
@@ -447,7 +447,7 @@ class AdminServiceImpl : AdminService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val embed = if (!accessService.fromAdminAtLeast(sc, serverData)) {
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")

@@ -3,6 +3,7 @@ package com.github.hummel.union.lang
 object LangBeBy : Lang {
 	override fun getJson(): String = """
 		{
+			"ai_clear": "Кантэкст ачышчаны.",
 			"no_connection": "Сайт з нейрасецівам тэрмінова недаступны.",
 			"exit": "Прыкладанне будзе выключана.",
 			"nuke": "Паведамленні выдалены.",

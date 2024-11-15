@@ -16,27 +16,29 @@ class DiscordControllerImpl : DiscordController {
 
 	override fun onStartCommand() {
 		val userService = ServiceFactory.userService
-		val adminService = ServiceFactory.adminService
+		val managerService = ServiceFactory.managerService
 		val ownerService = ServiceFactory.ownerService
 		val botService = ServiceFactory.botService
 
 		api.addInteractionCreateListener {
 			userService.complete(it)
+			userService.aiAnswer(it)
+			userService.aiClear(it)
 			userService.info(it)
 
-			adminService.addBirthday(it)
-			adminService.addManager(it)
-			adminService.addSecretChannel(it)
-			adminService.clearBirthdays(it)
-			adminService.clearManagers(it)
-			adminService.clearSecretChannels(it)
-			adminService.clearMessages(it)
-			adminService.clearData(it)
-			adminService.setLanguage(it)
-			adminService.setChanceMessage(it)
-			adminService.setChanceEmoji(it)
-			adminService.setChanceAI(it)
-			adminService.nuke(it)
+			managerService.addBirthday(it)
+			managerService.addManager(it)
+			managerService.addSecretChannel(it)
+			managerService.clearBirthdays(it)
+			managerService.clearManagers(it)
+			managerService.clearSecretChannels(it)
+			managerService.clearMessages(it)
+			managerService.clearData(it)
+			managerService.setLanguage(it)
+			managerService.setChanceMessage(it)
+			managerService.setChanceEmoji(it)
+			managerService.setChanceAI(it)
+			managerService.nuke(it)
 
 			ownerService.import(it)
 			ownerService.export(it)
@@ -45,9 +47,8 @@ class DiscordControllerImpl : DiscordController {
 
 		api.addMessageCreateListener {
 			botService.addRandomEmoji(it)
-			botService.saveAllowedMessage(it)
+			botService.saveMessage(it)
 			botService.sendRandomMessage(it)
-			botService.sendAIMessage(it)
 			botService.sendBirthdayMessage(it)
 		}
 	}

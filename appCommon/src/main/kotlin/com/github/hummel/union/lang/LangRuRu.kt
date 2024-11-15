@@ -3,6 +3,7 @@ package com.github.hummel.union.lang
 object LangRuRu : Lang {
 	override fun getJson(): String = """
 		{
+			"ai_clear": "Контекст очищен.",
 			"no_connection": "Сайт с нейросетью временно недоступен.",
 			"exit": "Приложение будет выключено.",
 			"nuke": "Сообщения удалены.",

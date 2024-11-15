@@ -6,7 +6,7 @@ import com.github.hummel.union.service.AccessService
 import org.javacord.api.interaction.SlashCommandInteraction
 
 class AccessServiceImpl : AccessService {
-	override fun fromAdminAtLeast(sc: SlashCommandInteraction, serverData: ServerData): Boolean {
+	override fun fromManagerAtLeast(sc: SlashCommandInteraction, serverData: ServerData): Boolean {
 		val server = sc.server.get()
 		val user = sc.user
 		return user.getRoles(server).any { role ->

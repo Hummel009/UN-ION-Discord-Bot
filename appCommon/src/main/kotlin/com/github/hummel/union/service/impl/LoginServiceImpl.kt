@@ -33,11 +33,10 @@ class LoginServiceImpl : LoginService {
 
 	override fun registerCommands(impl: DiscordControllerImpl) {
 		val api = impl.api
-		"answer" with Settings("/answer [your question]", argsList(), api)
-		"choice" with Settings("/choice [one] [two] [three]", argsList(), api)
 		"complete" with Settings("/complete [text]", argsList(), api)
-		"random" with Settings("/random [number]", argsList(), api)
 		"info" with Settings("/info", emptyList(), api)
+		"ai_answer" with Settings("/ai_answer [text]", argsList(), api)
+		"ai_clear" with Settings("/ai_clear", emptyList(), api)
 
 		"add_birthday" with Settings("/add_birthday [user_id] [month_number] [day_number]", argsList(), api)
 		"add_manager" with Settings("/add_manager [role_id]", argsList(), api)

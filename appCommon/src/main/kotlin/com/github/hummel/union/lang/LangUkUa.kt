@@ -3,6 +3,7 @@ package com.github.hummel.union.lang
 object LangUkUa : Lang {
 	override fun getJson(): String = """
 		{
+			"ai_clear": "Контекст очищений.",
 			"no_connection": "Сайт з нейромережею терміново недоступний.",
 			"exit": "Застосунок буде вимкнено.",
 			"nuke": "Повідомлення видалені.",

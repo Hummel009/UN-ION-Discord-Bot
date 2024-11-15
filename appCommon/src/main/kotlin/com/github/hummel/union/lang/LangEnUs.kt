@@ -3,6 +3,7 @@ package com.github.hummel.union.lang
 object LangEnUs : Lang {
 	override fun getJson(): String = """
 		{
+			"ai_clear": "Context was cleared.",
 			"no_connection": "The site with the neural network is temporarily unavailable.",
 			"exit": "Application will be turned off.",
 			"nuke": "Messages have been deleted.",

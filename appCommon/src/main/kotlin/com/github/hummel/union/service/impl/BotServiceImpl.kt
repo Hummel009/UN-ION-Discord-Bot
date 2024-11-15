@@ -11,22 +11,12 @@ import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.apache.hc.core5.net.URIBuilder
-import org.javacord.api.entity.message.MessageBuilder
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 import kotlin.random.Random
 
 class BotServiceImpl : BotService {
 	private val dataService: DataService = ServiceFactory.dataService
-	private val gson = Gson()
-
-	private val personalHistory = mutableMapOf(
-		0L to mutableMapOf(
-			0L to mutableListOf(
-				mapOf("" to "", "" to "")
-			)
-		)
-	)
 
 	private val chatHistory = mutableMapOf(
 		0L to mutableListOf(
@@ -34,7 +24,6 @@ class BotServiceImpl : BotService {
 		)
 	)
 
-	private val firstPersonalPrompt = "Запомни: тебя зовут Богдан и тебя создал Hummel009 (Хуммель)."
 	private val firstChatPrompt = """
 		Ты — участник этого чата, тебя зовут Богдан.
 		НЕ ПИШИ что-то вроде «Богдан на связи» или «Эй, ребята, я тут!».
@@ -48,12 +37,12 @@ class BotServiceImpl : BotService {
 		""".trimIndent().replace("\n", " ") + "\n"
 
 	override fun addRandomEmoji(event: MessageCreateEvent) {
-		val server = event.server.get()
-		val serverData = dataService.loadServerData(server)
-
 		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
 			return
 		}
+
+		val server = event.server.get()
+		val serverData = dataService.loadServerData(server)
 
 		if (Random.nextInt(100) < serverData.chanceEmoji) {
 			val emoji = event.server.get().customEmojis.random()
@@ -61,7 +50,7 @@ class BotServiceImpl : BotService {
 		}
 	}
 
-	override fun saveAllowedMessage(event: MessageCreateEvent) {
+	override fun saveMessage(event: MessageCreateEvent) {
 		val channelId = event.channel.id
 		val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
 
@@ -80,10 +69,6 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun sendRandomMessage(event: MessageCreateEvent) {
-		if (event.messageHasBotMention() || event.messageHasBotClearMention()) {
-			return
-		}
-
 		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
 			return
 		}
@@ -137,69 +122,8 @@ class BotServiceImpl : BotService {
 		}
 	}
 
-	override fun sendAIMessage(event: MessageCreateEvent) {
-		val channelId = event.channel.id
-		val authorId = event.messageAuthor.id
-
-		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
-			return
-		}
-
-		if (event.messageHasBotClearMention()) {
-			personalHistory.put(
-				channelId, mutableMapOf(
-					authorId to mutableListOf(
-						mapOf("role" to "user", "content" to firstPersonalPrompt)
-					)
-				)
-			)
-		} else if (event.messageHasBotMention()) {
-			val prompt = event.messageContent
-			val reply = HttpClients.createDefault().use { client ->
-				val history = personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
-					?: mutableListOf(mapOf("role" to "user", "content" to firstPersonalPrompt))
-
-				val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
-					addParameter("prompt", prompt)
-					addParameter("history", gson.toJson(history))
-				}.build().toString()
-
-				personalHistory.putIfAbsent(channelId, mutableMapOf())
-				personalHistory[channelId]!!.putIfAbsent(authorId, mutableListOf())
-				personalHistory[channelId]!![authorId]!!.add(mapOf("role" to "user", "content" to prompt))
-
-				val request = HttpGet(url)
-
-				client.execute(request) { response ->
-					if (response.code in 200..299) {
-						val entity = response.entity
-						val jsonResponse = EntityUtils.toString(entity)
-
-						val gson = Gson()
-						val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
-
-						apiResponse.response
-					} else {
-						null
-					}
-				}
-			}
-
-			if (reply != null) {
-				MessageBuilder().apply {
-					append(reply)
-					replyTo(event.message)
-					send(event.channel)
-				}
-			}
-		}
-	}
-
 	override fun sendBirthdayMessage(event: MessageCreateEvent) {
-		if (event.messageHasBotMention() || event.messageHasBotClearMention()) {
-			return
-		}
-		if (event.messageAuthor.isYourself) {
+		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
 			return
 		}
 
@@ -255,34 +179,6 @@ class BotServiceImpl : BotService {
 		return start.none {
 			messageContent.startsWith(it)
 		} || contain.none {
-			messageContent.contains(it)
-		}
-	}
-
-	private fun MessageCreateEvent.messageHasBotMention(): Boolean {
-		val contain = setOf(", Богдан,", ", богдан,", ",Богдан,", ",богдан,")
-		val start = setOf("Богдан,", "богдан,")
-		val end = setOf(", Богдан", ", богдан", ",Богдан", ",богдан")
-
-		return start.any {
-			messageContent.startsWith(it)
-		} || end.any {
-			messageContent.endsWith(it)
-		} || contain.any {
-			messageContent.contains(it)
-		}
-	}
-
-	private fun MessageCreateEvent.messageHasBotClearMention(): Boolean {
-		val contain = setOf(", !Богдан,", ", !богдан,", ",!Богдан,", ",!богдан,")
-		val start = setOf("!Богдан,", "!богдан,")
-		val end = setOf(", !Богдан", ", !богдан", ",!Богдан", ",!богдан")
-
-		return start.any {
-			messageContent.startsWith(it)
-		} || end.any {
-			messageContent.endsWith(it)
-		} || contain.any {
 			messageContent.contains(it)
 		}
 	}

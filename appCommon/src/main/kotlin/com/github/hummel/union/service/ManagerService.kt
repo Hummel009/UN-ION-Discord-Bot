@@ -2,7 +2,7 @@ package com.github.hummel.union.service
 
 import org.javacord.api.event.interaction.InteractionCreateEvent
 
-interface AdminService {
+interface ManagerService {
 	fun addBirthday(event: InteractionCreateEvent)
 	fun addManager(event: InteractionCreateEvent)
 	fun addSecretChannel(event: InteractionCreateEvent)
