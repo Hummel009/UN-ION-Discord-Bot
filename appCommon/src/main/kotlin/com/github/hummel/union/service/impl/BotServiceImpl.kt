@@ -52,18 +52,14 @@ class BotServiceImpl : BotService {
 
 	override fun saveMessage(event: MessageCreateEvent) {
 		val channelId = event.channel.id
-		val authorName = event.messageAuthor.displayName
 		val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
 
 		chatHistory.putIfAbsent(channelId, mutableListOf())
 		if (chatHistory[channelId]!!.size >= 20) {
 			chatHistory[channelId] = chatHistory[channelId]!!.takeLast(20) as MutableList<String>
 		}
-		if (event.messageAuthor.isYourself) {
-			chatHistory[channelId]!!.add("$authorName (assistant): $msg")
-		} else {
-			chatHistory[channelId]!!.add("$authorName (user): $msg")
-		}
+
+		chatHistory[channelId]!!.add(msg)
 
 		if (event.messageCanBeSaved()) {
 			val server = event.server.get()
