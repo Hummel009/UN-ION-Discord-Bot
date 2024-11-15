@@ -59,6 +59,7 @@ object LangEnUs : Lang {
 			"december": "December %d",
 			"user_birthday": "<@%d>: %s",
 			"secret_channel": "<#%d>",
+			"muted_channel": "<#%d>",
 			"manager": "<@&%d>",
 			"be": "belarusian",
 			"en": "english",

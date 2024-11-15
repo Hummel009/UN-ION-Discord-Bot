@@ -59,6 +59,7 @@ object LangBeBy : Lang {
 			"december": "%d снежня",
 			"user_birthday": "<@%d>: %s",
 			"secret_channel": "<#%d>",
+			"muted_channel": "<#%d>",
 			"manager": "<@&%d>",
 			"be": "беларуская",
 			"en": "англійская",

@@ -50,7 +50,7 @@ class ManagerServiceImpl : ManagerService {
 							val month = if (arguments[1].toInt() in 1..12) arguments[1].toInt() else throw Exception()
 							val range = ranges[month] ?: throw Exception()
 							val day = if (arguments[2].toInt() in range) arguments[2].toInt() else throw Exception()
-							if (!sc.server.get().getMemberById(userId).isPresent) {
+							if (!server.getMemberById(userId).isPresent) {
 								throw Exception()
 							}
 							serverData.birthdays.add(ServerData.Birthday(userId, ServerData.Date(day, month)))
@@ -89,7 +89,7 @@ class ManagerServiceImpl : ManagerService {
 					if (arguments.size == 1) {
 						try {
 							val roleId = arguments[0].toLong()
-							if (!sc.server.get().getRoleById(roleId).isPresent) {
+							if (!server.getRoleById(roleId).isPresent) {
 								throw Exception()
 							}
 							serverData.managers.add(ServerData.Role(roleId))
@@ -123,7 +123,7 @@ class ManagerServiceImpl : ManagerService {
 					if (arguments.size == 1) {
 						try {
 							val channelId = arguments[0].toLong()
-							if (!sc.server.get().getChannelById(channelId).isPresent) {
+							if (!server.getChannelById(channelId).isPresent) {
 								throw Exception()
 							}
 							serverData.secretChannels.add(ServerData.Channel(channelId))
@@ -159,7 +159,7 @@ class ManagerServiceImpl : ManagerService {
 					if (arguments.size == 1) {
 						try {
 							val channelId = arguments[0].toLong()
-							if (!sc.server.get().getChannelById(channelId).isPresent) {
+							if (!server.getChannelById(channelId).isPresent) {
 								throw Exception()
 							}
 							serverData.mutedChannels.add(ServerData.Channel(channelId))

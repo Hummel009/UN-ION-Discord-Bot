@@ -32,54 +32,6 @@ class UserServiceImpl : UserService {
 		)
 	)
 
-	override fun complete(event: InteractionCreateEvent) {
-		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("complete")) {
-			sc.respondLater().thenAccept {
-				val server = sc.server.get()
-				val serverData = dataService.loadServerData(server)
-
-				val prompt = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
-				val embed = if (prompt.isNotEmpty()) {
-					HttpClients.createDefault().use { client ->
-						val request = HttpPost("https://api.porfirevich.com/generate/")
-
-						val payload = """
-						{
-							"prompt": "$prompt",
-							"model": "xlarge",
-							"length": 100
-						}
-						""".trimIndent()
-
-						request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
-
-						request.addHeader("Accept", "*/*")
-						request.addHeader("Accept-Encoding", "gzip, deflate, br")
-						request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
-
-						client.execute(request) { response ->
-							if (response.code in 200..299) {
-								val entity = response.entity
-								val jsonResponse = EntityUtils.toString(entity)
-
-								val gson = Gson()
-								val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
-
-								EmbedBuilder().success(sc, serverData, "$prompt${apiResponse.replies.random()}")
-							} else {
-								EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
-							}
-						}
-					}
-				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
 	override fun info(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
@@ -133,6 +85,17 @@ class UserServiceImpl : UserService {
 						}
 						append("\r\n")
 					}
+					if (serverData.mutedChannels.isEmpty()) {
+						append("\r\n", I18n.of("no_muted_channels", serverData), "\r\n")
+					} else {
+						append("\r\n", I18n.of("has_muted_channels", serverData), "\r\n")
+						serverData.mutedChannels.sortedWith(compareBy { it.id }).joinTo(this, "\r\n") {
+							val channelId = it.id
+
+							I18n.of("muted_channel", serverData).format(channelId)
+						}
+						append("\r\n")
+					}
 				}
 				val embed = EmbedBuilder().success(sc, serverData, text)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -142,10 +105,65 @@ class UserServiceImpl : UserService {
 		}
 	}
 
+	override fun complete(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("complete")) {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val prompt = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
+				val embed = if (prompt.isNotEmpty()) {
+					HttpClients.createDefault().use { client ->
+						try {
+							val request = HttpPost("https://api.porfirevich.com/generate/")
+
+							val payload = """
+							{
+								"prompt": "$prompt",
+								"model": "xlarge",
+								"length": 100
+							}
+							""".trimIndent()
+
+							request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
+
+							request.addHeader("Accept", "*/*")
+							request.addHeader("Accept-Encoding", "gzip, deflate, br")
+							request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
+
+							client.execute(request) { response ->
+								if (response.code in 200..299) {
+									val entity = response.entity
+									val jsonResponse = EntityUtils.toString(entity)
+
+									val gson = Gson()
+									val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
+
+									EmbedBuilder().success(sc, serverData, "$prompt${apiResponse.replies.random()}")
+								} else {
+									EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
+								}
+							}
+						} catch (e: Exception) {
+							e.printStackTrace()
+
+							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+						}
+					}
+				} else {
+					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+			}.get()
+		}
+	}
+
 	override fun aiAnswer(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("aiAnswer")) {
+		if (sc.fullCommandName.contains("ai_answer")) {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -153,35 +171,41 @@ class UserServiceImpl : UserService {
 				val prompt = sc.arguments[0].stringValue.get()
 				val embed = if (prompt.isNotEmpty()) {
 					HttpClients.createDefault().use { client ->
-						val channelId = sc.channel.get().id
-						val authorId = sc.user.id
+						try {
+							val channelId = sc.channel.get().id
+							val authorId = sc.user.id
 
-						val history = personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
+							val history = personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
 
-						val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
-							addParameter("prompt", prompt)
-							history?.let { addParameter("history", gson.toJson(it)) }
-						}.build().toString()
+							val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
+								addParameter("prompt", prompt)
+								history?.let { addParameter("history", gson.toJson(it)) }
+							}.build().toString()
 
-						personalHistory.putIfAbsent(channelId, mutableMapOf())
-						personalHistory[channelId]!!.putIfAbsent(authorId, mutableListOf())
-						personalHistory[channelId]!![authorId]!!.add(mapOf("role" to "user", "content" to prompt))
+							personalHistory.putIfAbsent(channelId, mutableMapOf())
+							personalHistory[channelId]!!.putIfAbsent(authorId, mutableListOf())
+							personalHistory[channelId]!![authorId]!!.add(mapOf("role" to "user", "content" to prompt))
 
-						val request = HttpGet(url)
+							val request = HttpGet(url)
 
-						client.execute(request) { response ->
-							if (response.code in 200..299) {
-								val entity = response.entity
-								val jsonResponse = EntityUtils.toString(entity)
+							client.execute(request) { response ->
+								if (response.code in 200..299) {
+									val entity = response.entity
+									val jsonResponse = EntityUtils.toString(entity)
 
-								val gson = Gson()
-								val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
+									val gson = Gson()
+									val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
 
 
-								EmbedBuilder().success(sc, serverData, apiResponse.response)
-							} else {
-								EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
+									EmbedBuilder().success(sc, serverData, apiResponse.response)
+								} else {
+									EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
+								}
 							}
+						} catch (e: Exception) {
+							e.printStackTrace()
+
+							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 						}
 					}
 				} else {
@@ -195,7 +219,7 @@ class UserServiceImpl : UserService {
 	override fun aiClear(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("aiClear")) {
+		if (sc.fullCommandName.contains("ai_clear")) {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)

@@ -59,6 +59,7 @@ object LangUkUa : Lang {
 			"december": "%d грудня",
 			"user_birthday": "<@%d>: %s",
 			"secret_channel": "<#%d>",
+			"muted_channel": "<#%d>",
 			"manager": "<@&%d>",
 			"be": "білоруська",
 			"en": "англійська",
