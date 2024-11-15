@@ -77,16 +77,14 @@ class BotServiceImpl : BotService {
 		val serverData = dataService.loadServerData(server)
 
 		if (Random.nextInt(100) < serverData.chanceMessage) {
-			if (Random.nextInt(100) < serverData.chanceAI) {
-				val channelId = event.channel.id
+			val channelId = event.channel.id
+			val history = chatHistory.getOrDefault(channelId, null)
 
-				val prompt = chatHistory.getOrDefault(channelId, null)?.takeLast(30)?.joinToString(
+			if (history != null && Random.nextInt(100) < serverData.chanceAI) {
+				val prompt = history.takeLast(30).joinToString(
 					prefix = firstChatPrompt,
 					separator = "\r\n"
 				)
-
-				prompt ?: return
-
 				val reply = HttpClients.createDefault().use { client ->
 					val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
 						addParameter("prompt", prompt)
