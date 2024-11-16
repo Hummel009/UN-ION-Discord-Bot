@@ -91,11 +91,11 @@ class BotServiceImpl : BotService {
 			val channelHistory = channelsHistories.getOrDefault(channelId, null)
 
 			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
-				val prompt = channelHistory.joinToString(
-					prefix = firstChatPrompt, separator = "\r\n"
-				)
 				val reply = HttpClients.createDefault().use { client ->
 					try {
+						val prompt = channelHistory.joinToString(
+							prefix = firstChatPrompt, separator = "\r\n"
+						)
 						val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
 							addParameter("prompt", prompt)
 						}.build().toString()
