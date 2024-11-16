@@ -83,7 +83,7 @@ class BotServiceImpl : BotService {
 		val serverData = dataService.loadServerData(server)
 		val channelId = event.channel.id
 
-		if (!event.messageHasBotMention() && serverData.mutedChannels.any { it.id == channelId }) {
+		if (serverData.mutedChannels.any { it.id == channelId }) {
 			return
 		}
 
@@ -96,6 +96,7 @@ class BotServiceImpl : BotService {
 						val prompt = channelHistory.joinToString(
 							prefix = firstChatPrompt, separator = "\r\n"
 						)
+
 						val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
 							addParameter("prompt", prompt)
 						}.build().toString()
@@ -110,6 +111,10 @@ class BotServiceImpl : BotService {
 								val gson = Gson()
 								val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
 
+								if (apiResponse.response.length >= 2000) {
+									throw Exception()
+								}
+
 								apiResponse.response
 							} else {
 								null
@@ -122,8 +127,8 @@ class BotServiceImpl : BotService {
 					}
 				}
 
-				reply?.let {
-					event.channel.sendMessage(it)
+				if (reply != null) {
+					event.channel.sendMessage(reply)
 				}
 			} else {
 				val crypt = dataService.getServerRandomMessage(server)

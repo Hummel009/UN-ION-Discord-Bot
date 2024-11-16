@@ -196,6 +196,9 @@ class UserServiceImpl : UserService {
 									val gson = Gson()
 									val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
 
+									if (apiResponse.response.length >= 2000) {
+										throw Exception()
+									}
 
 									EmbedBuilder().success(sc, serverData, apiResponse.response)
 								} else {
