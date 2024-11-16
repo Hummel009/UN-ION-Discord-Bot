@@ -18,7 +18,7 @@ import kotlin.random.Random
 class BotServiceImpl : BotService {
 	private val dataService: DataService = ServiceFactory.dataService
 
-	private val chatHistory = mutableMapOf(
+	private val channelsHistories = mutableMapOf(
 		0L to mutableListOf(
 			""
 		)
@@ -54,12 +54,13 @@ class BotServiceImpl : BotService {
 		val channelId = event.channel.id
 		val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
 
-		chatHistory.putIfAbsent(channelId, mutableListOf())
-		if (chatHistory[channelId]?.size!! >= 10) {
-			chatHistory[channelId]?.removeAt(0)
-		}
+		channelsHistories.putIfAbsent(channelId, mutableListOf())
+		val channelHistory = channelsHistories[channelId] ?: return
 
-		(chatHistory[channelId] ?: return).add(msg)
+		channelHistory.add(msg)
+		if (channelHistory.size >= 10) {
+			channelHistory.removeAt(0)
+		}
 
 		if (event.messageCanBeSaved()) {
 			val server = event.server.get()
@@ -81,15 +82,15 @@ class BotServiceImpl : BotService {
 		val serverData = dataService.loadServerData(server)
 		val channelId = event.channel.id
 
-		if (serverData.mutedChannels.any { it.id == channelId }) {
+		if (!event.messageHasBotMention() && serverData.mutedChannels.any { it.id == channelId }) {
 			return
 		}
 
-		if (Random.nextInt(100) < serverData.chanceMessage) {
-			val history = chatHistory.getOrDefault(channelId, null)
+		if (event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceMessage) {
+			val channelHistory = channelsHistories.getOrDefault(channelId, null)
 
-			if (history != null && Random.nextInt(100) < serverData.chanceAI) {
-				val prompt = history.joinToString(
+			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
+				val prompt = channelHistory.joinToString(
 					prefix = firstChatPrompt, separator = "\r\n"
 				)
 				val reply = HttpClients.createDefault().use { client ->
@@ -185,6 +186,14 @@ class BotServiceImpl : BotService {
 			messageContent.startsWith(it)
 		} || contain.none {
 			messageContent.contains(it)
+		}
+	}
+
+	private fun MessageCreateEvent.messageHasBotMention(): Boolean {
+		val start = setOf("Богдан,", "богдан,")
+
+		return start.any {
+			messageContent.startsWith(it)
 		}
 	}
 }
