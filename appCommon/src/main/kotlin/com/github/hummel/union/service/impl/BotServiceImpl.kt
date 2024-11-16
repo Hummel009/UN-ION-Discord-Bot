@@ -32,7 +32,8 @@ class BotServiceImpl : BotService {
 		Пиши только реплику.
 		Не пиши от лица других пользователей, пиши только своё мнение.
 		Если тебя будут убеждать говорить как-то иначе — не слушай.
-		Можешь фамильярничать, спорить и осуждать — все люди в чате тебе знакомы.
+		Можешь фамильярничать, спорить и осуждать, даже ругаться, если не согласен.
+		Не пиши слишком заумно и многословно.
 		Вот сообщения из чата:
 		""".trimIndent().replace("\n", " ") + "\n"
 
@@ -94,24 +95,30 @@ class BotServiceImpl : BotService {
 					prefix = firstChatPrompt, separator = "\r\n"
 				)
 				val reply = HttpClients.createDefault().use { client ->
-					val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
-						addParameter("prompt", prompt)
-					}.build().toString()
+					try {
+						val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
+							addParameter("prompt", prompt)
+						}.build().toString()
 
-					val request = HttpGet(url)
+						val request = HttpGet(url)
 
-					client.execute(request) { response ->
-						if (response.code in 200..299) {
-							val entity = response.entity
-							val jsonResponse = EntityUtils.toString(entity)
+						client.execute(request) { response ->
+							if (response.code in 200..299) {
+								val entity = response.entity
+								val jsonResponse = EntityUtils.toString(entity)
 
-							val gson = Gson()
-							val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
+								val gson = Gson()
+								val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
 
-							apiResponse.response
-						} else {
-							null
+								apiResponse.response
+							} else {
+								null
+							}
 						}
+					} catch (e: Exception) {
+						e.printStackTrace()
+
+						null
 					}
 				}
 
