@@ -227,11 +227,9 @@ class UserServiceImpl : UserService {
 				val channelId = sc.channel.get().id
 				val authorId = sc.user.id
 
-				personalHistory.put(
-					channelId, mutableMapOf(
-						authorId to mutableListOf(
-							mapOf()
-						)
+				personalHistory[channelId] = mutableMapOf(
+					authorId to mutableListOf(
+						mapOf()
 					)
 				)
 

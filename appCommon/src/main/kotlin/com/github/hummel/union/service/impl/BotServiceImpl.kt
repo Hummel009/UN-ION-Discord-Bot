@@ -55,11 +55,11 @@ class BotServiceImpl : BotService {
 		val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
 
 		chatHistory.putIfAbsent(channelId, mutableListOf())
-		if (chatHistory[channelId]!!.size >= 20) {
-			chatHistory[channelId] = chatHistory[channelId]!!.takeLast(20) as MutableList<String>
+		if (chatHistory[channelId]?.size!! >= 10) {
+			chatHistory[channelId]?.removeAt(0)
 		}
 
-		chatHistory[channelId]!!.add(msg)
+		(chatHistory[channelId] ?: return).add(msg)
 
 		if (event.messageCanBeSaved()) {
 			val server = event.server.get()
@@ -89,9 +89,8 @@ class BotServiceImpl : BotService {
 			val history = chatHistory.getOrDefault(channelId, null)
 
 			if (history != null && Random.nextInt(100) < serverData.chanceAI) {
-				val prompt = history.takeLast(20).joinToString(
-					prefix = firstChatPrompt,
-					separator = "\r\n"
+				val prompt = history.joinToString(
+					prefix = firstChatPrompt, separator = "\r\n"
 				)
 				val reply = HttpClients.createDefault().use { client ->
 					val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
@@ -178,7 +177,7 @@ class BotServiceImpl : BotService {
 		val contain = setOf("@", "https://", "http://", "gopher://")
 		val start = setOf("!", "?", "/")
 
-		if (messageContent.length >= 2 && messageContent.length <= 445) {
+		if (messageContent.length !in 2..445) {
 			return false
 		}
 
