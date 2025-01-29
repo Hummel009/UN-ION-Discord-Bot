@@ -14,6 +14,7 @@ val embed: Configuration by configurations.creating
 dependencies {
 	implementation(project(":appCommon"))
 
+	embed(project(":appCommon"))
 	embed("org.jetbrains.kotlin:kotlin-stdlib:latest.release")
 }
 
