@@ -10,8 +10,8 @@ class DiscordControllerImpl : DiscordController {
 	override fun onCreate() {
 		val loginService = ServiceFactory.loginService
 		loginService.loginBot(this)
-		loginService.deleteCommands(this)
-		loginService.registerCommands(this)
+		//loginService.deleteCommands(this)
+		//loginService.registerCommands(this)
 	}
 
 	override fun onStartCommand() {
