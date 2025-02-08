@@ -27,7 +27,7 @@ class LoginServiceImpl : LoginService {
 				request.setHeader("Authorization", "Bot ${BotData.token}")
 
 				client.execute(request) { response ->
-					println("$index/${commands.size}; ${response.code}: ${response.reasonPhrase}")
+					println("${index + 1}/${commands.size}; ${response.code}: ${response.reasonPhrase}")
 				}
 			}
 		}
