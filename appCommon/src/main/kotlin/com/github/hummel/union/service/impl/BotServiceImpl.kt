@@ -35,7 +35,7 @@ class BotServiceImpl : BotService {
 		""".trimIndent().replace("\t", "").replace("\n", " ") + "\n"
 
 	override fun addRandomEmoji(event: MessageCreateEvent) {
-		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
+		if (event.messageAuthor.isYourself) {
 			return
 		}
 
@@ -112,10 +112,6 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun sendBirthdayMessage(event: MessageCreateEvent) {
-		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
-			return
-		}
-
 		val server = event.server.get()
 		val serverData = dataService.loadServerData(server)
 
@@ -162,6 +158,9 @@ class BotServiceImpl : BotService {
 		val start = setOf("!", "?", "/", "Богдан", "богдан")
 
 		if (messageContent.length !in 2..445) {
+			return false
+		}
+		if (messageAuthor.isYourself) {
 			return false
 		}
 
