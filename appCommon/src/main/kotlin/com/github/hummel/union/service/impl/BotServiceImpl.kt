@@ -1,16 +1,13 @@
 package com.github.hummel.union.service.impl
 
-import com.github.hummel.union.bean.ApiResponseDDG
 import com.github.hummel.union.bean.ServerData
 import com.github.hummel.union.factory.ServiceFactory
+import com.github.hummel.union.integration.DuckRequest
+import com.github.hummel.union.integration.DuckRequest.DuckMessage
+import com.github.hummel.union.integration.getDuckAnswer
 import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.BotService
 import com.github.hummel.union.service.DataService
-import com.google.gson.Gson
-import org.apache.hc.client5.http.classic.methods.HttpGet
-import org.apache.hc.client5.http.impl.classic.HttpClients
-import org.apache.hc.core5.http.io.entity.EntityUtils
-import org.apache.hc.core5.net.URIBuilder
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 import kotlin.random.Random
@@ -24,7 +21,7 @@ class BotServiceImpl : BotService {
 		)
 	)
 
-	private val firstChatPrompt = """
+	private val preprompt = """
 		Ты — участник этого чата, тебя зовут Богдан.
 		Не пиши что-то вроде «Богдан на связи» или «Эй, ребята, я тут!».
 		Сделай свою реплику, подстраиваясь под манер общения пользователей, да так,
@@ -35,7 +32,7 @@ class BotServiceImpl : BotService {
 		Можешь фамильярничать, спорить и осуждать, даже ругаться, если не согласен.
 		Не пиши слишком заумно и многословно.
 		Вот сообщения из чата:
-		""".trimIndent().replace("\n", " ") + "\n"
+		""".trimIndent().replace("\t", "").replace("\n", " ") + "\n"
 
 	override fun addRandomEmoji(event: MessageCreateEvent) {
 		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
@@ -91,44 +88,18 @@ class BotServiceImpl : BotService {
 			val channelHistory = channelsHistories.getOrDefault(channelId, null)
 
 			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
-				val reply = HttpClients.createDefault().use { client ->
-					try {
-						val prompt = channelHistory.joinToString(
-							prefix = firstChatPrompt, separator = "\r\n"
+				val prompt = channelHistory.joinToString(
+					prefix = preprompt, separator = "\n"
+				)
+
+				getDuckAnswer(
+					DuckRequest(
+						"gpt-4o-mini", listOf(
+							DuckMessage("user", prompt)
 						)
-
-						val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
-							addParameter("prompt", prompt)
-						}.build().toString()
-
-						val request = HttpGet(url)
-
-						client.execute(request) { response ->
-							if (response.code in 200..299) {
-								val entity = response.entity
-								val jsonResponse = EntityUtils.toString(entity)
-
-								val gson = Gson()
-								val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
-
-								if (apiResponse.response.length >= 2000) {
-									throw Exception()
-								}
-
-								apiResponse.response
-							} else {
-								null
-							}
-						}
-					} catch (e: Exception) {
-						e.printStackTrace()
-
-						null
-					}
-				}
-
-				if (reply != null) {
-					event.channel.sendMessage(reply)
+					)
+				)?.let {
+					event.channel.sendMessage(it)
 				}
 			} else {
 				val crypt = dataService.getServerRandomMessage(server)

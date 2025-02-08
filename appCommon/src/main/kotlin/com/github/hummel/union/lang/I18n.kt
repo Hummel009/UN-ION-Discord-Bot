@@ -1,7 +1,7 @@
 package com.github.hummel.union.lang
 
 import com.github.hummel.union.bean.ServerData
-import com.google.gson.Gson
+import com.github.hummel.union.utils.gson
 
 object I18n {
 	@Suppress("UNCHECKED_CAST")
@@ -14,7 +14,6 @@ object I18n {
 			else -> throw Exception()
 		}
 
-		val gson = Gson()
 		val translation = gson.fromJson(instance.getJson(), Map::class.java) as Map<String, String>
 
 		translation[key]?.let {

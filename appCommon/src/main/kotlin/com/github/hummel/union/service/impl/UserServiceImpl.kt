@@ -7,8 +7,8 @@ import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.UserService
 import com.github.hummel.union.utils.error
+import com.github.hummel.union.utils.gson
 import com.github.hummel.union.utils.success
-import com.google.gson.Gson
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.classic.methods.HttpPost
 import org.apache.hc.client5.http.impl.classic.HttpClients
@@ -22,7 +22,6 @@ import java.time.Month
 
 class UserServiceImpl : UserService {
 	private val dataService: DataService = ServiceFactory.dataService
-	private val gson = Gson()
 
 	private val personalHistory = mutableMapOf(
 		0L to mutableMapOf(
@@ -138,7 +137,6 @@ class UserServiceImpl : UserService {
 									val entity = response.entity
 									val jsonResponse = EntityUtils.toString(entity)
 
-									val gson = Gson()
 									val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
 
 									EmbedBuilder().success(sc, serverData, "$prompt${apiResponse.replies.random()}")
@@ -193,7 +191,6 @@ class UserServiceImpl : UserService {
 									val entity = response.entity
 									val jsonResponse = EntityUtils.toString(entity)
 
-									val gson = Gson()
 									val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
 
 									if (apiResponse.response.length >= 2000) {
