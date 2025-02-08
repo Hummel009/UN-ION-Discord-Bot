@@ -44,7 +44,7 @@ object LangEnUs : Lang {
 			"current_language": "Current language: %s.",
 			
 			"cleared_data": "Server data has been cleared.",
-			"cleared_bank": "Server messages have been cleared.",
+			"cleared_bank": "Server speechbank have been cleared.",
 			
 			"exit": "Application will be turned off.",
 			"import": "Data has been imported.",
