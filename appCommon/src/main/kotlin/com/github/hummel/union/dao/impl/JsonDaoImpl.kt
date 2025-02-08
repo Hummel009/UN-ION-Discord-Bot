@@ -12,7 +12,7 @@ class JsonDaoImpl : JsonDao {
 		return try {
 			val json = fileDao.readFromFile(filePath)
 			gson.fromJson(String(json), clazz)
-		} catch (ignored: Exception) {
+		} catch (_: Exception) {
 			null
 		}
 	}

@@ -10,21 +10,15 @@ class ZipDaoImpl : ZipDao {
 	private val fileDao: FileDao = DaoFactory.fileDao
 
 	override fun unzipFile(filePath: String, folderPath: String) {
-		try {
-			val file = fileDao.getFile(filePath)
-			val folder = fileDao.getFolder(folderPath)
-			ZipFile(file.path).extractAll(folder.path)
-		} catch (ignored: Exception) {
-		}
+		val file = fileDao.getFile(filePath)
+		val folder = fileDao.getFolder(folderPath)
+		ZipFile(file.path).extractAll(folder.path)
 	}
 
 	override fun zipFolder(folderPath: String, filePath: String) {
-		try {
-			val folder = fileDao.getFolder(folderPath)
-			val file = fileDao.getFile(filePath)
-			ZipFile(file.path).compressAll(folder)
-		} catch (ignored: Exception) {
-		}
+		val folder = fileDao.getFolder(folderPath)
+		val file = fileDao.getFile(filePath)
+		ZipFile(file.path).compressAll(folder)
 	}
 
 	private fun ZipFile.compressAll(folder: File) {

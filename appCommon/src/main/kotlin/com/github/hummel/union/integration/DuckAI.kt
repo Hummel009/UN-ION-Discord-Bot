@@ -35,12 +35,16 @@ private fun getDuckResponse(payload: String): String? = HttpClients.createDefaul
 				val entity = response.entity
 				val jsonResponse = EntityUtils.toString(entity)
 
-				jsonResponse?.split("data: ")?.filter {
+				val apiResponse = jsonResponse?.split("data: ")?.filter {
 					it.isNotEmpty()
 				}?.takeWhile {
 					!it.contains("[DONE]")
 				}?.mapNotNull {
-					gson.fromJson(it, DuckResponse::class.java).message
+					gson.fromJson(it, DuckResponse::class.java)
+				}
+
+				apiResponse?.mapNotNull {
+					it.message
 				}?.joinToString("")
 			} else {
 				xvqd4 = null

@@ -1,21 +1,16 @@
 package com.github.hummel.union.service.impl
 
-import com.github.hummel.union.bean.ApiResponse
-import com.github.hummel.union.bean.ApiResponseDDG
 import com.github.hummel.union.factory.ServiceFactory
+import com.github.hummel.union.integration.DuckRequest
+import com.github.hummel.union.integration.DuckRequest.DuckMessage
+import com.github.hummel.union.integration.PorfirevichRequest
+import com.github.hummel.union.integration.getDuckAnswer
+import com.github.hummel.union.integration.getPorfirevichAnswer
 import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.UserService
 import com.github.hummel.union.utils.error
-import com.github.hummel.union.utils.gson
 import com.github.hummel.union.utils.success
-import org.apache.hc.client5.http.classic.methods.HttpGet
-import org.apache.hc.client5.http.classic.methods.HttpPost
-import org.apache.hc.client5.http.impl.classic.HttpClients
-import org.apache.hc.core5.http.ContentType
-import org.apache.hc.core5.http.io.entity.EntityUtils
-import org.apache.hc.core5.http.io.entity.StringEntity
-import org.apache.hc.core5.net.URIBuilder
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
@@ -25,9 +20,7 @@ class UserServiceImpl : UserService {
 
 	private val personalHistory = mutableMapOf(
 		0L to mutableMapOf(
-			0L to mutableListOf(
-				mapOf("" to "", "" to "")
-			)
+			0L to mutableListOf<DuckMessage>()
 		)
 	)
 
@@ -112,44 +105,15 @@ class UserServiceImpl : UserService {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
 
-				val prompt = sc.arguments[0].stringValue.get().replace("\"", "\\\"")
+				val prompt = sc.arguments[0].stringValue.get()
 				val embed = if (prompt.isNotEmpty()) {
-					HttpClients.createDefault().use { client ->
-						try {
-							val request = HttpPost("https://api.porfirevich.com/generate/")
-
-							val payload = """
-							{
-								"prompt": "$prompt",
-								"model": "xlarge",
-								"length": 100
-							}
-							""".trimIndent()
-
-							request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
-
-							request.addHeader("Accept", "*/*")
-							request.addHeader("Accept-Encoding", "gzip, deflate, br")
-							request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
-
-							client.execute(request) { response ->
-								if (response.code in 200..299) {
-									val entity = response.entity
-									val jsonResponse = EntityUtils.toString(entity)
-
-									val apiResponse = gson.fromJson(jsonResponse, ApiResponse::class.java)
-
-									EmbedBuilder().success(sc, serverData, "$prompt${apiResponse.replies.random()}")
-								} else {
-									EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
-								}
-							}
-						} catch (e: Exception) {
-							e.printStackTrace()
-
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
-						}
-					}
+					getPorfirevichAnswer(
+						PorfirevichRequest(
+							prompt, "xlarge", 100
+						)
+					)?.let {
+						EmbedBuilder().success(sc, serverData, it)
+					} ?: EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
 				} else {
 					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
@@ -168,46 +132,24 @@ class UserServiceImpl : UserService {
 
 				val prompt = sc.arguments[0].stringValue.get()
 				val embed = if (prompt.isNotEmpty()) {
-					HttpClients.createDefault().use { client ->
-						try {
-							val channelId = sc.channel.get().id
-							val authorId = sc.user.id
+					val channelId = sc.channel.get().id
+					val authorId = sc.user.id
 
-							val history = personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
+					personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
+					personalHistory.putIfAbsent(channelId, mutableMapOf())
+					personalHistory[channelId]!!.putIfAbsent(authorId, mutableListOf())
 
-							val url = URIBuilder("https://duck.gpt-api.workers.dev/chat/").apply {
-								addParameter("prompt", prompt)
-								history?.let { addParameter("history", gson.toJson(it)) }
-							}.build().toString()
+					personalHistory[channelId]!![authorId]!!.add(DuckMessage("user", prompt))
 
-							personalHistory.putIfAbsent(channelId, mutableMapOf())
-							personalHistory[channelId]!!.putIfAbsent(authorId, mutableListOf())
-							personalHistory[channelId]!![authorId]!!.add(mapOf("role" to "user", "content" to prompt))
+					getDuckAnswer(
+						DuckRequest(
+							"gpt-4o-mini", personalHistory[channelId]!![authorId]!!
+						)
+					)?.let {
+						personalHistory[channelId]!![authorId]!!.add(DuckMessage("assistant", it))
 
-							val request = HttpGet(url)
-
-							client.execute(request) { response ->
-								if (response.code in 200..299) {
-									val entity = response.entity
-									val jsonResponse = EntityUtils.toString(entity)
-
-									val apiResponse = gson.fromJson(jsonResponse, ApiResponseDDG::class.java)
-
-									if (apiResponse.response.length >= 2000) {
-										throw Exception()
-									}
-
-									EmbedBuilder().success(sc, serverData, apiResponse.response)
-								} else {
-									EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
-								}
-							}
-						} catch (e: Exception) {
-							e.printStackTrace()
-
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
-						}
-					}
+						EmbedBuilder().success(sc, serverData, it)
+					} ?: EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
 				} else {
 					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
@@ -228,9 +170,7 @@ class UserServiceImpl : UserService {
 				val authorId = sc.user.id
 
 				personalHistory[channelId] = mutableMapOf(
-					authorId to mutableListOf(
-						mapOf()
-					)
+					authorId to mutableListOf()
 				)
 
 				val embed = EmbedBuilder().success(sc, serverData, I18n.of("ai_clear", serverData))

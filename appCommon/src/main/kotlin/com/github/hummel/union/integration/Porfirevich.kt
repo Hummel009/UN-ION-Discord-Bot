@@ -1,2 +1,52 @@
 package com.github.hummel.union.integration
 
+import com.github.hummel.union.utils.gson
+import org.apache.hc.client5.http.classic.methods.HttpPost
+import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.core5.http.ContentType
+import org.apache.hc.core5.http.io.entity.EntityUtils
+import org.apache.hc.core5.http.io.entity.StringEntity
+
+fun getPorfirevichAnswer(request: PorfirevichRequest): String? {
+	val payload = gson.toJson(request)
+
+	return request.prompt + getPorfirevichResponse(payload)
+}
+
+private fun getPorfirevichResponse(payload: String): String? = HttpClients.createDefault().use { client ->
+	try {
+		val request = HttpPost("https://api.porfirevich.com/generate/")
+		request.addHeader("Accept", "*/*")
+		request.addHeader("Accept-Encoding", "gzip, deflate, br")
+		request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
+
+		request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
+
+		client.execute(request) { response ->
+			if (response.code in 200..299) {
+				val entity = response.entity
+				val jsonResponse = EntityUtils.toString(entity)
+
+				val apiResponse = gson.fromJson(jsonResponse, PorfirevichResponse::class.java)
+
+				apiResponse.replies.random()
+			} else {
+				null
+			}
+		}
+	} catch (e: Exception) {
+		e.printStackTrace()
+
+		null
+	}
+}
+
+data class PorfirevichRequest(
+	val prompt: String,
+	val model: String,
+	val length: Int
+)
+
+data class PorfirevichResponse(
+	val replies: List<String>
+)
