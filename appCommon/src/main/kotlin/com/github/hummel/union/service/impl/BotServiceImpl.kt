@@ -100,6 +100,8 @@ class BotServiceImpl : BotService {
 					)
 				)?.let {
 					event.channel.sendMessage(it)
+				} ?: run {
+					event.channel.sendMessage("Я занят, поговорим попозже.")
 				}
 			} else {
 				val crypt = dataService.getServerRandomMessage(server)

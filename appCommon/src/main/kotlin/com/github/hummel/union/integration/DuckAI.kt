@@ -11,14 +11,39 @@ import java.net.URI
 
 var xvqd4: String? = null
 
+var lastRefreshTime: Long = 0
+var lastResponseTime: Long = 0
+
+const val REFRESH_INTERVAL: Long = 7000
+
 fun getDuckAnswer(request: DuckRequest): String? {
 	val payload = gson.toJson(request)
 
+	val currentTimeToken = System.currentTimeMillis()
+	val timeSinceLastTokenRefresh = currentTimeToken - lastRefreshTime
+
+	if (timeSinceLastTokenRefresh < REFRESH_INTERVAL) {
+		val sleepTime = REFRESH_INTERVAL - timeSinceLastTokenRefresh
+		Thread.sleep(sleepTime)
+	}
+
 	refreshToken()
+	lastRefreshTime = System.currentTimeMillis()
 
 	xvqd4 ?: return null
 
-	return getDuckResponse(payload)
+	val currentTimeResponse = System.currentTimeMillis()
+	val timeSinceLastResponse = currentTimeResponse - lastResponseTime
+
+	if (timeSinceLastResponse < REFRESH_INTERVAL) {
+		val sleepTime = REFRESH_INTERVAL - timeSinceLastResponse
+		Thread.sleep(sleepTime)
+	}
+
+	val response = getDuckResponse(payload)
+	lastResponseTime = System.currentTimeMillis()
+
+	return response
 }
 
 private fun getDuckResponse(payload: String): String? = HttpClients.createDefault().use { client ->
@@ -27,6 +52,22 @@ private fun getDuckResponse(payload: String): String? = HttpClients.createDefaul
 
 		val request = HttpPost(url)
 		request.addHeader("x-vqd-4", xvqd4)
+		request.setHeader(
+			"User-Agent",
+			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+		)
+		request.setHeader("Host", "duckduckgo.com")
+		request.setHeader("Accept", "text/event-stream")
+		request.setHeader("Accept-Language", "en-US,en;q=0.5")
+		request.setHeader("Accept-Encoding", "gzip, deflate, br")
+		request.setHeader("Referer", "https://duckduckgo.com/")
+		request.setHeader("DNT", "1")
+		request.setHeader("Sec-GPC", "1")
+		request.setHeader("Connection", "keep-alive")
+		request.setHeader("Sec-Fetch-Dest", "empty")
+		request.setHeader("Sec-Fetch-Mode", "cors")
+		request.setHeader("Sec-Fetch-Site", "same-origin")
+		request.setHeader("TE", "trailers")
 
 		request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
 
@@ -67,6 +108,23 @@ private fun refreshToken() {
 
 				val request = HttpGet(url)
 				request.addHeader("x-vqd-accept", "1")
+				request.setHeader(
+					"User-Agent",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+				)
+				request.addHeader("x-vqd-4", xvqd4)
+				request.setHeader("Host", "duckduckgo.com")
+				request.setHeader("Accept", "text/event-stream")
+				request.setHeader("Accept-Language", "en-US,en;q=0.5")
+				request.setHeader("Accept-Encoding", "gzip, deflate, br")
+				request.setHeader("Referer", "https://duckduckgo.com/")
+				request.setHeader("DNT", "1")
+				request.setHeader("Sec-GPC", "1")
+				request.setHeader("Connection", "keep-alive")
+				request.setHeader("Sec-Fetch-Dest", "empty")
+				request.setHeader("Sec-Fetch-Mode", "cors")
+				request.setHeader("Sec-Fetch-Site", "same-origin")
+				request.setHeader("TE", "trailers")
 
 				client.execute(request) { response ->
 					if (response.code in 200..299) {
