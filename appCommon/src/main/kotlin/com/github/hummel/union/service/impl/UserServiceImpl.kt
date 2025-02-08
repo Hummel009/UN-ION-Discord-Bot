@@ -1,10 +1,7 @@
 package com.github.hummel.union.service.impl
 
 import com.github.hummel.union.factory.ServiceFactory
-import com.github.hummel.union.integration.DuckRequest
-import com.github.hummel.union.integration.DuckRequest.DuckMessage
 import com.github.hummel.union.integration.PorfirevichRequest
-import com.github.hummel.union.integration.getDuckAnswer
 import com.github.hummel.union.integration.getPorfirevichAnswer
 import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.DataService
@@ -17,12 +14,6 @@ import java.time.Month
 
 class UserServiceImpl : UserService {
 	private val dataService: DataService = ServiceFactory.dataService
-
-	private val personalHistory = mutableMapOf(
-		0L to mutableMapOf(
-			0L to mutableListOf<DuckMessage>()
-		)
-	)
 
 	override fun info(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
@@ -51,7 +42,7 @@ class UserServiceImpl : UserService {
 							val day = it.date.day
 							val date = I18n.of(month.name.lowercase(), serverData).format(day)
 
-							I18n.of("user_birthday", serverData).format(userId, date)
+							I18n.of("birthday", serverData).format(userId, date)
 						}
 						append("\r\n")
 					}
@@ -117,64 +108,6 @@ class UserServiceImpl : UserService {
 				} else {
 					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
-	override fun aiAnswer(event: InteractionCreateEvent) {
-		val sc = event.slashCommandInteraction.get()
-
-		if (sc.fullCommandName.contains("ai_answer")) {
-			sc.respondLater().thenAccept {
-				val server = sc.server.get()
-				val serverData = dataService.loadServerData(server)
-
-				val prompt = sc.arguments[0].stringValue.get()
-				val embed = if (prompt.isNotEmpty()) {
-					val channelId = sc.channel.get().id
-					val authorId = sc.user.id
-
-					personalHistory.getOrDefault(channelId, null)?.getOrDefault(authorId, null)
-					personalHistory.putIfAbsent(channelId, mutableMapOf())
-					personalHistory[channelId]!!.putIfAbsent(authorId, mutableListOf())
-
-					personalHistory[channelId]!![authorId]!!.add(DuckMessage("user", prompt))
-
-					getDuckAnswer(
-						DuckRequest(
-							"gpt-4o-mini", personalHistory[channelId]!![authorId]!!
-						)
-					)?.let {
-						personalHistory[channelId]!![authorId]!!.add(DuckMessage("assistant", it))
-
-						EmbedBuilder().success(sc, serverData, it)
-					} ?: EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
-				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
-			}.get()
-		}
-	}
-
-	override fun aiClear(event: InteractionCreateEvent) {
-		val sc = event.slashCommandInteraction.get()
-
-		if (sc.fullCommandName.contains("ai_clear")) {
-			sc.respondLater().thenAccept {
-				val server = sc.server.get()
-				val serverData = dataService.loadServerData(server)
-
-				val channelId = sc.channel.get().id
-				val authorId = sc.user.id
-
-				personalHistory[channelId] = mutableMapOf(
-					authorId to mutableListOf()
-				)
-
-				val embed = EmbedBuilder().success(sc, serverData, I18n.of("ai_clear", serverData))
-
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}

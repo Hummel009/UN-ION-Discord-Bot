@@ -332,10 +332,10 @@ class ManagerServiceImpl : ManagerService {
 		}
 	}
 
-	override fun clearMessages(event: InteractionCreateEvent) {
+	override fun clearBank(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("clear_messages")) {
+		if (sc.fullCommandName.contains("clear_bank")) {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -344,7 +344,7 @@ class ManagerServiceImpl : ManagerService {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					dataService.wipeServerMessages(server)
-					EmbedBuilder().success(sc, serverData, I18n.of("cleared_messages", serverData))
+					EmbedBuilder().success(sc, serverData, I18n.of("cleared_bank", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -509,39 +509,6 @@ class ManagerServiceImpl : ManagerService {
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 
 				dataService.saveServerData(server, serverData)
-			}.get()
-		}
-	}
-
-	override fun nuke(event: InteractionCreateEvent) {
-		val sc = event.slashCommandInteraction.get()
-
-		if (sc.fullCommandName.contains("nuke")) {
-			sc.respondLater().thenAccept {
-				val server = sc.server.get()
-				val serverData = dataService.loadServerData(server)
-
-				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
-				} else {
-					val arguments = sc.arguments[0].stringValue.get().split(" ")
-					if (arguments.size == 1) {
-						try {
-							val range = arguments[0].toInt()
-							if (range !in 2..200) {
-								throw Exception()
-							}
-							val messageIds = sc.channel.get().getMessages(range).get().map { it.id }.toLongArray()
-							sc.channel.get().bulkDelete(*messageIds).get()
-							EmbedBuilder().success(sc, serverData, I18n.of("nuke", serverData))
-						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
-						}
-					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
-					}
-				}
-				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}
 	}

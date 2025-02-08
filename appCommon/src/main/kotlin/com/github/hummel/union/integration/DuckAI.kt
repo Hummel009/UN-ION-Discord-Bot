@@ -92,10 +92,10 @@ data class DuckRequest(
 }
 
 data class DuckResponse(
-	val role: String? = null,
-	val message: String? = null,
-	val created: Long? = null,
-	val id: String? = null,
-	val action: String? = null,
-	val model: String? = null
+	val role: String,
+	val message: String,
+	val created: Long,
+	val id: String,
+	val action: String,
+	val model: String,
 )

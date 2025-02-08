@@ -11,11 +11,10 @@ interface ManagerService {
 	fun clearManagers(event: InteractionCreateEvent)
 	fun clearSecretChannels(event: InteractionCreateEvent)
 	fun clearMutedChannels(event: InteractionCreateEvent)
-	fun clearMessages(event: InteractionCreateEvent)
+	fun clearBank(event: InteractionCreateEvent)
 	fun clearData(event: InteractionCreateEvent)
 	fun setLanguage(event: InteractionCreateEvent)
 	fun setChanceMessage(event: InteractionCreateEvent)
 	fun setChanceEmoji(event: InteractionCreateEvent)
 	fun setChanceAI(event: InteractionCreateEvent)
-	fun nuke(event: InteractionCreateEvent)
 }

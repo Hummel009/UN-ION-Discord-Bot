@@ -16,9 +16,6 @@ fun getPorfirevichAnswer(request: PorfirevichRequest): String? {
 private fun getPorfirevichResponse(payload: String): String? = HttpClients.createDefault().use { client ->
 	try {
 		val request = HttpPost("https://api.porfirevich.com/generate/")
-		request.addHeader("Accept", "*/*")
-		request.addHeader("Accept-Encoding", "gzip, deflate, br")
-		request.addHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6")
 
 		request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
 

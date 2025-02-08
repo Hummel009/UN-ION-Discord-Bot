@@ -10,8 +10,8 @@ class DiscordControllerImpl : DiscordController {
 	override fun onCreate() {
 		val loginService = ServiceFactory.loginService
 		loginService.loginBot(this)
-		//loginService.deleteCommands(this)
-		//loginService.registerCommands(this)
+		loginService.deleteCommands(this)
+		loginService.registerCommands(this)
 	}
 
 	override fun onStartCommand() {
@@ -22,8 +22,6 @@ class DiscordControllerImpl : DiscordController {
 
 		api.addInteractionCreateListener {
 			userService.complete(it)
-			userService.aiAnswer(it)
-			userService.aiClear(it)
 			userService.info(it)
 
 			managerService.addBirthday(it)
@@ -34,13 +32,12 @@ class DiscordControllerImpl : DiscordController {
 			managerService.clearManagers(it)
 			managerService.clearSecretChannels(it)
 			managerService.clearMutedChannels(it)
-			managerService.clearMessages(it)
+			managerService.clearBank(it)
 			managerService.clearData(it)
 			managerService.setLanguage(it)
 			managerService.setChanceMessage(it)
 			managerService.setChanceEmoji(it)
 			managerService.setChanceAI(it)
-			managerService.nuke(it)
 
 			ownerService.import(it)
 			ownerService.export(it)
