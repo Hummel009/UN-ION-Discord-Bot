@@ -11,39 +11,14 @@ import java.net.URI
 
 var xvqd4: String? = null
 
-var lastRefreshTime: Long = 0
-var lastResponseTime: Long = 0
-
-const val REFRESH_INTERVAL: Long = 7000
-
 fun getDuckAnswer(request: DuckRequest): String? {
 	val payload = gson.toJson(request)
 
-	val currentTimeToken = System.currentTimeMillis()
-	val timeSinceLastTokenRefresh = currentTimeToken - lastRefreshTime
-
-	if (timeSinceLastTokenRefresh < REFRESH_INTERVAL) {
-		val sleepTime = REFRESH_INTERVAL - timeSinceLastTokenRefresh
-		Thread.sleep(sleepTime)
-	}
-
 	refreshToken()
-	lastRefreshTime = System.currentTimeMillis()
 
 	xvqd4 ?: return null
 
-	val currentTimeResponse = System.currentTimeMillis()
-	val timeSinceLastResponse = currentTimeResponse - lastResponseTime
-
-	if (timeSinceLastResponse < REFRESH_INTERVAL) {
-		val sleepTime = REFRESH_INTERVAL - timeSinceLastResponse
-		Thread.sleep(sleepTime)
-	}
-
-	val response = getDuckResponse(payload)
-	lastResponseTime = System.currentTimeMillis()
-
-	return response
+	return getDuckResponse(payload)
 }
 
 private fun getDuckResponse(payload: String): String? = HttpClients.createDefault().use { client ->
