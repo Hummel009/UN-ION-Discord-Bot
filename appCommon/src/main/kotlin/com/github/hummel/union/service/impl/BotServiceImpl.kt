@@ -15,7 +15,7 @@ import kotlin.random.Random
 class BotServiceImpl : BotService {
 	private val dataService: DataService = ServiceFactory.dataService
 
-	private val channelsHistories = mutableMapOf(
+	private val channelHistories = mutableMapOf(
 		0L to mutableListOf(
 			""
 		)
@@ -52,8 +52,8 @@ class BotServiceImpl : BotService {
 		val channelId = event.channel.id
 		val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
 
-		channelsHistories.putIfAbsent(channelId, mutableListOf())
-		val channelHistory = channelsHistories[channelId] ?: return
+		channelHistories.putIfAbsent(channelId, mutableListOf())
+		val channelHistory = channelHistories[channelId] ?: return
 
 		channelHistory.add(msg)
 		if (channelHistory.size >= 10) {
@@ -72,7 +72,7 @@ class BotServiceImpl : BotService {
 	}
 
 	override fun sendRandomMessage(event: MessageCreateEvent) {
-		if (event.messageAuthor.isYourself || event.messageAuthor.isBotUser) {
+		if (event.messageAuthor.isYourself) {
 			return
 		}
 
@@ -85,7 +85,7 @@ class BotServiceImpl : BotService {
 		}
 
 		if (event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceMessage) {
-			val channelHistory = channelsHistories.getOrDefault(channelId, null)
+			val channelHistory = channelHistories.getOrDefault(channelId, null)
 
 			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
 				val prompt = channelHistory.joinToString(
@@ -159,7 +159,7 @@ class BotServiceImpl : BotService {
 
 	private fun MessageCreateEvent.messageCanBeSaved(): Boolean {
 		val contain = setOf("@", "https://", "http://", "gopher://")
-		val start = setOf("!", "?", "/")
+		val start = setOf("!", "?", "/", "Богдан", "богдан")
 
 		if (messageContent.length !in 2..445) {
 			return false
@@ -167,7 +167,7 @@ class BotServiceImpl : BotService {
 
 		return start.none {
 			messageContent.startsWith(it)
-		} || contain.none {
+		} && contain.none {
 			messageContent.contains(it)
 		}
 	}
