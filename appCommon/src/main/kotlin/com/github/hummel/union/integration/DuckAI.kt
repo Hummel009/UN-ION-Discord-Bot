@@ -16,8 +16,6 @@ fun getDuckAnswer(request: DuckRequest): String? {
 
 	refreshToken()
 
-	xvqd4 ?: return null
-
 	return getDuckResponse(payload)
 }
 
@@ -26,23 +24,23 @@ private fun getDuckResponse(payload: String): String? = HttpClients.createDefaul
 		val url = URI("https://duckduckgo.com/duckchat/v1/chat")
 
 		val request = HttpPost(url)
-		request.addHeader("x-vqd-4", xvqd4)
-		request.setHeader(
-			"User-Agent",
-			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-		)
-		request.setHeader("Host", "duckduckgo.com")
 		request.setHeader("Accept", "text/event-stream")
-		request.setHeader("Accept-Language", "en-US,en;q=0.5")
-		request.setHeader("Accept-Encoding", "gzip, deflate, br")
-		request.setHeader("Referer", "https://duckduckgo.com/")
+		request.setHeader("Accept-Encoding", "gzip, deflate, br, zstd")
+		request.setHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6,be;q=0.5")
+		request.setHeader("Content-Type", "application/json")
+		request.setHeader("Cookie", "dcs=1; dcm=3")
 		request.setHeader("DNT", "1")
-		request.setHeader("Sec-GPC", "1")
-		request.setHeader("Connection", "keep-alive")
+		request.setHeader("Origin", "https://duckduckgo.com")
+		request.setHeader("Priority", "u=1, i")
+		request.setHeader("Referer", "https://duckduckgo.com/")
+		request.setHeader("Sec-Ch-Ua", "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Microsoft Edge\";v=\"132\"")
+		request.setHeader("Sec-Ch-Ua-Mobile", "?0")
+		request.setHeader("Sec-Ch-Ua-Platform", "\"Windows\"")
 		request.setHeader("Sec-Fetch-Dest", "empty")
 		request.setHeader("Sec-Fetch-Mode", "cors")
 		request.setHeader("Sec-Fetch-Site", "same-origin")
-		request.setHeader("TE", "trailers")
+		request.setHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv,127.0) Gecko/20100101 Firefox/127.0")
+		request.addHeader("X-Vqd-4", xvqd4)
 
 		request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
 
@@ -50,6 +48,12 @@ private fun getDuckResponse(payload: String): String? = HttpClients.createDefaul
 			if (response.code in 200..299) {
 				val entity = response.entity
 				val jsonResponse = EntityUtils.toString(entity)
+
+				val newXvqd4 = response.headers.find { it.name == "x-vqd-4" }?.value
+
+				if (newXvqd4 != null) {
+					xvqd4 = newXvqd4
+				}
 
 				val apiResponse = jsonResponse?.split("data: ")?.filter {
 					it.isNotEmpty()
@@ -63,14 +67,11 @@ private fun getDuckResponse(payload: String): String? = HttpClients.createDefaul
 					it.message
 				}?.joinToString("")
 			} else {
-				xvqd4 = null
 				null
 			}
 		}
 	} catch (e: Exception) {
 		e.printStackTrace()
-
-		xvqd4 = null
 		null
 	}
 }
