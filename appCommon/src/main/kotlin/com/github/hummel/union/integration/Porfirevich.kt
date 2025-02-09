@@ -10,10 +10,10 @@ import org.apache.hc.core5.http.io.entity.StringEntity
 fun getPorfirevichAnswer(request: PorfirevichRequest): String? {
 	val payload = gson.toJson(request)
 
-	return request.prompt + getPorfirevichResponse(payload)
+	return request.prompt + getResponse(payload)
 }
 
-private fun getPorfirevichResponse(payload: String): String? = HttpClients.createDefault().use { client ->
+private fun getResponse(payload: String): String? = HttpClients.createDefault().use { client ->
 	try {
 		val request = HttpPost("https://api.porfirevich.com/generate/")
 
