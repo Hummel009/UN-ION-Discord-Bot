@@ -38,14 +38,14 @@ object LangEnUs : Lang {
 			"set_chance_message": "Message chance has been set: %s.",
 			"set_language": "Language has been set: %s.",
 			"set_preprompt": "Preprompt has been set: %s",
-			"set_name": "Name has been set: %s",
+			"set_name": "Name has been set: %s.",
 			
 			"current_chance_ai": "Current AI-message chance: %d.",
 			"current_chance_emoji": "Current emoji chance: %d.",
 			"current_chance_message": "Current message chance: %d.",
 			"current_language": "Current language: %s.",
 			"current_preprompt": "Current preprompt: %s",
-			"current_name": "Current name: %s",
+			"current_name": "Current name: %s.",
 			
 			"cleared_data": "Server data has been cleared.",
 			"cleared_bank": "Server speechbank have been cleared.",

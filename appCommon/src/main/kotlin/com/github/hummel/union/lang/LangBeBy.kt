@@ -38,14 +38,14 @@ object LangBeBy : Lang {
 			"set_chance_message": "Усталяваны шанс паведамлення: %d.",
 			"set_language": "Усталявана мова: %s.",
 			"set_preprompt": "Усталяваны прапромпт: %d",
-			"set_name": "Усталявана імя: %s",
+			"set_name": "Усталявана імя: %s.",
 			
 			"current_chance_ai": "Бягучы шанс ШІ-паведамлення: %d.",
 			"current_chance_emoji": "Бягучы шанс эмадзі: %d.",
 			"current_chance_message": "Бягучы шанс паведамлення: %d.",
 			"current_language": "Бягучая мова інтэрфейса: %s.",
 			"current_preprompt": "Бягучы прапромпт: %s",
-			"current_name": "Бягучае імя: %s",
+			"current_name": "Бягучае імя: %s.",
 			
 			"cleared_data": "Даныя сервера ачышчаны.",
 			"cleared_bank": "Спічбанк сервера ачышчаны.",
