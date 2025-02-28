@@ -63,6 +63,9 @@ object LangBeBy : Lang {
 			
 			"set_preprompt": "Промпт сервера зменены.",
 			"reset_preprompt": "Промпт сервера адноўлены.",
+			"current_preprompt": "Промпт сервера:",
+			
+			"cleared_context": "Кантэкст ачышчаны.",
 			
 			"january": "%d студзеня",
 			"february": "%d лютага",

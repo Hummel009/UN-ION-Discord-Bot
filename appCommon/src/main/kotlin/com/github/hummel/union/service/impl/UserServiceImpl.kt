@@ -1,5 +1,6 @@
 package com.github.hummel.union.service.impl
 
+import com.github.hummel.union.bean.BotData
 import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.integration.PorfirevichRequest
 import com.github.hummel.union.integration.getPorfirevichAnswer
@@ -79,6 +80,7 @@ class UserServiceImpl : UserService {
 						}
 						append("\r\n")
 					}
+					append(I18n.of("current_preprompt", serverData).format(serverData.preprompt), "\r\n")
 				}
 				val embed = EmbedBuilder().success(sc, serverData, text)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -108,6 +110,24 @@ class UserServiceImpl : UserService {
 				} else {
 					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+			}.get()
+		}
+	}
+
+	override fun clearContext(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName == "clear_context") {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val channelId = sc.channel.get().id
+				BotData.channelHistories[channelId] = mutableListOf()
+
+				val embed = EmbedBuilder().error(sc, serverData, I18n.of("context_cleared", serverData))
+
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
 		}

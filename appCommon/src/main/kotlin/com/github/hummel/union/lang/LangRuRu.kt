@@ -63,6 +63,9 @@ object LangRuRu : Lang {
 			
 			"set_preprompt": "Промпт сервера изменён.",
 			"reset_preprompt": "Промпт сервера восстановлен.",
+			"current_preprompt": "Промпт сервера:",
+			
+			"cleared_context": "Контекст очищен.",
 			
 			"january": "%d января",
 			"february": "%d февраля",

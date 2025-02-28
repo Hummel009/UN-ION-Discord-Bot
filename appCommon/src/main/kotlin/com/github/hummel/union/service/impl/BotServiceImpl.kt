@@ -1,5 +1,6 @@
 package com.github.hummel.union.service.impl
 
+import com.github.hummel.union.bean.BotData
 import com.github.hummel.union.bean.ServerData
 import com.github.hummel.union.factory.ServiceFactory
 import com.github.hummel.union.integration.DuckRequest
@@ -14,12 +15,6 @@ import kotlin.random.Random
 
 class BotServiceImpl : BotService {
 	private val dataService: DataService = ServiceFactory.dataService
-
-	private val channelHistories = mutableMapOf(
-		0L to mutableListOf(
-			""
-		)
-	)
 
 	override fun addRandomEmoji(event: MessageCreateEvent) {
 		if (event.messageAuthor.isYourself) {
@@ -39,8 +34,8 @@ class BotServiceImpl : BotService {
 		val channelId = event.channel.id
 		val msg = event.messageContent.replace("\r", " ").replace("\n", " ").replace("  ", " ")
 
-		channelHistories.putIfAbsent(channelId, mutableListOf())
-		val channelHistory = channelHistories[channelId] ?: return
+		BotData.channelHistories.putIfAbsent(channelId, mutableListOf())
+		val channelHistory = BotData.channelHistories[channelId] ?: return
 
 		channelHistory.add(msg)
 		if (channelHistory.size >= 10) {
@@ -72,7 +67,7 @@ class BotServiceImpl : BotService {
 		}
 
 		if (event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceMessage) {
-			val channelHistory = channelHistories.getOrDefault(channelId, null)
+			val channelHistory = BotData.channelHistories.getOrDefault(channelId, null)
 
 			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
 				val prompt = channelHistory.joinToString(

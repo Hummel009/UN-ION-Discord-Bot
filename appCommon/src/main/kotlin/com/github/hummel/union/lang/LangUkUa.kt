@@ -63,6 +63,9 @@ object LangUkUa : Lang {
 			
 			"set_preprompt": "Промпт сервера змінено.",
 			"reset_preprompt": "Промпт сервера відновлено.",
+			"current_preprompt": "Промпт сервера:",
+			
+			"cleared_context": "Контекст очищено.",
 			
 			"january": "%d січня",
 			"february": "%d лютого",

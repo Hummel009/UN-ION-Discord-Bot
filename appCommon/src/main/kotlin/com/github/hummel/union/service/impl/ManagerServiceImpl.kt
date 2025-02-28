@@ -524,7 +524,7 @@ class ManagerServiceImpl : ManagerService {
 				} else {
 					val prompt = sc.arguments[0].stringValue.get()
 					try {
-						serverData.preprompt = prompt.processPreprompt()
+						serverData.preprompt = prepromptTemplate.build(prompt)
 						EmbedBuilder().success(sc, serverData, I18n.of("set_preprompt", serverData))
 					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
@@ -549,7 +549,7 @@ class ManagerServiceImpl : ManagerService {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					try {
-						serverData.preprompt = defaultPreprompt.processPreprompt()
+						serverData.preprompt = prepromptTemplate.build(defaultPrompt)
 						EmbedBuilder().success(sc, serverData, I18n.of("reset_preprompt", serverData))
 					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
