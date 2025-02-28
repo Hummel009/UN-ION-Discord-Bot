@@ -66,6 +66,7 @@ object LangEnUs : Lang {
 			"happy_birthday": "<@%d>, happy birthday to you!",
 			
 			"reset_preprompt": "Preprompt has been reset.",
+			"reset_name": "Name has been reset.",
 			"cleared_context": "Context cleared.",
 			
 			"january": "January %d",

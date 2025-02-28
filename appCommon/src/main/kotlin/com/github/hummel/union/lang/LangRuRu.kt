@@ -66,6 +66,7 @@ object LangRuRu : Lang {
 			"happy_birthday": "<@%d>, с днём рождения!",
 			
 			"reset_preprompt": "Препромпт восстановлен.",
+			"reset_name": "Имя восстановлено.",
 			"cleared_context": "Контекст очищен.",
 			
 			"january": "%d января",

@@ -66,6 +66,7 @@ object LangUkUa : Lang {
 			"happy_birthday": "<@%d>, з днем народження!",
 			
 			"reset_preprompt": "Препромпт відновлено.",
+			"reset_name": "Ім’я відновлено.",
 			"cleared_context": "Контекст очищено.",
 			
 			"january": "%d січня",

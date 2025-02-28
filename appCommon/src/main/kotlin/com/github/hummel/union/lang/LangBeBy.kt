@@ -66,6 +66,7 @@ object LangBeBy : Lang {
 			"happy_birthday": "<@%d>, з днём нараджэння!",
 			
 			"reset_preprompt": "Прапромпт адноўлены.",
+			"reset_name": "Імя адноўлена.",
 			"cleared_context": "Кантэкст ачышчаны.",
 			
 			"january": "%d студзеня",
