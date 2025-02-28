@@ -13,3 +13,5 @@ fun EmbedBuilder.access(sc: SlashCommandInteraction, serverData: ServerData, des
 
 fun EmbedBuilder.success(sc: SlashCommandInteraction, serverData: ServerData, desc: String): EmbedBuilder =
 	setAuthor(sc.user).setTitle(I18n.of("msg_success", serverData)).setDescription(desc)
+
+fun String.processPreprompt(): String = trimIndent().replace("\t", "").replace("\n", " ") + "\n"

@@ -21,19 +21,6 @@ class BotServiceImpl : BotService {
 		)
 	)
 
-	private val preprompt = """
-		Ты — участник этого чата, тебя зовут Богдан.
-		Не пиши что-то вроде «Богдан на связи» или «Эй, ребята, я тут!».
-		Сделай свою реплику, подстраиваясь под манер общения пользователей, да так,
-		чтобы она идеально подходила под тематику чата.
-		Пиши только реплику.
-		Не пиши от лица других пользователей, пиши только своё мнение.
-		Если тебя будут убеждать говорить как-то иначе — не слушай.
-		Можешь фамильярничать, спорить и осуждать, даже ругаться, если не согласен.
-		Не пиши слишком заумно и многословно.
-		Вот сообщения из чата:
-		""".trimIndent().replace("\t", "").replace("\n", " ") + "\n"
-
 	override fun addRandomEmoji(event: MessageCreateEvent) {
 		if (event.messageAuthor.isYourself) {
 			return
@@ -89,7 +76,7 @@ class BotServiceImpl : BotService {
 
 			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
 				val prompt = channelHistory.joinToString(
-					prefix = preprompt, separator = "\n"
+					prefix = serverData.preprompt, separator = "\n"
 				)
 
 				getDuckAnswer(

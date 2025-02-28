@@ -6,6 +6,8 @@ import com.github.hummel.union.dao.JsonDao
 import com.github.hummel.union.dao.ZipDao
 import com.github.hummel.union.factory.DaoFactory
 import com.github.hummel.union.service.DataService
+import com.github.hummel.union.utils.defaultPreprompt
+import com.github.hummel.union.utils.processPreprompt
 import com.github.hummel.union.utils.version
 import org.javacord.api.entity.server.Server
 import org.javacord.api.interaction.SlashCommandInteraction
@@ -117,6 +119,7 @@ class DataServiceImpl : DataService {
 			mutedChannels = mutableSetOf(),
 			managers = mutableSetOf(),
 			birthdays = mutableSetOf(),
+			preprompt = defaultPreprompt.processPreprompt()
 		)
 	}
 }

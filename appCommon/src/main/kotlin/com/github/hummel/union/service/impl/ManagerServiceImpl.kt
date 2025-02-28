@@ -6,9 +6,7 @@ import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.AccessService
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.ManagerService
-import com.github.hummel.union.utils.access
-import com.github.hummel.union.utils.error
-import com.github.hummel.union.utils.success
+import com.github.hummel.union.utils.*
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
@@ -503,6 +501,57 @@ class ManagerServiceImpl : ManagerService {
 							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
+	override fun setPreprompt(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("set_preprompt")) {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					val prompt = sc.arguments[0].stringValue.get()
+					try {
+						serverData.preprompt = prompt.processPreprompt()
+						EmbedBuilder().success(sc, serverData, I18n.of("set_preprompt", serverData))
+					} catch (_: Exception) {
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
+	override fun resetPreprompt(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName.contains("reset_preprompt")) {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					try {
+						serverData.preprompt = defaultPreprompt.processPreprompt()
+						EmbedBuilder().success(sc, serverData, I18n.of("reset_preprompt", serverData))
+					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
