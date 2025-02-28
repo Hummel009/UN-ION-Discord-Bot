@@ -6,7 +6,10 @@ import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.AccessService
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.ManagerService
-import com.github.hummel.union.utils.*
+import com.github.hummel.union.utils.access
+import com.github.hummel.union.utils.defaultPrompt
+import com.github.hummel.union.utils.error
+import com.github.hummel.union.utils.success
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
@@ -524,7 +527,7 @@ class ManagerServiceImpl : ManagerService {
 				} else {
 					val prompt = sc.arguments[0].stringValue.get()
 					try {
-						serverData.preprompt = prepromptTemplate.build(prompt)
+						serverData.preprompt = prompt
 						EmbedBuilder().success(sc, serverData, I18n.of("set_preprompt", serverData))
 					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
@@ -549,7 +552,7 @@ class ManagerServiceImpl : ManagerService {
 					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
 				} else {
 					try {
-						serverData.preprompt = prepromptTemplate.build(defaultPrompt)
+						serverData.preprompt = defaultPrompt
 						EmbedBuilder().success(sc, serverData, I18n.of("reset_preprompt", serverData))
 					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))

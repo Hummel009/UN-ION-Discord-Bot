@@ -37,11 +37,13 @@ object LangBeBy : Lang {
 			"set_chance_emoji": "Усталяваны шанс эмадзі: %d.",
 			"set_chance_message": "Усталяваны шанс паведамлення: %d.",
 			"set_language": "Усталявана мова: %s.",
+			"set_preprompt": "Усталяваны прапромпт: %d.",
 			
 			"current_chance_ai": "Бягучы шанс ШІ-паведамлення: %d.",
 			"current_chance_emoji": "Бягучы шанс эмадзі: %d.",
 			"current_chance_message": "Бягучы шанс паведамлення: %d.",
 			"current_language": "Бягучая мова інтэрфейса: %s.",
+			"current_preprompt": "Бягучы прапромпт: %s.",
 			
 			"cleared_data": "Даныя сервера ачышчаны.",
 			"cleared_bank": "Спічбанк сервера ачышчаны.",
@@ -61,10 +63,7 @@ object LangBeBy : Lang {
 			
 			"happy_birthday": "<@%d>, з днём нараджэння!",
 			
-			"set_preprompt": "Промпт сервера зменены.",
-			"reset_preprompt": "Промпт сервера адноўлены.",
-			"current_preprompt": "Промпт сервера:",
-			
+			"reset_preprompt": "Прапромпт адноўлены.",
 			"cleared_context": "Кантэкст ачышчаны.",
 			
 			"january": "%d студзеня",

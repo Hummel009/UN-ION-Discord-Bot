@@ -80,6 +80,7 @@ class UserServiceImpl : UserService {
 						}
 						append("\r\n")
 					}
+					append("\r\n")
 					append(I18n.of("current_preprompt", serverData).format(serverData.preprompt), "\r\n")
 				}
 				val embed = EmbedBuilder().success(sc, serverData, text)

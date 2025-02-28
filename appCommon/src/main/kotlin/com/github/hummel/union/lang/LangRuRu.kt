@@ -37,11 +37,13 @@ object LangRuRu : Lang {
 			"set_chance_emoji": "Установлен шанс эмодзи: %d.",
 			"set_chance_message": "Установлен шанс сообщения: %d.",
 			"set_language": "Установлен язык: %s.",
+			"set_preprompt": "Установлен препромпт: %s.",
 			
 			"current_chance_ai": "Текущий шанс ИИ-сообщения: %d.",
 			"current_chance_emoji": "Текущий шанс эмодзи: %d.",
 			"current_chance_message": "Текущий шанс сообщения: %d.",
 			"current_language": "Текущий язык интерфейса: %s.",
+			"current_preprompt": "Текущий препромпт: %s.",
 			
 			"cleared_data": "Данные сервера очищены.",
 			"cleared_bank": "Спичбанк сервера очищены.",
@@ -61,10 +63,7 @@ object LangRuRu : Lang {
 			
 			"happy_birthday": "<@%d>, с днём рождения!",
 			
-			"set_preprompt": "Промпт сервера изменён.",
-			"reset_preprompt": "Промпт сервера восстановлен.",
-			"current_preprompt": "Промпт сервера:",
-			
+			"reset_preprompt": "Препромпт восстановлен.",
 			"cleared_context": "Контекст очищен.",
 			
 			"january": "%d января",

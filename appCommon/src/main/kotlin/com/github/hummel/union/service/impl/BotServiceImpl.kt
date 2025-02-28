@@ -9,6 +9,8 @@ import com.github.hummel.union.integration.getDuckAnswer
 import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.BotService
 import com.github.hummel.union.service.DataService
+import com.github.hummel.union.utils.build
+import com.github.hummel.union.utils.prepromptTemplate
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 import kotlin.random.Random
@@ -71,7 +73,7 @@ class BotServiceImpl : BotService {
 
 			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
 				val prompt = channelHistory.joinToString(
-					prefix = serverData.preprompt, separator = "\n"
+					prefix = prepromptTemplate.build(serverData.preprompt), separator = "\n"
 				)
 
 				getDuckAnswer(

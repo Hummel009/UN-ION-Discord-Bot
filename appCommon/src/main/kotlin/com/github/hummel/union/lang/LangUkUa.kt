@@ -37,11 +37,13 @@ object LangUkUa : Lang {
 			"set_chance_emoji": "Встановлено шанс емодзі: %d.",
 			"set_chance_message": "Встановлено шанс повідомлення: %d.",
 			"set_language": "Встановлено мову: %s.",
+			"set_preprompt": "Встановлено препромпт: %s.",
 			
 			"current_chance_ai": "Поточний шанс ШІ-повідомлення: %d.",
 			"current_chance_emoji": "Поточний шанс емодзі: %d.",
 			"current_chance_message": "Поточний шанс повідомлення: %d.",
 			"current_language": "Поточна мова інтерфейсу: %s.",
+			"current_preprompt": "Поточний препромпт: %s.",
 			
 			"cleared_data": "Дані сервера очищено.",
 			"cleared_bank": "Спічбанк сервера очищено.",
@@ -61,10 +63,7 @@ object LangUkUa : Lang {
 			
 			"happy_birthday": "<@%d>, з днем народження!",
 			
-			"set_preprompt": "Промпт сервера змінено.",
-			"reset_preprompt": "Промпт сервера відновлено.",
-			"current_preprompt": "Промпт сервера:",
-			
+			"reset_preprompt": "Препромпт відновлено.",
 			"cleared_context": "Контекст очищено.",
 			
 			"january": "%d січня",
