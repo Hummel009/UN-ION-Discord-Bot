@@ -33,7 +33,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun addBirthday(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("add_birthday")) {
+		if (sc.fullCommandName == "add_birthday") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -75,7 +75,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun addManager(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("add_manager")) {
+		if (sc.fullCommandName == "add_manager") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -109,7 +109,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun addSecretChannel(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("add_secret_channel")) {
+		if (sc.fullCommandName == "add_secret_channel") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -145,7 +145,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun addMutedChannel(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("add_muted_channel")) {
+		if (sc.fullCommandName == "add_muted_channel") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -181,7 +181,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun clearBirthdays(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("clear_birthdays")) {
+		if (sc.fullCommandName == "clear_birthdays") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -219,7 +219,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun clearManagers(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("clear_managers")) {
+		if (sc.fullCommandName == "clear_managers") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -257,7 +257,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun clearSecretChannels(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("clear_secret_channels")) {
+		if (sc.fullCommandName == "clear_secret_channels") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -295,7 +295,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun clearMutedChannels(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("clear_muted_channels")) {
+		if (sc.fullCommandName == "clear_muted_channels") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -333,7 +333,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun clearBank(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("clear_bank")) {
+		if (sc.fullCommandName == "clear_bank") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -352,7 +352,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun clearData(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("clear_data")) {
+		if (sc.fullCommandName == "clear_data") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -371,7 +371,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun setLanguage(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("set_language")) {
+		if (sc.fullCommandName == "set_language") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -406,7 +406,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun setChanceMessage(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("set_chance_message")) {
+		if (sc.fullCommandName == "set_chance_message") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -442,7 +442,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun setChanceEmoji(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("set_chance_emoji")) {
+		if (sc.fullCommandName == "set_chance_emoji") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -478,7 +478,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun setChanceAI(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("set_chance_ai")) {
+		if (sc.fullCommandName == "set_chance_ai") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -514,7 +514,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun setPreprompt(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("set_preprompt")) {
+		if (sc.fullCommandName == "set_preprompt") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -540,7 +540,7 @@ class ManagerServiceImpl : ManagerService {
 	override fun resetPreprompt(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("reset_preprompt")) {
+		if (sc.fullCommandName == "reset_preprompt") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)

@@ -18,7 +18,7 @@ class OwnerServiceImpl : OwnerService {
 	override fun import(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("import")) {
+		if (sc.fullCommandName == "import") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -38,7 +38,7 @@ class OwnerServiceImpl : OwnerService {
 	override fun export(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("export")) {
+		if (sc.fullCommandName == "export") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -55,7 +55,7 @@ class OwnerServiceImpl : OwnerService {
 
 	override fun exit(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
-		if (sc.fullCommandName.contains("exit")) {
+		if (sc.fullCommandName == "exit") {
 			var exit = false
 
 			sc.respondLater().thenAccept {

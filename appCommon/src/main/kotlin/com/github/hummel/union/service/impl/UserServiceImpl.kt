@@ -18,7 +18,7 @@ class UserServiceImpl : UserService {
 	override fun info(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("info")) {
+		if (sc.fullCommandName == "info") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
@@ -91,7 +91,7 @@ class UserServiceImpl : UserService {
 	override fun complete(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
-		if (sc.fullCommandName.contains("complete")) {
+		if (sc.fullCommandName == "complete") {
 			sc.respondLater().thenAccept {
 				val server = sc.server.get()
 				val serverData = dataService.loadServerData(server)
