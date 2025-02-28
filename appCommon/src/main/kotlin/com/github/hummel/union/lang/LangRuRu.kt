@@ -37,8 +37,8 @@ object LangRuRu : Lang {
 			"set_chance_emoji": "Установлен шанс эмодзи: %d.",
 			"set_chance_message": "Установлен шанс сообщения: %d.",
 			"set_language": "Установлен язык: %s.",
-			"set_preprompt": "Установлен препромпт: %s.",
-			"set_name": "Установлено имя: %s.",
+			"set_preprompt": "Установлен препромпт: %s",
+			"set_name": "Установлено имя: %s",
 			
 			"current_chance_ai": "Текущий шанс ИИ-сообщения: %d.",
 			"current_chance_emoji": "Текущий шанс эмодзи: %d.",

@@ -37,8 +37,8 @@ object LangEnUs : Lang {
 			"set_chance_emoji": "Emoji chance has been set: %s.",
 			"set_chance_message": "Message chance has been set: %s.",
 			"set_language": "Language has been set: %s.",
-			"set_preprompt": "Preprompt has been set: %s.",
-			"set_name": "Name has been set: %s.",
+			"set_preprompt": "Preprompt has been set: %s",
+			"set_name": "Name has been set: %s",
 			
 			"current_chance_ai": "Current AI-message chance: %d.",
 			"current_chance_emoji": "Current emoji chance: %d.",

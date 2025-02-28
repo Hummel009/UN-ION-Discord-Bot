@@ -37,8 +37,8 @@ object LangUkUa : Lang {
 			"set_chance_emoji": "Встановлено шанс емодзі: %d.",
 			"set_chance_message": "Встановлено шанс повідомлення: %d.",
 			"set_language": "Встановлено мову: %s.",
-			"set_preprompt": "Встановлено препромпт: %s.",
-			"set_name": "Встановлено ім’я: %s.",
+			"set_preprompt": "Встановлено препромпт: %s",
+			"set_name": "Встановлено ім’я: %s",
 			
 			"current_chance_ai": "Поточний шанс ШІ-повідомлення: %d.",
 			"current_chance_emoji": "Поточний шанс емодзі: %d.",
