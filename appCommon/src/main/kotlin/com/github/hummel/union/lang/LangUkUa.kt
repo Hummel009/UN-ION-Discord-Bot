@@ -61,6 +61,9 @@ object LangUkUa : Lang {
 			
 			"happy_birthday": "<@%d>, з днем народження!",
 			
+			"set_preprompt": "Промпт сервера змінено.",
+			"reset_preprompt": "Промпт сервера відновлено.",
+			
 			"january": "%d січня",
 			"february": "%d лютого",
 			"march": "%d березня",

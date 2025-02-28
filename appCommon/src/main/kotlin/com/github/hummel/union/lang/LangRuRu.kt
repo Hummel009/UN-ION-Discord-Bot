@@ -61,6 +61,9 @@ object LangRuRu : Lang {
 			
 			"happy_birthday": "<@%d>, с днём рождения!",
 			
+			"set_preprompt": "Промпт сервера изменён.",
+			"reset_preprompt": "Промпт сервера восстановлен.",
+			
 			"january": "%d января",
 			"february": "%d февраля",
 			"march": "%d марта",

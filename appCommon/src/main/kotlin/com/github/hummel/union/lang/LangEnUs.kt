@@ -61,6 +61,9 @@ object LangEnUs : Lang {
 			
 			"happy_birthday": "<@%d>, happy birthday to you!",
 			
+			"set_preprompt": "Server data has been changed.",
+			"reset_preprompt": "Server data has been reset.",
+			
 			"january": "January %d",
 			"february": "February %d",
 			"march": "March %d",

@@ -61,6 +61,9 @@ object LangBeBy : Lang {
 			
 			"happy_birthday": "<@%d>, з днём нараджэння!",
 			
+			"set_preprompt": "Промпт сервера зменены.",
+			"reset_preprompt": "Промпт сервера адноўлены.",
+			
 			"january": "%d студзеня",
 			"february": "%d лютага",
 			"march": "%d сакавіка",

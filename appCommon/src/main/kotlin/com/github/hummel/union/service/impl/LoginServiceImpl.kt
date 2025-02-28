@@ -57,6 +57,9 @@ class LoginServiceImpl : LoginService {
 
 		"set_language" with Settings("/set_language [ru/be/uk/en]", argsList(), api)
 
+		"set_preprompt" with Settings("/set_preprompt [text]", argsList(), api)
+		"reset_preprompt" with Settings("/reset_preprompt", emptyList(), api)
+
 		"import" with Settings("/import", file(), api)
 		"export" with Settings("/export", emptyList(), api)
 		"exit" with Settings("/exit", emptyList(), api)
