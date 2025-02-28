@@ -35,6 +35,7 @@ class LoginServiceImpl : LoginService {
 
 	override fun registerCommands(impl: DiscordControllerImpl) {
 		val api = impl.api
+		"clear_context" with Settings("/clear_context [text]", argsList(), api)
 		"complete" with Settings("/complete [text]", argsList(), api)
 		"info" with Settings("/info", emptyList(), api)
 

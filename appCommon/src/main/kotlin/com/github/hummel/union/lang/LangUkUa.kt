@@ -38,13 +38,14 @@ object LangUkUa : Lang {
 			"set_chance_message": "Встановлено шанс повідомлення: %d.",
 			"set_language": "Встановлено мову: %s.",
 			"set_preprompt": "Встановлено препромпт: %s.",
+			"set_name": "Встановлено ім’я: %s.",
 			
 			"current_chance_ai": "Поточний шанс ШІ-повідомлення: %d.",
 			"current_chance_emoji": "Поточний шанс емодзі: %d.",
 			"current_chance_message": "Поточний шанс повідомлення: %d.",
 			"current_language": "Поточна мова інтерфейсу: %s.",
-			"current_preprompt": "Поточний препромпт: %s.",
-			"current_name": "Поточне ім’я: %s.",
+			"current_preprompt": "Поточний препромпт: %s",
+			"current_name": "Поточне ім’я: %s",
 			
 			"cleared_data": "Дані сервера очищено.",
 			"cleared_bank": "Спічбанк сервера очищено.",

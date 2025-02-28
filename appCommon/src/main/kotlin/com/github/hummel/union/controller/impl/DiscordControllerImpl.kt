@@ -21,6 +21,7 @@ class DiscordControllerImpl : DiscordController {
 		val botService = ServiceFactory.botService
 
 		api.addInteractionCreateListener {
+			userService.clearContext(it)
 			userService.complete(it)
 			userService.info(it)
 

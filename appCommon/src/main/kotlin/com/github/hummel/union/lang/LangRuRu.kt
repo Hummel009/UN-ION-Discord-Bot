@@ -38,13 +38,14 @@ object LangRuRu : Lang {
 			"set_chance_message": "Установлен шанс сообщения: %d.",
 			"set_language": "Установлен язык: %s.",
 			"set_preprompt": "Установлен препромпт: %s.",
+			"set_name": "Установлено имя: %s.",
 			
 			"current_chance_ai": "Текущий шанс ИИ-сообщения: %d.",
 			"current_chance_emoji": "Текущий шанс эмодзи: %d.",
 			"current_chance_message": "Текущий шанс сообщения: %d.",
 			"current_language": "Текущий язык интерфейса: %s.",
-			"current_preprompt": "Текущий препромпт: %s.",
-			"current_name": "Текущее имя: %s.",
+			"current_preprompt": "Текущий препромпт: %s",
+			"current_name": "Текущее имя: %s",
 			
 			"cleared_data": "Данные сервера очищены.",
 			"cleared_bank": "Спичбанк сервера очищены.",
