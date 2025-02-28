@@ -13,7 +13,8 @@ data class ServerData(
 	val mutedChannels: MutableSet<Channel>,
 	val managers: MutableSet<Role>,
 	val birthdays: MutableSet<Birthday>,
-	var preprompt: String
+	var preprompt: String,
+	var name: String
 ) {
 	data class Date(var day: Int, var month: Int)
 

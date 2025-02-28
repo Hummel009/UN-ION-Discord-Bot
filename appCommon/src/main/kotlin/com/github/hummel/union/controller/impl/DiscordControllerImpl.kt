@@ -40,6 +40,8 @@ class DiscordControllerImpl : DiscordController {
 			managerService.setChanceAI(it)
 			managerService.setPreprompt(it)
 			managerService.resetPreprompt(it)
+			managerService.setName(it)
+			managerService.resetName(it)
 
 			ownerService.import(it)
 			ownerService.export(it)

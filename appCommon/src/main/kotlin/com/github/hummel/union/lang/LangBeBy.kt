@@ -44,6 +44,7 @@ object LangBeBy : Lang {
 			"current_chance_message": "Бягучы шанс паведамлення: %d.",
 			"current_language": "Бягучая мова інтэрфейса: %s.",
 			"current_preprompt": "Бягучы прапромпт: %s.",
+			"current_name": "Бягучае імя: %s.",
 			
 			"cleared_data": "Даныя сервера ачышчаны.",
 			"cleared_bank": "Спічбанк сервера ачышчаны.",

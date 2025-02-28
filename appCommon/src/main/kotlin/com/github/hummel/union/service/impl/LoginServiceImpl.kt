@@ -60,6 +60,9 @@ class LoginServiceImpl : LoginService {
 		"set_preprompt" with Settings("/set_preprompt [text]", argsList(), api)
 		"reset_preprompt" with Settings("/reset_preprompt", emptyList(), api)
 
+		"set_name" with Settings("/set_name [text]", argsList(), api)
+		"reset_name" with Settings("/reset_name", emptyList(), api)
+
 		"import" with Settings("/import", file(), api)
 		"export" with Settings("/export", emptyList(), api)
 		"exit" with Settings("/exit", emptyList(), api)

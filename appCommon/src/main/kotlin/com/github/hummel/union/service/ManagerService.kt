@@ -19,4 +19,6 @@ interface ManagerService {
 	fun setChanceAI(event: InteractionCreateEvent)
 	fun setPreprompt(event: InteractionCreateEvent)
 	fun resetPreprompt(event: InteractionCreateEvent)
+	fun setName(event: InteractionCreateEvent)
+	fun resetName(event: InteractionCreateEvent)
 }

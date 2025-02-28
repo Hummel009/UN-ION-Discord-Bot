@@ -44,6 +44,7 @@ object LangEnUs : Lang {
 			"current_chance_message": "Current message chance: %d.",
 			"current_language": "Current language: %s.",
 			"current_preprompt": "Current preprompt: %s.",
+			"current_name": "Current name: %s.",
 			
 			"cleared_data": "Server data has been cleared.",
 			"cleared_bank": "Server speechbank have been cleared.",

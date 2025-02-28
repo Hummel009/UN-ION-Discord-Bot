@@ -44,6 +44,7 @@ object LangUkUa : Lang {
 			"current_chance_message": "Поточний шанс повідомлення: %d.",
 			"current_language": "Поточна мова інтерфейсу: %s.",
 			"current_preprompt": "Поточний препромпт: %s.",
+			"current_name": "Поточне ім’я: %s.",
 			
 			"cleared_data": "Дані сервера очищено.",
 			"cleared_bank": "Спічбанк сервера очищено.",

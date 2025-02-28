@@ -6,10 +6,7 @@ import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.AccessService
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.service.ManagerService
-import com.github.hummel.union.utils.access
-import com.github.hummel.union.utils.defaultPrompt
-import com.github.hummel.union.utils.error
-import com.github.hummel.union.utils.success
+import com.github.hummel.union.utils.*
 import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.interaction.InteractionCreateEvent
 import java.time.Month
@@ -528,7 +525,9 @@ class ManagerServiceImpl : ManagerService {
 					val prompt = sc.arguments[0].stringValue.get()
 					try {
 						serverData.preprompt = prompt
-						EmbedBuilder().success(sc, serverData, I18n.of("set_preprompt", serverData))
+						EmbedBuilder().success(
+							sc, serverData, I18n.of("set_preprompt", serverData).format(prompt)
+						)
 					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 					}
@@ -540,6 +539,7 @@ class ManagerServiceImpl : ManagerService {
 		}
 	}
 
+	@Suppress("StringFormatTrivial")
 	override fun resetPreprompt(event: InteractionCreateEvent) {
 		val sc = event.slashCommandInteraction.get()
 
@@ -553,7 +553,61 @@ class ManagerServiceImpl : ManagerService {
 				} else {
 					try {
 						serverData.preprompt = defaultPrompt
-						EmbedBuilder().success(sc, serverData, I18n.of("reset_preprompt", serverData))
+						EmbedBuilder().success(
+							sc, serverData, I18n.of("reset_preprompt", serverData).format(defaultPrompt)
+						)
+					} catch (_: Exception) {
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
+	override fun setName(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName == "set_name") {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					val name = sc.arguments[0].stringValue.get()
+					try {
+						serverData.name = name
+						EmbedBuilder().success(sc, serverData, I18n.of("set_name", serverData).format(name))
+					} catch (_: Exception) {
+						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					}
+				}
+				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
+
+				dataService.saveServerData(server, serverData)
+			}.get()
+		}
+	}
+
+	@Suppress("StringFormatTrivial")
+	override fun resetName(event: InteractionCreateEvent) {
+		val sc = event.slashCommandInteraction.get()
+
+		if (sc.fullCommandName == "reset_name") {
+			sc.respondLater().thenAccept {
+				val server = sc.server.get()
+				val serverData = dataService.loadServerData(server)
+
+				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
+					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+				} else {
+					try {
+						serverData.name = defaultName
+						EmbedBuilder().success(sc, serverData, I18n.of("reset_name", serverData).format(defaultName))
 					} catch (_: Exception) {
 						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
 					}

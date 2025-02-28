@@ -44,6 +44,7 @@ object LangRuRu : Lang {
 			"current_chance_message": "Текущий шанс сообщения: %d.",
 			"current_language": "Текущий язык интерфейса: %s.",
 			"current_preprompt": "Текущий препромпт: %s.",
+			"current_name": "Текущее имя: %s.",
 			
 			"cleared_data": "Данные сервера очищены.",
 			"cleared_bank": "Спичбанк сервера очищены.",

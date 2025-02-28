@@ -44,10 +44,10 @@ class BotServiceImpl : BotService {
 			channelHistory.removeAt(0)
 		}
 
-		if (event.messageCanBeSaved()) {
-			val server = event.server.get()
-			val serverData = dataService.loadServerData(server)
+		val server = event.server.get()
+		val serverData = dataService.loadServerData(server)
 
+		if (event.messageCanBeSaved(serverData.name)) {
 			if (!serverData.secretChannels.any { it.id == channelId }) {
 				val crypt = encodeMessage(msg)
 				dataService.saveServerMessage(server, crypt)
@@ -68,12 +68,12 @@ class BotServiceImpl : BotService {
 			return
 		}
 
-		if (event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceMessage) {
+		if (event.messageHasBotMention(serverData.name) || Random.nextInt(100) < serverData.chanceMessage) {
 			val channelHistory = BotData.channelHistories.getOrDefault(channelId, null)
 
-			if ((event.messageHasBotMention() || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
+			if ((event.messageHasBotMention(serverData.name) || Random.nextInt(100) < serverData.chanceAI) && channelHistory != null) {
 				val prompt = channelHistory.joinToString(
-					prefix = prepromptTemplate.build(serverData.preprompt), separator = "\n"
+					prefix = prepromptTemplate.build(serverData.name, serverData.preprompt), separator = "\n"
 				)
 
 				getDuckAnswer(
@@ -139,9 +139,9 @@ class BotServiceImpl : BotService {
 		return isBirthday to userIds
 	}
 
-	private fun MessageCreateEvent.messageCanBeSaved(): Boolean {
+	private fun MessageCreateEvent.messageCanBeSaved(name: String): Boolean {
 		val contain = setOf("@", "https://", "http://", "gopher://")
-		val start = setOf("!", "?", "/", "Богдан", "богдан")
+		val start = setOf("!", "?", "/", name, name.lowercase(), name.lowercase())
 
 		if (messageContent.length !in 2..445) {
 			return false
@@ -157,8 +157,8 @@ class BotServiceImpl : BotService {
 		}
 	}
 
-	private fun MessageCreateEvent.messageHasBotMention(): Boolean {
-		val start = setOf("Богдан,", "богдан,")
+	private fun MessageCreateEvent.messageHasBotMention(name: String): Boolean {
+		val start = setOf("$name,", "${name.lowercase()},", "${name.uppercase()},")
 
 		return start.any {
 			messageContent.startsWith(it)
