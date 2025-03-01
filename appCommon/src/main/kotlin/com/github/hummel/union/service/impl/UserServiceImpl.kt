@@ -127,7 +127,7 @@ class UserServiceImpl : UserService {
 				val channelId = sc.channel.get().id
 				BotData.channelHistories[channelId] = mutableListOf()
 
-				val embed = EmbedBuilder().error(sc, serverData, I18n.of("cleared_context", serverData))
+				val embed = EmbedBuilder().success(sc, serverData, I18n.of("cleared_context", serverData))
 
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
