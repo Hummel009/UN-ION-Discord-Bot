@@ -37,7 +37,7 @@ object LangBeBy : Lang {
 			"set_chance_emoji": "Усталяваны шанс эмадзі: %d.",
 			"set_chance_message": "Усталяваны шанс паведамлення: %d.",
 			"set_language": "Усталявана мова: %s.",
-			"set_preprompt": "Усталяваны прапромпт: %d",
+			"set_preprompt": "Усталяваны прапромпт: %s",
 			"set_name": "Усталявана імя: %s.",
 			
 			"current_chance_ai": "Бягучы шанс ШІ-паведамлення: %d.",
