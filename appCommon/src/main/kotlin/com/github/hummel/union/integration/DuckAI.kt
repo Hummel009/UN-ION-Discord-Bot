@@ -30,49 +30,55 @@ private val headers = mutableMapOf(
 fun getDuckAnswer(request: DuckRequest): String? {
 	val payload = gson.toJson(request)
 
-	val xvqd4 = getXvqd4() ?: return null
+	val xvqdAndHash = getXvqdAndHash()
 
-	return getResponse(xvqd4, payload)
-}
-
-private fun getResponse(xvqd4: String, payload: String): String? = HttpClients.createDefault().use { client ->
-	try {
-		val url = URI("https://duckduckgo.com/duckchat/v1/chat")
-
-		val request = HttpPost(url)
-		request.addHeader("X-Vqd-4", xvqd4)
-
-		headers.forEach { (key, value) -> request.addHeader(key, value) }
-
-		request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
-
-		client.execute(request) { response ->
-			if (response.code in 200..299) {
-				val entity = response.entity
-				val jsonResponse = EntityUtils.toString(entity)
-
-				val apiResponse = jsonResponse?.split("data: ")?.filter {
-					it.isNotEmpty()
-				}?.takeWhile {
-					!it.contains("[DONE]")
-				}?.mapNotNull {
-					gson.fromJson(it, DuckResponse::class.java)
-				}
-
-				apiResponse?.mapNotNull {
-					it.message
-				}?.joinToString("")
-			} else {
-				null
-			}
-		}
-	} catch (e: Exception) {
-		e.printStackTrace()
-		null
+	if (xvqdAndHash.first == null || xvqdAndHash.second == null) {
+		return null
 	}
+
+	return getResponse(xvqdAndHash, payload)
 }
 
-private fun getXvqd4(): String? {
+private fun getResponse(xvqdAndHash: Pair<String?, String?>, payload: String): String? =
+	HttpClients.createDefault().use { client ->
+		try {
+			val url = URI("https://duckduckgo.com/duckchat/v1/chat")
+
+			val request = HttpPost(url)
+			request.addHeader("x-vqd-4", xvqdAndHash.first)
+			request.addHeader("x-vqd-hash-1", xvqdAndHash.second)
+
+			headers.forEach { (key, value) -> request.addHeader(key, value) }
+
+			request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
+
+			client.execute(request) { response ->
+				if (response.code in 200..299) {
+					val entity = response.entity
+					val jsonResponse = EntityUtils.toString(entity)
+
+					val apiResponse = jsonResponse?.split("data: ")?.filter {
+						it.isNotEmpty()
+					}?.takeWhile {
+						!it.contains("[DONE]")
+					}?.mapNotNull {
+						gson.fromJson(it, DuckResponse::class.java)
+					}
+
+					apiResponse?.mapNotNull {
+						it.message
+					}?.joinToString("")
+				} else {
+					null
+				}
+			}
+		} catch (e: Exception) {
+			e.printStackTrace()
+			null
+		}
+	}
+
+private fun getXvqdAndHash(): Pair<String?, String?> {
 	return HttpClients.createDefault().use { client ->
 		try {
 			val url = URI("https://duckduckgo.com/duckchat/v1/status")
@@ -84,14 +90,14 @@ private fun getXvqd4(): String? {
 
 			client.execute(request) { response ->
 				if (response.code in 200..299) {
-					response.headers.find { it.name == "x-vqd-4" }?.value
+					response.headers.find { it.name == "x-vqd-4" }?.value to response.headers.find { it.name == "x-vqd-hash-1" }?.value
 				} else {
-					null
+					null to null
 				}
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()
-			null
+			null to null
 		}
 	}
 }
