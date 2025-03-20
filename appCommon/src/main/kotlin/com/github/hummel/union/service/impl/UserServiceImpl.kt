@@ -83,7 +83,7 @@ class UserServiceImpl : UserService {
 					append("\r\n", I18n.of("current_name", serverData).format(serverData.name), "\r\n")
 					append("\r\n", I18n.of("current_preprompt", serverData).format(serverData.preprompt), "\r\n")
 				}
-				val embed = EmbedBuilder().success(sc, serverData, text)
+				val embed = EmbedBuilder().success(sc.user, serverData, text)
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 
 				dataService.saveServerData(sc.server.get(), serverData)
@@ -106,10 +106,10 @@ class UserServiceImpl : UserService {
 							prompt, "xlarge", 100
 						)
 					)?.let {
-						EmbedBuilder().success(sc, serverData, it)
-					} ?: EmbedBuilder().error(sc, serverData, I18n.of("no_connection", serverData))
+						EmbedBuilder().success(sc.user, serverData, it)
+					} ?: EmbedBuilder().error(sc.user, serverData, I18n.of("no_connection", serverData))
 				} else {
-					EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+					EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -127,7 +127,7 @@ class UserServiceImpl : UserService {
 				val channelId = sc.channel.get().id
 				BotData.channelHistories[channelId] = mutableListOf()
 
-				val embed = EmbedBuilder().success(sc, serverData, I18n.of("cleared_context", serverData))
+				val embed = EmbedBuilder().success(sc.user, serverData, I18n.of("cleared_context", serverData))
 
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()

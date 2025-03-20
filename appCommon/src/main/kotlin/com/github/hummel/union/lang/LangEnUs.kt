@@ -82,6 +82,9 @@ object LangEnUs : Lang {
 			"november": "November %d",
 			"december": "December %d",
 			
+			"duck_long": "The answer is too long and exceeds the Discord limit. Try editing the prompt to say «Write 3 paragraphs».",
+			"duck_off": "The site with the neural network is temporarily not working, or is overloaded, or the request rules have changed, and now the bot program needs to be reworked.",
+			
 			"be": "belarusian",
 			"en": "english",
 			"ru": "russian",

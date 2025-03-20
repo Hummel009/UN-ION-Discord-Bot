@@ -39,7 +39,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 3) {
@@ -56,13 +56,13 @@ class ManagerServiceImpl : ManagerService {
 							val date = I18n.of(Month.of(month).name.lowercase(), serverData).format(day)
 
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("added_birthday", serverData).format(userId, date)
+								sc.user, serverData, I18n.of("added_birthday", serverData).format(userId, date)
 							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -81,7 +81,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -91,12 +91,14 @@ class ManagerServiceImpl : ManagerService {
 								throw Exception()
 							}
 							serverData.managers.add(ServerData.Role(roleId))
-							EmbedBuilder().success(sc, serverData, I18n.of("added_manager", serverData).format(roleId))
+							EmbedBuilder().success(
+								sc.user, serverData, I18n.of("added_manager", serverData).format(roleId)
+							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -115,7 +117,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -126,13 +128,13 @@ class ManagerServiceImpl : ManagerService {
 							}
 							serverData.secretChannels.add(ServerData.Channel(channelId))
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("added_secret_channel", serverData).format(channelId)
+								sc.user, serverData, I18n.of("added_secret_channel", serverData).format(channelId)
 							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -151,7 +153,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -162,13 +164,13 @@ class ManagerServiceImpl : ManagerService {
 							}
 							serverData.mutedChannels.add(ServerData.Channel(channelId))
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("added_muted_channel", serverData).format(channelId)
+								sc.user, serverData, I18n.of("added_muted_channel", serverData).format(channelId)
 							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -187,11 +189,11 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.birthdays.clear()
-						EmbedBuilder().success(sc, serverData, I18n.of("cleared_birthdays", serverData))
+						EmbedBuilder().success(sc.user, serverData, I18n.of("cleared_birthdays", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -199,13 +201,13 @@ class ManagerServiceImpl : ManagerService {
 								val userId = arguments[0].toLong()
 								serverData.birthdays.removeIf { it.id == userId }
 								EmbedBuilder().success(
-									sc, serverData, I18n.of("removed_birthday", serverData).format(userId)
+									sc.user, serverData, I18n.of("removed_birthday", serverData).format(userId)
 								)
 							} catch (_: Exception) {
-								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+								EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 							}
 						} else {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 						}
 					}
 				}
@@ -225,11 +227,11 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.managers.clear()
-						EmbedBuilder().success(sc, serverData, I18n.of("cleared_managers", serverData))
+						EmbedBuilder().success(sc.user, serverData, I18n.of("cleared_managers", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -237,13 +239,13 @@ class ManagerServiceImpl : ManagerService {
 								val roleId = arguments[0].toLong()
 								serverData.managers.removeIf { it.id == roleId }
 								EmbedBuilder().success(
-									sc, serverData, I18n.of("removed_manager", serverData).format(roleId)
+									sc.user, serverData, I18n.of("removed_manager", serverData).format(roleId)
 								)
 							} catch (_: Exception) {
-								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+								EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 							}
 						} else {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 						}
 					}
 				}
@@ -263,11 +265,11 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.secretChannels.clear()
-						EmbedBuilder().success(sc, serverData, I18n.of("cleared_secret_channels", serverData))
+						EmbedBuilder().success(sc.user, serverData, I18n.of("cleared_secret_channels", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -275,13 +277,13 @@ class ManagerServiceImpl : ManagerService {
 								val channelId = arguments[0].toLong()
 								serverData.secretChannels.removeIf { it.id == channelId }
 								EmbedBuilder().success(
-									sc, serverData, I18n.of("removed_secret_channel", serverData).format(channelId)
+									sc.user, serverData, I18n.of("removed_secret_channel", serverData).format(channelId)
 								)
 							} catch (_: Exception) {
-								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+								EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 							}
 						} else {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 						}
 					}
 				}
@@ -301,11 +303,11 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					if (sc.arguments.isEmpty()) {
 						serverData.mutedChannels.clear()
-						EmbedBuilder().success(sc, serverData, I18n.of("cleared_muted_channels", serverData))
+						EmbedBuilder().success(sc.user, serverData, I18n.of("cleared_muted_channels", serverData))
 					} else {
 						val arguments = sc.arguments[0].stringValue.get().split(" ")
 						if (arguments.size == 1) {
@@ -313,13 +315,13 @@ class ManagerServiceImpl : ManagerService {
 								val channelId = arguments[0].toLong()
 								serverData.mutedChannels.removeIf { it.id == channelId }
 								EmbedBuilder().success(
-									sc, serverData, I18n.of("removed_muted_channel", serverData).format(channelId)
+									sc.user, serverData, I18n.of("removed_muted_channel", serverData).format(channelId)
 								)
 							} catch (_: Exception) {
-								EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+								EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 							}
 						} else {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 						}
 					}
 				}
@@ -339,10 +341,10 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					dataService.wipeServerMessages(server)
-					EmbedBuilder().success(sc, serverData, I18n.of("cleared_bank", serverData))
+					EmbedBuilder().success(sc.user, serverData, I18n.of("cleared_bank", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -358,10 +360,10 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					dataService.wipeServerData(server)
-					EmbedBuilder().success(sc, serverData, I18n.of("cleared_data", serverData))
+					EmbedBuilder().success(sc.user, serverData, I18n.of("cleared_data", serverData))
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
 			}.get()
@@ -377,7 +379,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -388,12 +390,14 @@ class ManagerServiceImpl : ManagerService {
 							}
 							serverData.lang = lang
 							val langName = I18n.of(lang, serverData)
-							EmbedBuilder().success(sc, serverData, I18n.of("set_language", serverData).format(langName))
+							EmbedBuilder().success(
+								sc.user, serverData, I18n.of("set_language", serverData).format(langName)
+							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -412,7 +416,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -423,13 +427,13 @@ class ManagerServiceImpl : ManagerService {
 							}
 							serverData.chanceMessage = chance
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("set_chance_message", serverData).format(chance)
+								sc.user, serverData, I18n.of("set_chance_message", serverData).format(chance)
 							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -448,7 +452,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -459,13 +463,13 @@ class ManagerServiceImpl : ManagerService {
 							}
 							serverData.chanceEmoji = chance
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("set_chance_emoji", serverData).format(chance)
+								sc.user, serverData, I18n.of("set_chance_emoji", serverData).format(chance)
 							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -484,7 +488,7 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val arguments = sc.arguments[0].stringValue.get().split(" ")
 					if (arguments.size == 1) {
@@ -495,13 +499,13 @@ class ManagerServiceImpl : ManagerService {
 							}
 							serverData.chanceAI = chance
 							EmbedBuilder().success(
-								sc, serverData, I18n.of("set_chance_ai", serverData).format(chance)
+								sc.user, serverData, I18n.of("set_chance_ai", serverData).format(chance)
 							)
 						} catch (_: Exception) {
-							EmbedBuilder().error(sc, serverData, I18n.of("invalid_format", serverData))
+							EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_format", serverData))
 						}
 					} else {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -520,16 +524,16 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val prompt = sc.arguments[0].stringValue.get()
 					try {
 						serverData.preprompt = prompt
 						EmbedBuilder().success(
-							sc, serverData, I18n.of("set_preprompt", serverData).format(prompt)
+							sc.user, serverData, I18n.of("set_preprompt", serverData).format(prompt)
 						)
 					} catch (_: Exception) {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -549,15 +553,15 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					try {
 						serverData.preprompt = defaultPrompt
 						EmbedBuilder().success(
-							sc, serverData, I18n.of("reset_preprompt", serverData).format(defaultPrompt)
+							sc.user, serverData, I18n.of("reset_preprompt", serverData).format(defaultPrompt)
 						)
 					} catch (_: Exception) {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -576,14 +580,14 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					val name = sc.arguments[0].stringValue.get()
 					try {
 						serverData.name = name
-						EmbedBuilder().success(sc, serverData, I18n.of("set_name", serverData).format(name))
+						EmbedBuilder().success(sc.user, serverData, I18n.of("set_name", serverData).format(name))
 					} catch (_: Exception) {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()
@@ -603,13 +607,15 @@ class ManagerServiceImpl : ManagerService {
 				val serverData = dataService.loadServerData(server)
 
 				val embed = if (!accessService.fromManagerAtLeast(sc, serverData)) {
-					EmbedBuilder().access(sc, serverData, I18n.of("no_access", serverData))
+					EmbedBuilder().access(sc.user, serverData, I18n.of("no_access", serverData))
 				} else {
 					try {
 						serverData.name = defaultName
-						EmbedBuilder().success(sc, serverData, I18n.of("reset_name", serverData).format(defaultName))
+						EmbedBuilder().success(
+							sc.user, serverData, I18n.of("reset_name", serverData).format(defaultName)
+						)
 					} catch (_: Exception) {
-						EmbedBuilder().error(sc, serverData, I18n.of("invalid_arg", serverData))
+						EmbedBuilder().error(sc.user, serverData, I18n.of("invalid_arg", serverData))
 					}
 				}
 				sc.createFollowupMessageBuilder().addEmbed(embed).send().get()

@@ -10,7 +10,9 @@ import com.github.hummel.union.lang.I18n
 import com.github.hummel.union.service.BotService
 import com.github.hummel.union.service.DataService
 import com.github.hummel.union.utils.build
+import com.github.hummel.union.utils.error
 import com.github.hummel.union.utils.prepromptTemplate
+import org.javacord.api.entity.message.embed.EmbedBuilder
 import org.javacord.api.event.message.MessageCreateEvent
 import java.time.LocalDate
 import kotlin.random.Random
@@ -83,9 +85,19 @@ class BotServiceImpl : BotService {
 						)
 					)
 				)?.let {
-					event.channel.sendMessage(it)
+					if (it.length > 2000) {
+						val embed = EmbedBuilder().error(
+							event.messageAuthor.asUser().get(), serverData, I18n.of("duck_long", serverData)
+						)
+						event.channel.sendMessage(embed)
+					} else {
+						event.channel.sendMessage(it)
+					}
 				} ?: run {
-					event.channel.sendMessage("Я занят, поговорим попозже.")
+					val embed = EmbedBuilder().error(
+						event.messageAuthor.asUser().get(), serverData, I18n.of("duck_off", serverData)
+					)
+					event.channel.sendMessage(embed)
 				}
 			} else {
 				val crypt = dataService.getServerRandomMessage(server)
