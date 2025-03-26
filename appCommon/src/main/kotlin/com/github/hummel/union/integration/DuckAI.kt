@@ -46,7 +46,7 @@ private fun getResponse(xvqdAndHash: Pair<String?, String?>, payload: String): S
 
 			val request = HttpPost(url)
 			request.addHeader("x-vqd-4", xvqdAndHash.first)
-			request.addHeader("x-vqd-hash-1", xvqdAndHash.second)
+			request.addHeader("x-vqd-hash-1", "")
 
 			headers.forEach { (key, value) -> request.addHeader(key, value) }
 
