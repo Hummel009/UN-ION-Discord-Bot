@@ -10,87 +10,94 @@ import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.apache.hc.core5.http.io.entity.StringEntity
 import java.net.URI
 
-private val headers = mutableMapOf(
-	"User-Agent" to getRandomUserAgent(),
-	"Accept" to "*/*",
-	"Accept-Language" to "en-US,en;q=0.5",
-	"Accept-Encoding" to "gzip, deflate, br, zstd",
-	"Referer" to "https://duckduckgo.com/",
-	"Cache-Control" to "no-store",
-	"Connection" to "keep-alive",
-	"Cookie" to "dcm=3",
-	"Sec-Fetch-Dest" to "empty",
-	"Sec-Fetch-Mode" to "cors",
-	"Sec-Fetch-Site" to "same-origin",
-	"Priority" to "u=4",
-	"Pragma" to "no-cache",
-	"TE" to "trailers"
-)
-
 fun getDuckAnswer(request: DuckRequest): String? {
 	val payload = gson.toJson(request)
 
-	val xvqdAndHash = getXvqdAndHash()
+	val userAgent = getRandomUserAgent()
+	val feVersion = getXFeVersion() ?: return null
+	val (vqd, _) = getXVqdHash()
 
-	if (xvqdAndHash.first == null || xvqdAndHash.second == null) {
-		return null
-	}
-
-	return getResponse(xvqdAndHash, payload)
+	return getResponse(userAgent, feVersion, vqd ?: return null, payload)
 }
 
-private fun getResponse(xvqdAndHash: Pair<String?, String?>, payload: String): String? =
-	HttpClients.createDefault().use { client ->
-		try {
-			val url = URI("https://duckduckgo.com/duckchat/v1/chat")
+private fun getResponse(
+	userAgent: String, feVersion: String, vqd: String, payload: String
+): String? = HttpClients.createDefault().use { client ->
+	try {
+		val url = URI("https://duckduckgo.com/duckchat/v1/chat")
 
-			val request = HttpPost(url)
-			request.addHeader("x-vqd-4", xvqdAndHash.first)
-			request.addHeader("x-vqd-hash-1", "")
+		val request = HttpPost(url)
+		request.setHeader("Accept", "text/event-stream")
+		request.setHeader("Accept-Encoding", "gzip, deflate, br, zstd")
+		request.setHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6,be;q=0.5")
+		request.setHeader("Cookie", "dcm=3; dcs=1")
+		request.setHeader("Dnt", "1")
+		request.setHeader("Origin", "https://duckduckgo.com")
+		request.setHeader("Priority", "u=1, i")
+		request.setHeader("Referer", "https://duckduckgo.com/")
+		request.setHeader("Sec-Fetch-Dest", "empty")
+		request.setHeader("Sec-Fetch-Mode", "cors")
+		request.setHeader("Sec-Fetch-Site", "same-origin")
 
-			headers.forEach { (key, value) -> request.addHeader(key, value) }
+		request.addHeader("User-Agent", userAgent)
+		request.addHeader("X-Fe-Version", feVersion)
+		request.addHeader("X-Vqd-4", vqd)
+		request.addHeader("X-Vqd-Hash-1", "")
 
-			request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
+		request.entity = StringEntity(payload, ContentType.APPLICATION_JSON)
 
-			client.execute(request) { response ->
-				if (response.code in 200..299) {
-					val entity = response.entity
-					val jsonResponse = EntityUtils.toString(entity)
+		client.execute(request) { response ->
+			if (response.code in 200..299) {
+				val content = EntityUtils.toString(response.entity)
 
-					val apiResponse = jsonResponse?.split("data: ")?.filter {
-						it.isNotEmpty()
-					}?.takeWhile {
-						!it.contains("[DONE]")
-					}?.mapNotNull {
-						gson.fromJson(it, DuckResponse::class.java)
-					}
-
-					apiResponse?.mapNotNull {
-						it.message
-					}?.joinToString("")
-				} else {
-					null
+				val apiResponse = content.split("data: ").filter {
+					it.isNotEmpty()
+				}.takeWhile {
+					!it.contains("[DONE]")
+				}.mapNotNull {
+					gson.fromJson(it, DuckResponse::class.java)
 				}
-			}
-		} catch (e: Exception) {
-			e.printStackTrace()
-			null
-		}
-	}
 
-private fun getXvqdAndHash(): Pair<String?, String?> {
+				apiResponse.joinToString("") { it.message }
+			} else {
+				null
+			}
+		}
+	} catch (e: Exception) {
+		e.printStackTrace()
+		null
+	}
+}
+
+private fun getXVqdHash(): Pair<String?, String?> {
 	return HttpClients.createDefault().use { client ->
 		try {
 			val url = URI("https://duckduckgo.com/duckchat/v1/status")
 
 			val request = HttpGet(url)
-			request.addHeader("x-vqd-accept", "1")
+			request.setHeader("Accept", "*/*")
+			request.setHeader("Accept-Encoding", "gzip, deflate, br, zstd")
+			request.setHeader("Accept-Language", "ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7,uk;q=0.6,be;q=0.5")
+			request.setHeader("Cache-Control", "no-store")
+			request.setHeader("Cookie", "dcm=3")
+			request.setHeader("Dnt", "1")
+			request.setHeader("Priority", "u=1, i")
+			request.setHeader("Referer", "https://duckduckgo.com/")
+			request.setHeader("Sec-Fetch-Dest", "empty")
+			request.setHeader("Sec-Fetch-Mode", "cors")
+			request.setHeader("Sec-Fetch-Site", "same-origin")
 
-			headers.forEach { (key, value) -> request.addHeader(key, value) }
+			request.addHeader("X-Vqd-Accept", "1")
 
 			client.execute(request) { response ->
 				if (response.code in 200..299) {
-					response.headers.find { it.name == "x-vqd-4" }?.value to response.headers.find { it.name == "x-vqd-hash-1" }?.value
+					val headers = response.headers
+
+					headers.find {
+						it.name.lowercase() == "X-Vqd-4".lowercase()
+					}?.value to headers.find {
+						it.name.lowercase() == "X-Vqd-Hash-1".lowercase()
+					}?.value
 				} else {
 					null to null
 				}
@@ -98,6 +105,35 @@ private fun getXvqdAndHash(): Pair<String?, String?> {
 		} catch (e: Exception) {
 			e.printStackTrace()
 			null to null
+		}
+	}
+}
+
+private fun getXFeVersion(): String? {
+	return HttpClients.createDefault().use { client ->
+		try {
+			val url = URI("https://duckduckgo.com/?q=DuckDuckGo+AI+Chat&ia=chat&duckai=1")
+
+			val request = HttpGet(url)
+
+			client.execute(request) { response ->
+				if (response.code in 200..299) {
+					val content = EntityUtils.toString(response.entity)
+
+					val regexVersion = "__DDG_BE_VERSION__=\"([^\"]+)\"".toRegex()
+					val regexChatHash = "__DDG_FE_CHAT_HASH__=\"([^\"]+)\"".toRegex()
+
+					val version = regexVersion.find(content)?.groups[1]?.value
+					val chatHash = regexChatHash.find(content)?.groups[1]?.value
+
+					"$version-$chatHash"
+				} else {
+					null
+				}
+			}
+		} catch (e: Exception) {
+			e.printStackTrace()
+			null
 		}
 	}
 }
