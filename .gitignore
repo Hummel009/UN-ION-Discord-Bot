@@ -41,3 +41,4 @@ bin/
 ### SECURITY ###
 token.txt
 **/*.bin
+appWindows/start.properties
